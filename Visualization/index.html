@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockSets</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+    <div id="content">
+        <menu>
+            <section id="file">
+                <div class="dropdownHeader">
+                    <div class="icon">
+                        <svg width="0.75em" height="0.75em" viewBox="0 0 40 40">
+                            <polygon points="10,5 30,20 10,35" fill="#fff" />
+                        </svg>
+                    </div>
+                    <p>Dataset</p>
+                </div>
+                <div class="items dropdownMenu">
+                    <span>
+                        <label class="selectable" for="fileInput" id="fileLabel">Select File</label>
+                        <input class="selectable" type="file" id="fileInput">
+                    </span>
+                    <span>
+                        <label class="selectable" for="export" id="exportLabel">Export</label>
+                        <input class="selectable" type="button" id="export">
+                    </span>
+                </div>
+            </section>
+
+            <section id="settings">
+                <div class="dropdownHeader">
+                    <div class="icon">
+                        <svg width="0.75em" height="0.75em" viewBox="0 0 40 40">
+                            <polygon points="10,5 30,20 10,35" fill="#fff" />
+                        </svg>
+                    </div>
+                    <p>Settings</p>
+                </div>
+                <div class="items dropdownMenu">
+                    <span>
+                        <div class="dropdownHeader">
+                            <div class="icon">
+                                <svg width="0.75em" height="0.75em" viewBox="0 0 40 40">
+                                    <polygon points="10,5 30,20 10,35" fill="#bbb" />
+                                </svg>
+                            </div>
+                            <p>Entity Render Type</p>
+                        </div>
+                        <ul class="dropdownMenu">
+                            <li class="selectable" id="stackedEntities">Stacked</li>
+                            <li class="selectable" id="transparentEntities">Transparent</li>
+                        </ul>
+                    </span>
+
+                    <span>
+                        <div class="dropdownHeader">
+                            <div class="icon">
+                                <svg width="0.75em" height="0.75em" viewBox="0 0 40 40">
+                                    <polygon points="10,5 30,20 10,35" fill="#bbb" />
+                                </svg>
+                            </div>
+                            <p>Name Highlighting</p>
+                        </div>
+                        <ul class="dropdownMenu">
+                            <li class="selectable" id="textHighlighted">Text</li>
+                            <li class="selectable" id="backgroundHighlighted">Background</li>
+                            <li class="selectable" id="nothingHighlighted">None</li>
+                        </ul>
+                    </span>
+
+                    <span>
+                        <p>Rounding</p>
+                        <div class="slider">
+                            <span class="sliderValue"></span>
+                            <input class="selectable" id="cornerRadius" type="range" min="0" max="30" value="5">
+                        </div>
+                    </span>
+
+                    <span>
+                        <label class="selectable" for="grayscaleToggle">Grayscale</label>
+                        <input class="selectable" type="checkbox" id="grayscaleToggle">
+                        <label for="grayscaleToggle" class="selectable check"></label>
+                    </span>
+
+                    <span>
+                        <label class="selectable" for="headerToggle">Headers</label>
+                        <input class="selectable" type="checkbox" id="headerToggle">
+                        <label for="headerToggle" class="selectable check"></label>
+                    </span>
+
+                    <span>
+                        <label class="selectable" for="shadowToggle">Shadows</label>
+                        <input class="selectable" type="checkbox" id="shadowToggle" checked>
+                        <label for="shadowToggle" class="selectable check"></label>
+                    </span>
+
+                    <span>
+                        <div class="dropdownHeader">
+                            <div class="icon">
+                                <svg width="0.75em" height="0.75em" viewBox="0 0 40 40">
+                                    <polygon points="10,5 30,20 10,35" fill="#bbb" />
+                                </svg>
+                            </div>
+                            <label class="selectable" for="outlineToggle">Outlines</label>
+                            <input class="selectable" type="checkbox" id="outlineToggle" checked>
+                            <label for="outlineToggle" class="selectable check"></label>
+                        </div>
+                        <ul class="dropdownMenu" id="outlineMenu">
+                            <li id="outlineWeight">
+                                <p>Weight</p>
+                                <div class="slider">
+                                    <span class="sliderValue"></span>
+                                    <input class="selectable" id="outlineWeight" type="range" min="1" max="10"
+                                        value="1">
+                                </div>
+                            </li>
+                            <li id="outlineColor">
+                                <label class="selectable" for="outlineColorInput">Color</label>
+                                <input class="selectable" id="outlineColorInput" type="color">
+                            </li>
+                            <li>
+                                <label class="selectable" for="outlinesUseEntityColorToggle">Use Entity Color</label>
+                                <input class="selectable" type="checkbox" id="outlinesUseEntityColorToggle" checked>
+                                <label for="outlinesUseEntityColorToggle" class="selectable check"></label>
+                            </li>
+                            <li>
+                                <label class="selectable" for="outlineNonRepeatedToggle">Non-Repeated</label>
+                                <input class="selectable" type="checkbox" id="outlineNonRepeatedToggle" checked>
+                                <label for="outlineNonRepeatedToggle" class="selectable check"></label>
+                            </li>
+                            <li class="dropdownHeader">
+                                <div class="icon">
+                                    <svg width="0.75em" height="0.75em" viewBox="0 0 40 40">
+                                        <polygon points="10,5 30,20 10,35" fill="#bbb" />
+                                    </svg>
+                                </div>
+                                <label class="selectable" for="outlineRepeatedToggle">Repeated</label>
+                                <input class="selectable" type="checkbox" id="outlineRepeatedToggle">
+                                <label for="outlineRepeatedToggle" class="selectable check"></label>
+                            </li>
+                            <li class="dropdownMenu">
+                                <label class="selectable" for="dashRepeatedToggle">Dashed</label>
+                                <input class="selectable" type="checkbox" id="dashRepeatedToggle">
+                                <label for="dashRepeatedToggle" class="selectable check"></label>
+                            </li>
+                        </ul>
+                    </span>
+                </div>
+            </section>
+        </menu>
+
+        <div id="canvasWrapper"><canvas id="canvas"></canvas></div>
+    </div>
+
+    <script type="module">
+        import * as culori from 'https://esm.run/culori@3.3.0';
+        window.culori = culori;
+    </script>
+
+    <script src="Point.js"></script>
+    <script src="Interval.js"></script>
+    <script src="Entity.js"></script>
+    <script src="Statement.js"></script>
+    <script src="utils.js"></script>
+    <script src="colors.js"></script>
+    <script src="textProcessingHelper.js"></script>
+    <script src="prepareElements.js"></script>
+    <script src="position.js"></script>
+    <script src="draw.js"></script>
+    <script src="interaction.js"></script>
+    <script src="svg.js"></script>
+    <script src="main.js"></script>
+</body>
+
+
+</html>
