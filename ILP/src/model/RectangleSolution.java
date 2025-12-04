@@ -40,10 +40,16 @@ public class RectangleSolution implements Solution {
 
     @Override
     public String getStatement(int x, int y) {
-        for (int sId = 0; sId != this.statementCoordinates.length; ++sId) {
-            var coord = this.statementCoordinates[sId];
+        for (int k = 0; k != this.statementCoordinates.length; ++k) {
+            var coord = this.statementCoordinates[k];
             if (coord[0] == x && coord[1] == y) {
-                return instance.statements.get(sId);
+                int j = 0;
+                for (var key : instance.statements.keySet()) {
+                    if (j == k) {
+                        return instance.statements.get(key);
+                    }
+                    ++j;
+                }
             }
         }
         return "";

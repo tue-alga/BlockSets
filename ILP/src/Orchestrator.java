@@ -64,7 +64,8 @@ public class Orchestrator {
                     }
 
                     for (int y = minY; y <= maxY; ++y) {
-                        if (sol.getStatement(x, y).isEmpty()) {
+                        String s = sol.getStatement(x, y);
+                        if (s == null || s.isEmpty()) {
                             gaps.add(new Point(x, y));
                         }
                     }
@@ -84,15 +85,18 @@ public class Orchestrator {
                     }
 
                     for (int x = minX; x <= maxX; ++x) {
-                        if (sol.getStatement(x, y).isEmpty()) {
+                        String s = sol.getStatement(x, y);
+                        if (s == null || s.isEmpty()) {
                             gaps.add(new Point(x, y));
                         }
                     }
                 }
-                System.out.println("#gaps: " + gaps.size());
-                if (gaps.size() <= sol.getInstance().numberOfStatements / 10) {
+                System.out.println("#gaps: " + gaps.size() + "  #statements: " + sol.getInstance().numberOfStatements);
+                if (gaps.size() <= sol.getInstance().numberOfStatements / 5) {
                     solutions.add(sol);
                     continue;
+                } else {
+                    System.out.println("Splitting component as there are too many gaps.");
                 }
             }
 
