@@ -1,0 +1,98 @@
+{
+  "statements": [
+    {
+      "id": 0,
+      "text": "Robin Hood is famed as an outlaw in Sherwood Forest near Nottingham, stealing from proud lords and easing the hunger of the poor."
+    },
+    {
+      "id": 1,
+      "text": "Folk say Robin Hood wore Lincoln green and carried a yew bow that could split another man's arrow on the butts at Nottingham."
+    },
+    {
+      "id": 2,
+      "text": "The Sheriff of Nottingham rides the forest roads with men-at-arms, yet Sherwood Forest always seems to swallow his prey and spit him back in anger."
+    },
+    {
+      "id": 3,
+      "text": "Maid Marian walks between Nottingham Castle and the green shade of Sherwood, passing secret words to Robin Hood and laughing at Prince John's spies."
+    },
+    {
+      "id": 4,
+      "text": "In many tales, King Richard returns from war in the south and finds Robin Hood kneeling under the oaks of Sherwood, loyal in heart if not in law."
+    },
+    {
+      "id": 5,
+      "text": "On a narrow bridge over a forest stream, Robin Hood and Little John trade blows with quarterstaffs until Robin falls in, and the two rise as sworn friends."
+    },
+    {
+      "id": 6,
+      "text": "Friar Tuck is remembered as a stout, laughing priest who shares his ale with the Merry Men and scolds Robin Hood when pride grows too bold."
+    },
+    {
+      "id": 7,
+      "text": "Will Scarlet, fine in red, and Much the Miller's Son keep watch on the forest paths, warning the Merry Men when the Sheriff's hunters draw near."
+    },
+    {
+      "id": 8,
+      "text": "Ballads tell of a great archery contest in Nottingham where Robin Hood, in disguise, wins a golden arrow while the Sheriff rages and plots revenge."
+    },
+    {
+      "id": 9,
+      "text": "Around firelit clearings in Sherwood Forest, the Merry Men share stolen coins and broken bread with beggars, widows, and wandering strangers."
+    },
+    {
+      "id": 10,
+      "text": "In darker songs, Robin Hood dies at Kirklees Priory, betrayed by a false-hearted prioress, yet he still shoots one last arrow to mark his grave."
+    },
+    {
+      "id": 11,
+      "text": "In cottages and taverns across Nottinghamshire, people still sing of Little John, Will Scarlet, Friar Tuck, and other Merry Men who followed Robin Hood against unjust rule."
+    }
+  ],
+
+  "entities": [
+    { "id": 0,  "name": "Robin Hood (Robin)" },
+    { "id": 1,  "name": "Sherwood Forest (Sherwood)" },
+    { "id": 2,  "name": "Nottingham" },
+    { "id": 3,  "name": "Nottinghamshire" },
+    { "id": 4,  "name": "Merry Men" },
+    { "id": 5,  "name": "Sheriff of Nottingham (Sheriff)" },
+    { "id": 6,  "name": "Maid Marian" },
+    { "id": 7,  "name": "King Richard (king)" },
+    { "id": 8,  "name": "Prince John" },
+    { "id": 9,  "name": "Nottingham Castle" },
+    { "id": 10, "name": "Little John" },
+    { "id": 11, "name": "Friar Tuck" },
+    { "id": 12, "name": "Lincoln green" },
+    { "id": 13, "name": "yew bow" },
+    { "id": 14, "name": "Will Scarlet" },
+    { "id": 15, "name": "Much the Miller's Son" },
+    { "id": 16, "name": "archery contest" },
+    { "id": 17, "name": "golden arrow" },
+    { "id": 18, "name": "Kirklees Priory" },
+    { "id": 19, "name": "prioress" }
+  ],
+
+  "entity_statements": {
+    "0":  [0, 1, 3, 4, 5, 6, 8, 10, 11],
+    "1":  [0, 2, 3, 4, 9],
+    "2":  [0, 1, 2, 3, 8],
+    "3":  [11],
+    "4":  [6, 7, 9, 11],
+    "5":  [2, 7, 8],
+    "6":  [3],
+    "7":  [4],
+    "8":  [3],
+    "9":  [3],
+    "10": [5, 11],
+    "11": [6, 11],
+    "12": [1],
+    "13": [1],
+    "14": [7, 11],
+    "15": [7],
+    "16": [8],
+    "17": [8],
+    "18": [10],
+    "19": [10]
+  }
+}

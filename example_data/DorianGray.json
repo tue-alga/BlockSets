@@ -1,0 +1,90 @@
+{
+  "statements": [
+    {
+      "id": 0,
+      "text": "In Basil Hallward's London studio, the painter introduced a young man of striking beauty to Lord Henry Wotton, and the meeting filled the room with an uneasy brilliance."
+    },
+    {
+      "id": 1,
+      "text": "Lady Agatha often remarked that the portrait of Dorian Gray had become the talk of artistic circles, praised for the strange fervor it seemed to embody."
+    },
+    {
+      "id": 2,
+      "text": "The shabby West End theatre where Sibyl Vane performed seemed each night to lift London's weary audiences into realms purer than the city's smoke and sorrow."
+    },
+    {
+      "id": 3,
+      "text": "Mrs. Vane fretted backstage that Sibyl's newfound admirer from Mayfair might disrupt the fragile discipline required for her nightly transformations."
+    },
+    {
+      "id": 4,
+      "text": "In the studio, Lord Henry Wotton filled the air with his glittering theories about pleasure and influence, unsettling Basil Hallward even as the young sitter listened with dangerous fascination."
+    },
+    {
+      "id": 5,
+      "text": "Sibyl Vane's artistry collapsed the night she discovered love, for real emotion shattered the delicate illusions upon which her performances had always depended."
+    },
+    {
+      "id": 6,
+      "text": "After Sibyl Vane's death, Dorian Gray noticed that the portrait in the locked attic room had altered, as though the painted face bore a reproach no living voice dared speak."
+    },
+    {
+      "id": 7,
+      "text": "James Vane prowled through London's narrow alleys seeking the nameless gentleman he held responsible for his sister's despair."
+    },
+    {
+      "id": 8,
+      "text": "Alan Campbell, summoned by Dorian Gray, entered the attic to dispose of Basil Hallward's body, never knowing that a hidden portrait in the room had witnessed the crime in mute horror."
+    },
+    {
+      "id": 9,
+      "text": "Basil Hallward confronted the altered portrait in the attic and felt a terror beyond guilt, for he sensed that his creation had become a ledger of moral ruin."
+    },
+    {
+      "id": 10,
+      "text": "Lord Henry Wotton later recounted disturbing rumors about the attic portrait to Lord Fermor, remarking that conscience was merely a superstition for those who lacked imagination."
+    },
+    {
+      "id": 11,
+      "text": "On the night before departing for France, Basil Hallward vanished, leaving behind only the silent studio and a mystery that neither friends nor acquaintances could unravel."
+    }
+  ],
+
+  "entities": [
+    { "id": 0, "name": "Basil Hallward [Basil]" },
+    { "id": 1, "name": "Lord Henry Wotton" },
+    { "id": 2, "name": "Dorian Gray [Dorian]" },
+    { "id": 3, "name": "Sibyl Vane [Sibyl]" },
+    { "id": 4, "name": "James Vane [James]" },
+    { "id": 5, "name": "Mrs. Vane" },
+    { "id": 6, "name": "Lady Agatha" },
+    { "id": 7, "name": "Alan Campbell" },
+    { "id": 8, "name": "Lord Fermor" },
+    { "id": 9, "name": "London" },
+    { "id": 10, "name": "Mayfair" },
+    { "id": 11, "name": "France" },
+    { "id": 12, "name": "The studio [studio]" },
+    { "id": 13, "name": "West End theatre" },
+    { "id": 14, "name": "the attic [attic]" },
+    { "id": 15, "name": "the portrait [portrait]" }
+  ],
+
+  "entity_statements": {
+    "0": [0, 4, 8, 9, 11],
+    "1": [0, 4, 10],
+    "2": [1, 6, 8],
+    "3": [2, 3, 5, 6],
+    "4": [7],
+    "5": [3],
+    "6": [1],
+    "7": [8],
+    "8": [10],
+    "9": [0, 2, 7],
+    "10": [3],
+    "11": [11],
+    "12": [0, 4, 11],
+    "13": [2],
+    "14": [6, 8, 9, 10],
+    "15": [1, 6, 8, 9, 10]
+  }
+}

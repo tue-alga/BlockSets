@@ -201,7 +201,8 @@ public class Orchestrator {
         try {
             List<Solution> sols;
             sols = solveWithSplits(solver, instance);
-            writer.write("Number of components: " + String.valueOf(sols.size()) + "\n");
+            if (writer != null)
+                writer.write("Number of components: " + sols.size() + "\n");
 
             int totalNumberOfDuplicateEntities = 0;
             int numberOfDuplicatedEntities = 0;
@@ -217,11 +218,15 @@ public class Orchestrator {
                     totalNumberOfDuplicateEntities += occurences - 1;
                 }
             }
-            writer.write("Total number of duplicate entities: " + totalNumberOfDuplicateEntities + "\n");
-            writer.write("Number of duplicated entities: " + numberOfDuplicatedEntities + "\n");
+            if (writer != null) {
+                writer.write("Total number of duplicate entities: " + totalNumberOfDuplicateEntities + "\n");
+                writer.write("Number of duplicated entities: " + numberOfDuplicatedEntities + "\n");
+            }
             PositionedSolution finalLayout = SolutionPositioner.computeCompleteSolution((ArrayList<Solution>) sols, polygonType, componentArrangementTimeLimit);
-            writer.write("Width: " + finalLayout.width + "\n");
-            writer.write("Height: " + finalLayout.height + "\n");
+            if (writer != null) {
+                writer.write("Width: " + finalLayout.width + "\n");
+                writer.write("Height: " + finalLayout.height + "\n");
+            }
             return finalLayout;
         } catch (Exception e) {
             e.printStackTrace();
@@ -279,10 +284,10 @@ public class Orchestrator {
 
         var uniqueID = System.currentTimeMillis();
         var outputName = outputFile.getName().split("\\.(?=[^\\.]+$)")[0];
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("log_" + outputName + "_" + uniqueID + ".txt"))) {
+        try {
             StatementEntityInstance instance = StatementEntityReader.readFromFile(inputFile.getPath());
             Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, componentLayoutTimeLimit, componentArrangementTimeLimit);
-            PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, writer);
+            PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, null);
 
             // Write result to file
             SolutionWriter.saveMultipleToFile(
