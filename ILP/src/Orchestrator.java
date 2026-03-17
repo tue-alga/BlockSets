@@ -14,6 +14,7 @@ import ilp.solvers.SolutionPositioner;
 import ilp.solvers.StatementEntitySolver;
 import io.SolutionWriter;
 import io.StatementEntityReader;
+import io.StatsRecorder;
 import model.PositionedSolution;
 import model.Solution;
 import model.StatementEntityInstance;
@@ -39,13 +40,16 @@ public class Orchestrator {
         this.componentArrangementTimeLimit = componentArrangementTimeLimit;
     }
 
-    public List<Solution> solveWithSplits(StatementEntitySolver solver, StatementEntityInstance root) throws Exception, GRBException {
+    public List<Solution> solveWithSplits(StatementEntityInstance root, StatsRecorder stats) throws Exception, GRBException {
+        // Store solved instances to record stats
+        ArrayList<StatementEntityInstance> solvedInstances = new ArrayList<>();
+
         Deque<StatementEntityInstance> queue = new ArrayDeque<>();
         queue.add(root);
 
         while (!queue.isEmpty()) {
             StatementEntityInstance inst = queue.removeFirst();
-            Solution sol = solver.solve(inst, this.componentLayoutTimeLimit);
+            Solution sol = solver.solve(inst, this.componentLayoutTimeLimit, stats);
             if (sol != null) {
                 // Check whether components do not have too many empty spots.
                 Set<Point> gaps = new HashSet<>();
@@ -98,17 +102,29 @@ public class Orchestrator {
                 } else {
                     System.out.println("Splitting component as there are too many gaps.");
                 }
+                solutions.add(sol);
+
+                // Record shape stats for this solution
+                stats.updateShapeStatsSingleComponent(sol);
+
+                // Add solved instance to global solved list
+                solvedInstances.add(inst);
+
+                continue;
             }
 
             // Too large or no optimal -> split
             GreedySplit splitInst = new GreedySplit(inst);
-            ArrayList<StatementEntityInstance> parts = splitInst.findSplit(splitK, splitRatio);
+            ArrayList<StatementEntityInstance> parts = splitInst.findSplit(splitK, splitRatio, stats);
             // Record deletions
             deletedNodes.addAll(splitInst.deletedEntities);
 
             // Enqueue parts
             queue.addAll(parts);
         }
+
+        // Record final component stats
+        stats.updateSplitComponentStats(solvedInstances);
 
         return solutions;
     }

@@ -61,6 +61,17 @@ public class PolygonSolution implements Solution {
     }
 
     @Override
+    public ArrayList<Point> getStatementCells() {
+        ArrayList<Point> coords = new ArrayList<>();
+        
+        for (int i = 0; i < statementCoordinates.length; i++) {
+            coords.add(new Point(statementCoordinates[i][0], statementCoordinates[i][1]));
+        }
+
+        return coords;
+    }
+
+    @Override
     public ArrayList<Point> getCells() {
         return this.cells;
     }
