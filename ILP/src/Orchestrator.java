@@ -42,7 +42,7 @@ public class Orchestrator {
     }
 
     public List<Solution> solveWithSplits(StatementEntitySolver solver, StatementEntityInstance root,
-            bool rectEulerSplit) throws Exception, GRBException {
+            boolean rectEulerSplit) throws Exception, GRBException {
         Deque<StatementEntityInstance> queue = new ArrayDeque<>();
         queue.add(root);
 
