@@ -14,7 +14,7 @@ public interface Solution {
 
     ArrayList<Integer> getEntityIds();
 
-    ArrayList<Point> setCells();
+//    ArrayList<Point> setCells();
 
     ArrayList<Point> getCells();
 

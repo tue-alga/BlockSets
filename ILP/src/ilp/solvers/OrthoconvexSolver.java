@@ -10,7 +10,7 @@ import ilp.objective.*;
 import model.Solution;
 import model.StatementEntityInstance;
 
-public class StatementEntitySolver {
+public class OrthoconvexSolver implements Solver {
 
     private final int dimensions;
     private final int gridMin = 0;
@@ -26,7 +26,7 @@ public class StatementEntitySolver {
 
     // Constructor with default constraints and objective (produces rectangle
     // solutions)
-    public StatementEntitySolver(int dimensions, int solutionType) {
+    public OrthoconvexSolver(int dimensions, int solutionType) {
         this.dimensions = dimensions;
         this.constraints = List.of(
                 new C00NonNegativity(),
@@ -45,19 +45,15 @@ public class StatementEntitySolver {
 
     // Constructor that allows you to define your own list of constraints and
     // objective function
-    public StatementEntitySolver(int dimensions, List<ConstraintModule> constraints, ObjectiveModule objective,
-            int solutionType) {
+    public OrthoconvexSolver(int dimensions, List<ConstraintModule> constraints, ObjectiveModule objective,
+                             int solutionType) {
         this.dimensions = dimensions;
         this.constraints = constraints;
         this.objective = objective;
         this.solutionType = solutionType;
     }
 
-    /**
-     * Pure solve for a single instance.
-     * 
-     * @return Solution if optimal, else null (caller decides to split).
-     */
+    @Override
     public Solution solve(StatementEntityInstance inst, double timeLimit) throws Exception, GRBException {
         int maxCells = (dimensions + 1) * (dimensions + 1);
         if (inst.numberOfStatements > maxCells) {

@@ -65,7 +65,7 @@ public class PolygonSolution implements Solution {
         return this.cells;
     }
 
-    @Override
+//    @Override
     public ArrayList<Point> setCells() {
         ArrayList<Point> coveredCells = new ArrayList<>();
 

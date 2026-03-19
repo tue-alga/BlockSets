@@ -10,10 +10,13 @@ import ilp.constraints.*;
 import ilp.objective.CompactSquareTopLeft;
 import ilp.objective.ObjectiveModule;
 import ilp.objective.PolygonAreaDimensionsComplexity;
+import ilp.solvers.MosaicSetsSolver;
 import ilp.solvers.SolutionPositioner;
-import ilp.solvers.StatementEntitySolver;
+import ilp.solvers.OrthoconvexSolver;
+import ilp.solvers.Solver;
 import io.SolutionWriter;
 import io.StatementEntityReader;
+import model.ArbitraryPolygonSolution;
 import model.PositionedSolution;
 import model.Solution;
 import model.StatementEntityInstance;
@@ -39,7 +42,7 @@ public class Orchestrator {
         this.componentArrangementTimeLimit = componentArrangementTimeLimit;
     }
 
-    public List<Solution> solveWithSplits(StatementEntitySolver solver, StatementEntityInstance root) throws Exception, GRBException {
+    public List<Solution> solveWithSplits(Solver solver, StatementEntityInstance root) throws Exception, GRBException {
         Deque<StatementEntityInstance> queue = new ArrayDeque<>();
         queue.add(root);
 
@@ -120,7 +123,6 @@ public class Orchestrator {
 
         switch (polygonType) {
             case Arbitrary:
-                // TODO: integrate with MosaicSets code
                 break;
             case Orthoconvex:
                 constraints = List.of(
@@ -196,7 +198,12 @@ public class Orchestrator {
                 break;
         }
 
-        StatementEntitySolver solver = new StatementEntitySolver(maxDimensions - 1, constraints, objective, solutionType);
+        Solver solver;
+        if (polygonType == PolygonType.Arbitrary) {
+            solver = new MosaicSetsSolver(maxDimensions - 1, 0.01, 0.01);
+        } else {
+            solver = new OrthoconvexSolver(maxDimensions - 1, constraints, objective, solutionType);
+        }
 
         try {
             List<Solution> sols;

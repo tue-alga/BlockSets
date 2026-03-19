@@ -1,5 +1,6 @@
 package io;
 
+import model.ArbitraryPolygonSolution;
 import model.PolygonSolution;
 import model.RectangleSolution;
 import model.Solution;
@@ -103,6 +104,25 @@ public class SolutionWriter {
         }
     }
 
+    private static void extractArbitraryPolygonEntities(ArbitraryPolygonSolution s, BufferedWriter writer) throws IOException {
+        int i = 0;
+        for (Integer entity : s.getInstance().entities.keySet()) {
+            String entityString = "Entity " + s.getInstance().entities.get(entity) + ": ";
+            ArrayList<Point> entityCorners = new ArrayList<>();
+
+            // Combine points into a string
+            String cells = s.entityCells.get(i).stream()
+                    .map(p -> "(" + p.x + ", " + p.y + ")")
+                    .collect(Collectors.joining(" - "));
+
+            entityString += cells;
+            entityString += "\n";
+
+            writer.write(entityString);
+            i++;
+        }
+    }
+
     // A method that saves the solution in a way that Vesko can read and draw it
     // (P.S. This is does not output the required by the Visualization format.)
     public static void saveSimplePolygonSolutionToFile(PolygonSolution s, String filename) {
@@ -159,6 +179,8 @@ public class SolutionWriter {
                 writer.write("type: rectangles\n");
             } else if (solutions.get(0) instanceof PolygonSolution) {
                 writer.write("type: polygons\n");
+            } else if (solutions.get(0) instanceof ArbitraryPolygonSolution) {
+                writer.write("type: arbitrary\n");
             }
             writer.write("w: " + w + "\n");
             writer.write("h: " + h + "\n");
@@ -168,6 +190,8 @@ public class SolutionWriter {
                     extractRectangleEntities(s, writer);
                 } else if (solution instanceof PolygonSolution s) {
                     extractPolygonEntities(s, writer);
+                } else if (solution instanceof ArbitraryPolygonSolution s) {
+                    extractArbitraryPolygonEntities(s, writer);
                 }
             }
 
@@ -186,6 +210,14 @@ public class SolutionWriter {
                         writer.write("Statement " + solution.getInstance().statements.get(statement) + ": (" +
                                 s.statementCoordinates[j][0] + ", " +
                                 s.statementCoordinates[j][1] + ")\n");
+                        j++;
+                    }
+                } else if (solution instanceof ArbitraryPolygonSolution s) {
+                    int j = 0;
+                    for (Integer statement : s.getInstance().statements.keySet()) {
+                        writer.write("Statement " + solution.getInstance().statements.get(statement) + ": (" +
+                                s.statementCoordinates[j].x + ", " +
+                                s.statementCoordinates[j].y + ")\n");
                         j++;
                     }
                 }
