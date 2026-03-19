@@ -38,16 +38,16 @@ public class ClusterSplit {
     }
 
     public List<StatementEntityInstance> splitWithPython(
-            String pythonExePath,
-            String scriptPath,
-            String workingDir,
+            Path pythonExePath,
+            Path scriptPath,
+            Path workingDir,
             int k,
             int randomState,
             int minClusterSize) {
 
         try {
-            Path inputPath = Paths.get(workingDir, "boolean_vectors.json");
-            Path outputPath = Paths.get(workingDir, "split.json");
+            Path inputPath = workingDir.resolve("boolean_vectors.json");
+            Path outputPath = workingDir.resolve("split.json");
 
             long vectorStart = System.nanoTime();
             BooleanVectorData data = buildStatementBooleanVectors(this.instance);
@@ -57,8 +57,8 @@ public class ClusterSplit {
             saveBooleanVectorsToJson(data, inputPath.toString());
 
             runPythonClusterSplit(
-                    pythonExePath,
-                    scriptPath,
+                    pythonExePath.toString(),
+                    scriptPath.toString(),
                     inputPath.toString(),
                     outputPath.toString(),
                     k,

@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
@@ -107,10 +108,14 @@ public class Orchestrator {
             List<StatementEntityInstance> parts;
             if (rectEulerSplit) {
                 ClusterSplit splitter = new ClusterSplit(inst);
+                String os = System.getProperty("os.name").toLowerCase();
                 parts = splitter.splitWithPython(
-                        "ILP\\src\\split\\RectEuler-Split\\.venv\\Scripts\\python.exe",
-                        "ILP\\src\\split\\RectEuler-Split\\cluster_split.py",
-                        "ILP\\src\\split\\RectEuler-Split",
+                        os.contains("win") ?
+                                Paths.get("ILP", "src", "split", "RectEuler-Split", ".venv", "Scripts", "python.exe") :
+                                Paths.get("ILP", "src", "split", "RectEuler-Split", ".venv", "bin", "python")
+                        ,
+                        Paths.get("ILP", "src", "split", "RectEuler-Split", "cluster_split.py"),
+                        Paths.get("ILP", "src", "split", "RectEuler-Split"),
                         2,
                         0,
                         5);
