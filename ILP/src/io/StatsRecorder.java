@@ -7,6 +7,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Locale;
 
 import model.PolygonSolution;
 import model.PositionedSolution;
@@ -272,6 +273,7 @@ public class StatsRecorder {
                 writer.newLine();
             }
 
+            Locale.setDefault(Locale.US);
             writer.write(
                     escapeCsv(dataset) + "," +
                             escapeCsv(split) + "," +
