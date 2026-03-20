@@ -13,7 +13,7 @@ public class SplitIntanceFactory {
     IntersectionGraph graph;
     ArrayList<Integer> addedStatements;
 
-    SplitIntanceFactory(StatementEntityInstance instance, IntersectionGraph graph) {
+    public SplitIntanceFactory(StatementEntityInstance instance, IntersectionGraph graph) {
         this.parentInstance = instance;
         this.graph = graph;
         this.addedStatements = new ArrayList<>();
@@ -74,7 +74,8 @@ public class SplitIntanceFactory {
             result.add(inst);
         }
 
-        return handleDeletedNodeStatements(result);
+        ArrayList<StatementEntityInstance> finalInstances = handleDeletedNodeStatements(result);
+        return finalInstances;
     }
 
     private ArrayList<StatementEntityInstance> handleDeletedNodeStatements(ArrayList<StatementEntityInstance> result) {

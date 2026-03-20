@@ -6,13 +6,14 @@ import com.gurobi.gurobi.GRBException;
 import ilp.ModelContext;
 import ilp.variables.VarsPolygons;
 import ilp.variables.VarsRectangles;
+import io.StatsRecorder;
 import model.PolygonSolution;
 import model.RectangleSolution;
 import model.Solution;
 
 public class SolutionExtractor {
     
-    public static Solution extractRectangleSolution(ModelContext ctx) throws Exception, GRBException {
+    public static Solution extractRectangleSolution(ModelContext ctx, StatsRecorder stats) throws Exception, GRBException {
         if ((ctx.v instanceof VarsRectangles v)) { // only extracts rectangle solutions
             int nEntities = ctx.entityIds.size();
             int nStatements = ctx.statementIds.size();
@@ -39,13 +40,16 @@ public class SolutionExtractor {
             Solution newSolution = new RectangleSolution(ctx.inst, w, h, ctx.entityIds, entityCoordinates,
                     statementCoordinates);
 
+            // Record set stats for this component
+            stats.updateSetStatsRectangles((RectangleSolution) newSolution);
+
             return newSolution;
         } else {
             throw new Exception("Incorrect solution type");
         }
     }
 
-    public static Solution extractPolygonSolution(ModelContext ctx) throws Exception, GRBException {
+    public static Solution extractPolygonSolution(ModelContext ctx, StatsRecorder stats) throws Exception, GRBException {
         if ((ctx.v instanceof VarsPolygons v)) { // only extracts rectangle solutions
             int nEntities = ctx.entityIds.size();
             int nStatements = ctx.statementIds.size();
@@ -76,6 +80,9 @@ public class SolutionExtractor {
 
             // Add solution to global list of solutions
             Solution newSolution = new PolygonSolution(ctx.inst, w, h, ctx.entityIds, entities, statementCoordinates);
+
+            // Record set stats for this component
+            stats.updateSetStatsPolygons((PolygonSolution) newSolution);
 
             return newSolution;
         } else {

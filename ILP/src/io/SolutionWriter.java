@@ -6,11 +6,21 @@ import model.RectangleSolution;
 import model.Solution;
 
 import java.awt.Point;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class SolutionWriter {
 
@@ -226,6 +236,75 @@ public class SolutionWriter {
             System.out.println("Solution saved to " + filename);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void writeCsvFromJson(String jsonFilePath, String csvFilePath) throws IOException {
+        // Load JSON from file
+        StringBuilder jsonContent = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(jsonFilePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonContent.append(line);
+            }
+        }
+
+        JSONObject jsonData = new JSONObject(jsonContent.toString());
+
+        // Parse statements
+        JSONArray statementArray = jsonData.getJSONArray("statements");
+        Map<Integer, String> statements = new LinkedHashMap<>();
+        for (int i = 0; i < statementArray.length(); i++) {
+            JSONObject obj = statementArray.getJSONObject(i);
+            statements.put(obj.getInt("id"), obj.getString("text"));
+        }
+
+        // Parse entities
+        JSONArray entityArray = jsonData.getJSONArray("entities");
+        Map<Integer, String> entities = new LinkedHashMap<>();
+        for (int i = 0; i < entityArray.length(); i++) {
+            JSONObject obj = entityArray.getJSONObject(i);
+            entities.put(obj.getInt("id"), obj.getString("name"));
+        }
+
+        // Parse entity→statement mapping
+        JSONObject entityStatementsObj = jsonData.getJSONObject("entity_statements");
+        Map<Integer, Set<Integer>> entityToStatements = new LinkedHashMap<>();
+
+        for (String key : entityStatementsObj.keySet()) {
+            int entityId = Integer.parseInt(key);
+            JSONArray arr = entityStatementsObj.getJSONArray(key);
+            Set<Integer> set = new HashSet<>();
+            for (int i = 0; i < arr.length(); i++) {
+                set.add(arr.getInt(i));
+            }
+            entityToStatements.put(entityId, set);
+        }
+
+        // Write CSV
+        try (PrintWriter writer = new PrintWriter(new FileWriter(csvFilePath))) {
+
+            // Header row: Name;E1;E2;E3...
+            writer.print("Name;");
+            boolean first = true;
+            for (String entityName : entities.values()) {
+                if (!first)
+                    writer.print(";");
+                writer.print(entityName);
+                first = false;
+            }
+            writer.println();
+
+            // For each statement, write: id;0/1;0/1;...
+            for (Integer stmtId : statements.keySet()) {
+                writer.print(stmtId);
+                for (Integer entityId : entities.keySet()) {
+                    Set<Integer> stmts = entityToStatements.get(entityId);
+                    writer.print(";");
+                    writer.print(stmts != null && stmts.contains(stmtId) ? "1" : "0");
+                }
+                writer.println();
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package split;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import io.StatsRecorder;
 import model.StatementEntityInstance;
 
 public class GreedySplit {
@@ -20,7 +21,10 @@ public class GreedySplit {
 
     // Try all possible splits by deleting up to s nodes and return a set of
     // instances for the one with minimal cost
-    public ArrayList<StatementEntityInstance> findSplit(int s, double alpha) {
+    public ArrayList<StatementEntityInstance> findSplit(int s, double alpha, StatsRecorder stats) {
+        // Record start time
+        long start = System.nanoTime();
+
         // Make an intersection graph for the parent instance
         IntersectionGraph graph = new IntersectionGraph(instance);
         int n = graph.intersectionGraph.length;
@@ -78,7 +82,14 @@ public class GreedySplit {
         getDeletedEntities(bestSplit);
 
         // Return a set of instances for the components of the best split
-        return new SplitIntanceFactory(instance, bestSplit).createInstances();
+        ArrayList<StatementEntityInstance> finalInstances = new SplitIntanceFactory(instance, bestSplit).createInstances();
+
+        // Measure total runtime for this split
+        long end = System.nanoTime();
+        double timeS = (end - start) / 1_000_000_000.0;
+        stats.totalSplitTime += timeS;
+
+        return finalInstances;
     }
 
     // Create an array list containing the indices of the deleted nodes from this

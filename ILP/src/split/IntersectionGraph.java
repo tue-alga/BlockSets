@@ -63,7 +63,7 @@ public class IntersectionGraph {
     ArrayList<Node> deletedNodeCopies = new ArrayList<>();
     GraphHelper helper;
 
-    IntersectionGraph(StatementEntityInstance instance) {
+    public IntersectionGraph(StatementEntityInstance instance) {
         createGraph(instance);
         helper = new GraphHelper(instance);
     }

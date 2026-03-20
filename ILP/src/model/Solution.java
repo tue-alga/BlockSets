@@ -13,6 +13,7 @@ public interface Solution {
     int getH();
 
     ArrayList<Integer> getEntityIds();
+    ArrayList<Point> getStatementCells();
 
 //    ArrayList<Point> setCells();
 

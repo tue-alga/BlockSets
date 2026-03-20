@@ -18,6 +18,7 @@ import ilp.solvers.Solver;
 import io.SolutionWriter;
 import io.StatementEntityReader;
 import model.ArbitraryPolygonSolution;
+import io.StatsRecorder;
 import model.PositionedSolution;
 import model.Solution;
 import model.StatementEntityInstance;
@@ -45,13 +46,16 @@ public class Orchestrator {
     }
 
     public List<Solution> solveWithSplits(Solver solver, StatementEntityInstance root,
-                                          boolean rectEulerSplit) throws Exception, GRBException {
+                                          boolean rectEulerSplit, StatsRecorder stats) throws Exception, GRBException {
+        // Store solved instances to record stats
+        ArrayList<StatementEntityInstance> solvedInstances = new ArrayList<>();
+
         Deque<StatementEntityInstance> queue = new ArrayDeque<>();
         queue.add(root);
 
         while (!queue.isEmpty()) {
             StatementEntityInstance inst = queue.removeFirst();
-            Solution sol = solver.solve(inst, this.componentLayoutTimeLimit);
+            Solution sol = solver.solve(inst, this.componentLayoutTimeLimit, stats);
             if (sol != null) {
                 // Check whether components do not have too many empty spots.
                 Set<Point> gaps = new HashSet<>();
@@ -100,6 +104,13 @@ public class Orchestrator {
                 System.out.println("#gaps: " + gaps.size() + "  #statements: " + sol.getInstance().numberOfStatements);
                 if (gaps.size() <= sol.getInstance().numberOfStatements / 5) {
                     solutions.add(sol);
+
+                    // Record shape stats for this solution
+                    stats.updateShapeStatsSingleComponent(sol);
+
+                    // Add solved instance to global solved list
+                    solvedInstances.add(inst);
+
                     continue;
                 } else {
                     System.out.println("Splitting component as there are too many gaps.");
@@ -123,7 +134,7 @@ public class Orchestrator {
                         5);
             } else {
                 GreedySplit splitInst = new GreedySplit(inst);
-                parts = splitInst.findSplit(splitK, splitRatio);
+                parts = splitInst.findSplit(splitK, splitRatio, stats);
                 // Record deletions
                 deletedNodes.addAll(splitInst.deletedEntities);
             }
@@ -132,10 +143,13 @@ public class Orchestrator {
             queue.addAll(parts);
         }
 
+        // Record final component stats
+        stats.updateSplitComponentStats(solvedInstances);
+
         return solutions;
     }
 
-    public PositionedSolution runBlockSets(StatementEntityInstance instance, PolygonType polygonType, Writer writer) {
+    public PositionedSolution runBlockSets(StatementEntityInstance instance, PolygonType polygonType, Writer writer, StatsRecorder stats) {
         List<ConstraintModule> constraints = null;
         ObjectiveModule objective = null;
         int solutionType = -1;
@@ -226,7 +240,7 @@ public class Orchestrator {
 
         try {
             List<Solution> sols;
-            sols = solveWithSplits(solver, instance, false);
+            sols = solveWithSplits(solver, instance, false, stats);
             if (writer != null)
                 writer.write("Number of components: " + sols.size() + "\n");
 
@@ -248,8 +262,10 @@ public class Orchestrator {
                 writer.write("Total number of duplicate entities: " + totalNumberOfDuplicateEntities + "\n");
                 writer.write("Number of duplicated entities: " + numberOfDuplicatedEntities + "\n");
             }
-            PositionedSolution finalLayout = SolutionPositioner.computeCompleteSolution((ArrayList<Solution>) sols,
-                    polygonType, componentArrangementTimeLimit);
+            PositionedSolution finalLayout = SolutionPositioner.computeCompleteSolution((ArrayList<Solution>) sols, polygonType, componentArrangementTimeLimit);
+
+            stats.updateShapeStatsFinalLayout(finalLayout);
+
             if (writer != null) {
                 writer.write("Width: " + finalLayout.width + "\n");
                 writer.write("Height: " + finalLayout.height + "\n");
@@ -262,21 +278,20 @@ public class Orchestrator {
     }
 
     public static void main(String[] args) {
-        if (args.length < 2 || args.length > 5) {
-            System.out.println(
-                    "Call this program with the following arguments: dataName outputName structure layoutTimeLimit arrangementTimeLimit.\n"
-                            +
-                            "Time limits are in seconds. The structure parameter has one of the following values.\n" +
-                            "0: arbitrary polygons\n" +
-                            "1: orthoconvex polygons\n" +
-                            "2: nabla-shapes (top-aligned)\n" +
-                            "3: gamma-shapes (top- and left-aligned)\n" +
-                            "4: rectangles");
+        if (args.length < 2 || args.length > 6) {
+            System.out.println("Call this program with the following arguments: dataName outputName statsName structure layoutTimeLimit arrangementTimeLimit.\n" +
+                    "Time limits are in seconds. The structure parameter has one of the following values.\n" +
+                    "0: arbitrary polygons\n" +
+                    "1: orthoconvex polygons\n" +
+                    "2: nabla-shapes (top-aligned)\n" +
+                    "3: gamma-shapes (top- and left-aligned)\n" +
+                    "4: rectangles");
             return;
         }
 
         File inputFile = new File(args[0]);
         File outputFile = new File(args[1]);
+        File statsFile = new File(args[2]);
 
         PolygonType polygonType;
 
@@ -284,10 +299,9 @@ public class Orchestrator {
         double componentArrangementTimeLimit;
 
         try {
-            int structure = Integer.parseInt(args[2]);
+            int structure = Integer.parseInt(args[3]);
             if (structure < 0 || structure > 4) {
-                System.out.println(
-                        "As third argument, please provide an integer between 0 and 4.\nRun the program without arguments for more info.");
+                System.out.println("As fourth argument, please provide an integer between 0 and 4.\nRun the program without arguments for more info.");
                 return;
             }
             switch (structure) {
@@ -309,28 +323,32 @@ public class Orchestrator {
                 default:
                     throw new RuntimeException("Unknown structure argument: " + structure);
             }
-        } catch (Exception e) {
-            System.out.println(
-                    "As third argument, please provide an integer between 0 and 4.\nRun the program without arguments for more info.");
+        } catch(Exception e) {
+            System.out.println("As fourth argument, please provide an integer between 0 and 4.\nRun the program without arguments for more info.");
             return;
         }
 
         try {
-            componentLayoutTimeLimit = Integer.parseInt(args[3]);
-            componentArrangementTimeLimit = Integer.parseInt(args[4]);
-        } catch (Exception e) {
-            System.out.println(
-                    "As fourth and fifth argument, please provide time limits.\nRun the program without arguments for more info.");
+            componentLayoutTimeLimit = Integer.parseInt(args[4]);
+            componentArrangementTimeLimit = Integer.parseInt(args[5]);
+        } catch(Exception e) {
+            System.out.println("As fifth and sixth argument, please provide time limits.\nRun the program without arguments for more info.");
             return;
         }
 
         var uniqueID = System.currentTimeMillis();
+        var inputName = inputFile.getName().substring(0, inputFile.getName().lastIndexOf('.'));
         var outputName = outputFile.getName().split("\\.(?=[^\\.]+$)")[0];
         try {
             StatementEntityInstance instance = StatementEntityReader.readFromFile(inputFile.getPath());
-            Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, componentLayoutTimeLimit,
-                    componentArrangementTimeLimit);
-            PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, null);
+            String[] runParams = {inputName, "BlockSets", polygonType.name()};
+            StatsRecorder stats = new StatsRecorder(instance, runParams);
+
+            Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, componentLayoutTimeLimit, componentArrangementTimeLimit);
+            PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, null, stats);
+
+            // Write solution stats to file
+            stats.appendToCsv(statsFile);
 
             // Write result to file
             SolutionWriter.saveMultipleToFile(
