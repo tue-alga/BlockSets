@@ -3,6 +3,7 @@ package model;
 import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ArbitraryPolygonSolution implements Solution {
     public StatementEntityInstance instance;
@@ -70,6 +71,11 @@ public class ArbitraryPolygonSolution implements Solution {
     @Override
     public ArrayList<Integer> getEntityIds() {
         return this.entityIds;
+    }
+
+    @Override
+    public ArrayList<Point> getStatementCells() {
+        return new ArrayList<>(Arrays.asList(statementCoordinates));
     }
 
     @Override
