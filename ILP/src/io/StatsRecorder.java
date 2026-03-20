@@ -252,12 +252,11 @@ public class StatsRecorder {
         System.out.println("-------------------------------------------");
     }
 
-    public void appendToCsv(String csvFilePath) {
+    public void appendToCsv(File file) {
         String dataset = this.parameters[0];
         String split = this.parameters[1];
         String setShape = this.parameters[2];
 
-        File file = new File(csvFilePath);
         boolean writeHeader = !file.exists() || file.length() == 0;
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
