@@ -13,5 +13,5 @@ public interface Solver {
      *
      * @return Solution if optimal, else null (caller decides to split).
      */
-    public Solution solve(StatementEntityInstance inst, double timeLimit, StatsRecorder stats) throws Exception, GRBException;
+    public Solution solve(StatementEntityInstance inst, double timeLimit) throws Exception, GRBException;
 }

@@ -68,7 +68,7 @@ public class StatsRecorder {
             int[][] set = sol.entities[i];
 
             // Bounding box
-            int xStart = Integer.MAX_VALUE, xEnd = -1, yStart = -1, yEnd = -1;
+            int xStart = Integer.MAX_VALUE, xEnd = -1, yStart = -1, yEnd = sol.h;
             for (int j = 0; j < set.length - 1; j++) {
                 if (yStart == -1 && set[j][0] == 1) {
                     yStart = j;
@@ -99,6 +99,8 @@ public class StatsRecorder {
             int numVertices = 4;
 
             for (int j = yStart; j < yEnd; j++) {
+                if (set[j][0] == 0 || set[j][1] == 0) continue;
+
                 if (set[j][1] != set[j + 1][1]) {
                     numVertices += 2;
                 }
@@ -144,6 +146,12 @@ public class StatsRecorder {
     }
 
     public void updateShapeStatsSingleComponent(Solution sol) {
+        if (sol instanceof RectangleSolution) {
+            updateSetStatsRectangles((RectangleSolution) sol);
+        }
+        if (sol instanceof PolygonSolution) {
+            updateSetStatsPolygons((PolygonSolution) sol);
+        }
         for (Point cell : sol.getCells()) {
             // No statement coordinates on this cell
             if (!sol.getStatementCells().stream().anyMatch(p -> p.x == cell.x && p.y == cell.y)) {

@@ -46,7 +46,7 @@ public class Orchestrator {
     }
 
     public List<Solution> solveWithSplits(Solver solver, StatementEntityInstance root,
-                                          boolean rectEulerSplit, StatsRecorder stats) throws Exception, GRBException {
+                                          boolean rectEulerSplit, StatsRecorder stats, PolygonType polygonType) throws Exception, GRBException {
         // Store solved instances to record stats
         ArrayList<StatementEntityInstance> solvedInstances = new ArrayList<>();
 
@@ -55,54 +55,18 @@ public class Orchestrator {
 
         while (!queue.isEmpty()) {
             StatementEntityInstance inst = queue.removeFirst();
-            Solution sol = solver.solve(inst, this.componentLayoutTimeLimit, stats);
+            Solution sol = solver.solve(inst, this.componentLayoutTimeLimit);
             if (sol != null) {
                 // Check whether components do not have too many empty spots.
-                Set<Point> gaps = new HashSet<>();
-                for (int x = 0; x < sol.getW(); ++x) {
-                    int minY = sol.getH();
-                    int maxY = 0;
-                    for (int y = 0; y < sol.getH(); ++y) {
-                        if (sol.hasCell(x, y)) {
-                            if (y < minY) {
-                                minY = y;
-                            }
-                            if (y > maxY) {
-                                maxY = y;
-                            }
-                        }
-                    }
-
-                    for (int y = minY; y <= maxY; ++y) {
-                        String s = sol.getStatement(x, y);
-                        if (s == null || s.isEmpty()) {
-                            gaps.add(new Point(x, y));
-                        }
+                int numGaps = 0;
+                for (Point cell : sol.getCells()) {
+                    // No statement coordinates on this cell
+                    if (!sol.getStatementCells().stream().anyMatch(p -> p.x == cell.x && p.y == cell.y)) {
+                        numGaps++;
                     }
                 }
-                for (int y = 0; y < sol.getH(); ++y) {
-                    int minX = sol.getW();
-                    int maxX = 0;
-                    for (int x = 0; x < sol.getW(); ++x) {
-                        if (sol.hasCell(x, y)) {
-                            if (x < minX) {
-                                minX = x;
-                            }
-                            if (x > maxX) {
-                                maxX = x;
-                            }
-                        }
-                    }
-
-                    for (int x = minX; x <= maxX; ++x) {
-                        String s = sol.getStatement(x, y);
-                        if (s == null || s.isEmpty()) {
-                            gaps.add(new Point(x, y));
-                        }
-                    }
-                }
-                System.out.println("#gaps: " + gaps.size() + "  #statements: " + sol.getInstance().numberOfStatements);
-                if (gaps.size() <= sol.getInstance().numberOfStatements / 5) {
+                System.out.println("#gaps: " + numGaps + "  #statements: " + sol.getInstance().numberOfStatements);
+                if (numGaps <= (polygonType == PolygonType.Rectangle ? sol.getInstance().numberOfStatements / 2 : sol.getInstance().numberOfStatements / 5)) {
                     solutions.add(sol);
 
                     // Record shape stats for this solution
@@ -240,7 +204,7 @@ public class Orchestrator {
 
         try {
             List<Solution> sols;
-            sols = solveWithSplits(solver, instance, false, stats);
+            sols = solveWithSplits(solver, instance, false, stats, polygonType);
             if (writer != null)
                 writer.write("Number of components: " + sols.size() + "\n");
 

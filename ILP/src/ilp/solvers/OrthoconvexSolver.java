@@ -55,7 +55,7 @@ public class OrthoconvexSolver implements Solver {
     }
 
     @Override
-    public Solution solve(StatementEntityInstance inst, double timeLimit, StatsRecorder stats) throws Exception, GRBException {
+    public Solution solve(StatementEntityInstance inst, double timeLimit) throws Exception, GRBException {
         int maxCells = (dimensions + 1) * (dimensions + 1);
         if (inst.numberOfStatements > maxCells) {
             System.out.println("Instance too large");
@@ -104,9 +104,9 @@ public class OrthoconvexSolver implements Solver {
             // Extract and return
             switch (solutionType) {
                 case 0:
-                    return SolutionExtractor.extractRectangleSolution(ctx, stats);
+                    return SolutionExtractor.extractRectangleSolution(ctx);
                 case 1:
-                    return SolutionExtractor.extractPolygonSolution(ctx, stats);
+                    return SolutionExtractor.extractPolygonSolution(ctx);
                 default:
                     throw new Exception("Unknown solution type");
             }

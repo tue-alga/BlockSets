@@ -37,7 +37,7 @@ public class MosaicSetsSolver implements Solver {
 
     /// Uses the eccentricity-based compactness measure
     @Override
-    public Solution solve(StatementEntityInstance inst, double timeLimit, StatsRecorder stats) throws Exception, GRBException {
+    public Solution solve(StatementEntityInstance inst, double timeLimit) throws Exception, GRBException {
         // todo: check if grid dimensions are consistent
         Grid grid = new Grid(dimensions, dimensions, 1, 0.0, 0.0, Grid.TYPE_SQUARE);
 

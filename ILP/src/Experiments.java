@@ -27,13 +27,14 @@ public class Experiments {
                 var inputName = file.getName().split("\\.(?=[^\\.]+$)")[0];
                 for (var polygonType : new PolygonType[]{PolygonType.Orthoconvex, PolygonType.Nabla, PolygonType.Gamma, PolygonType.Rectangle}) {
                     String outputName = inputName + "_" + polygonType.name();
-                    if ((new File(outputFolder + outputName + ".txt")).exists()) continue;
+                    var outputFile = new File(outputFolder + outputName + ".txt");
+                    if (outputFile.exists()) continue;
 
                     System.out.println(outputName);
                     writer.write(outputName + "\n");
                     writer.flush();
 
-                    StatementEntityInstance instance = StatementEntityReader.readFromFile(inputName + ".json");
+                    StatementEntityInstance instance = StatementEntityReader.readFromFile(file.getPath());
 
                     String[] runParams = {inputName, "BlockSets", polygonType.name()};
                     StatsRecorder stats = new StatsRecorder(instance, runParams);
@@ -48,7 +49,7 @@ public class Experiments {
                             finalLayout.solutions,
                             finalLayout.width,
                             finalLayout.height,
-                            outputName + ".txt");
+                            outputFile.getPath());
                 }
             }
         } catch (IOException e) {
