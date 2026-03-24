@@ -1,0 +1,307 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "Heracles, son of Zeus and the mortal Alcmene, is praised in Greek song for his prodigious strength and stormy life."
+        },
+        {
+            "id": 1,
+            "text": "Hera resents Heracles as the living proof of Zeus’s unfaithfulness and becomes his enemy from the day he is born."
+        },
+        {
+            "id": 2,
+            "text": "Alcmene endures the wrath of Hera as she raises Heracles, knowing that the queen of the gods lashes out against the boy and his mother alike."
+        },
+        {
+            "id": 3,
+            "text": "In adulthood, a madness sent by Hera seizes Heracles so that he kills his wife Megara and their children, and blood-guilt hangs over him like a shadow."
+        },
+        {
+            "id": 4,
+            "text": "To purify this crime, an oracle decrees that Heracles must obey King Eurystheus and undertake a series of great labors."
+        },
+        {
+            "id": 5,
+            "text": "Eurystheus is a timid ruler who fears the very strength he commands and hides himself away whenever rumors of the hero’s return reach his ears."
+        },
+        {
+            "id": 6,
+            "text": "The Nemean Lion is said to have a hide no spear or arrow can pierce, and its lair becomes a byword among Greeks for an almost invincible foe."
+        },
+        {
+            "id": 7,
+            "text": "Heracles strangles the Nemean Lion with his bare hands and later wears its skin and gaping jaws as a cloak and helmet."
+        },
+        {
+            "id": 8,
+            "text": "In the struggle with the Lernaean Hydra, Heracles hacks at the snapping heads while his kinsman Iolaus burns the necks to keep them from multiplying."
+        },
+        {
+            "id": 9,
+            "text": "Stories of the Lernaean Hydra spread the saying that some troubles, like the monster’s heads, seem to grow back stronger whenever they are cut down."
+        },
+        {
+            "id": 10,
+            "text": "Eurystheus orders that the Augean Stables, choked with filth from countless cattle, be cleansed in a single day as one of the appointed labors."
+        },
+        {
+            "id": 11,
+            "text": "King Augeas promises a rich reward to the one who can cleanse the Augean Stables, but he later tries to deny the bargain when he sees how quickly the task is done."
+        },
+        {
+            "id": 12,
+            "text": "In the task of driving off the Stymphalian Birds, Athena gives Heracles a brazen rattle whose harsh clamor startles the flock into flight."
+        },
+        {
+            "id": 13,
+            "text": "Heracles masters the Cretan Bull and brings the snorting beast to Eurystheus, who is said to cower at the sight of his captive prize."
+        },
+        {
+            "id": 14,
+            "text": "In another far-roaming labor, Heracles seizes the cattle of the giant Geryon and drives them back across strange lands as a living sign of his endurance."
+        },
+        {
+            "id": 15,
+            "text": "Some poets tell how the golden apples of a distant garden, guarded by divine powers, are taken at last and counted among the greatest of Heracles’s labors."
+        },
+        {
+            "id": 16,
+            "text": "For his descent to the Underworld, Heracles wrestles Cerberus, the three-headed hound, and bears it upward without using blade or arrow."
+        },
+        {
+            "id": 17,
+            "text": "In Greek imagination, the Underworld is a shadowy realm where Cerberus keeps watch at the gates and souls drift far from the sunlight of the living."
+        },
+        {
+            "id": 18,
+            "text": "Later in his wandering life, Heracles wins Deianira as his wife after contending with other suitors for her hand."
+        },
+        {
+            "id": 19,
+            "text": "The centaur Nessus, struck down by Deianira’s husband for assaulting her, leaves behind a deceptive token that will one day bring ruin to the hero."
+        },
+        {
+            "id": 20,
+            "text": "Trusting Nessus’s words, Deianira later sends her husband a garment steeped in the centaur’s blood, believing it will preserve his love."
+        },
+        {
+            "id": 21,
+            "text": "When the poisoned garment is put on, Deianira realizes too late that Nessus’s promise was a trap, for the cloth clings to the wearer’s skin and burns with unending pain."
+        },
+        {
+            "id": 22,
+            "text": "On Mount Oeta, the suffering hero has a great pyre built and lies upon it so that mortal weakness may be burned away."
+        },
+        {
+            "id": 23,
+            "text": "Zeus is moved by the hero’s torment on Mount Oeta and sends a thunderbolt that consumes the pyre, signaling that his son will not remain among mortals."
+        },
+        {
+            "id": 24,
+            "text": "After this transformation, the hero is said to dwell on Mount Olympus among the gods, freed at last from the service of Eurystheus."
+        },
+        {
+            "id": 25,
+            "text": "On Mount Olympus, Heracles is joined in marriage to Hebe, and the once-tormented hero is honored at the feasts of the gods."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "Heracles"
+        },
+        {
+            "id": 1,
+            "name": "Zeus"
+        },
+        {
+            "id": 2,
+            "name": "Alcmene"
+        },
+        {
+            "id": 3,
+            "name": "Hera"
+        },
+        {
+            "id": 4,
+            "name": "Megara"
+        },
+        {
+            "id": 5,
+            "name": "Eurystheus"
+        },
+        {
+            "id": 6,
+            "name": "Nemean Lion"
+        },
+        {
+            "id": 7,
+            "name": "Lernaean Hydra"
+        },
+        {
+            "id": 8,
+            "name": "Iolaus"
+        },
+        {
+            "id": 9,
+            "name": "Augean Stables"
+        },
+        {
+            "id": 10,
+            "name": "Augeas"
+        },
+        {
+            "id": 11,
+            "name": "Stymphalian Birds"
+        },
+        {
+            "id": 12,
+            "name": "Athena"
+        },
+        {
+            "id": 13,
+            "name": "Cretan Bull"
+        },
+        {
+            "id": 14,
+            "name": "Geryon"
+        },
+        {
+            "id": 15,
+            "name": "golden apples"
+        },
+        {
+            "id": 16,
+            "name": "Underworld"
+        },
+        {
+            "id": 17,
+            "name": "Cerberus"
+        },
+        {
+            "id": 18,
+            "name": "Deianira"
+        },
+        {
+            "id": 19,
+            "name": "Nessus"
+        },
+        {
+            "id": 20,
+            "name": "Mount Oeta"
+        },
+        {
+            "id": 21,
+            "name": "Mount Olympus"
+        },
+        {
+            "id": 22,
+            "name": "Hebe"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            7,
+            8,
+            12,
+            13,
+            14,
+            15,
+            16,
+            18,
+            25
+        ],
+        "1": [
+            0,
+            1,
+            23
+        ],
+        "2": [
+            0,
+            2
+        ],
+        "3": [
+            1,
+            2,
+            3
+        ],
+        "4": [
+            3
+        ],
+        "5": [
+            4,
+            5,
+            10,
+            13,
+            24
+        ],
+        "6": [
+            6,
+            7
+        ],
+        "7": [
+            8,
+            9
+        ],
+        "8": [
+            8
+        ],
+        "9": [
+            10,
+            11
+        ],
+        "10": [
+            11
+        ],
+        "11": [
+            12
+        ],
+        "12": [
+            12
+        ],
+        "13": [
+            13
+        ],
+        "14": [
+            14
+        ],
+        "15": [
+            15
+        ],
+        "16": [
+            16,
+            17
+        ],
+        "17": [
+            16,
+            17
+        ],
+        "18": [
+            18,
+            19,
+            20,
+            21
+        ],
+        "19": [
+            19,
+            20,
+            21
+        ],
+        "20": [
+            22,
+            23
+        ],
+        "21": [
+            24,
+            25
+        ],
+        "22": [
+            25
+        ]
+    }
+}

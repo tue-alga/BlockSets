@@ -1,0 +1,163 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "An undirected graph models relationships where edges have no inherent direction, so each connection can be traversed symmetrically between vertices."
+        },
+        {
+            "id": 1,
+            "text": "In a directed graph, each edge has an orientation, making concepts like in-degree, out-degree, and reachability central to the structure."
+        },
+        {
+            "id": 2,
+            "text": "A weighted graph assigns a numerical weight to each edge, allowing shortest-path algorithms to minimize distance, cost, or time across a network."
+        },
+        {
+            "id": 3,
+            "text": "A tree is a connected graph with no cycles, so there is exactly one simple path between any pair of vertices."
+        },
+        {
+            "id": 4,
+            "text": "A directed acyclic graph, or DAG, has directed edges and no cycles, which makes it suitable for modeling dependencies such as task schedules or version histories."
+        },
+        {
+            "id": 5,
+            "text": "In a complete graph, every pair of distinct vertices is joined by an edge, making it an extreme example of a dense graph."
+        },
+        {
+            "id": 6,
+            "text": "A bipartite graph partitions its vertices into two disjoint sets so that every edge connects one set to the other, and no edge ever joins two vertices within the same set."
+        },
+        {
+            "id": 7,
+            "text": "Planar graphs can be drawn in the plane without edge crossings, and classical results such as Kuratowski’s theorem characterize when a graph is non-planar."
+        },
+        {
+            "id": 8,
+            "text": "In a sparse graph, the number of edges grows roughly on the order of the number of vertices, whereas a dense graph has edges approaching the maximum possible for its vertex count."
+        },
+        {
+            "id": 9,
+            "text": "Many trees are naturally sparse graphs, since a tree on n vertices has exactly n − 1 edges, far fewer than a complete graph on the same vertex set."
+        },
+        {
+            "id": 10,
+            "text": "If every vertex in an undirected graph lies in a single connected component, the structure is called a connected graph and there is some path between any two vertices."
+        },
+        {
+            "id": 11,
+            "text": "In a weighted graph that is also a DAG, algorithms for longest or shortest paths can process vertices in topological order without needing to handle cycles."
+        },
+        {
+            "id": 12,
+            "text": "Bipartite graphs are central in matching problems, where one seeks to pair vertices from one part with distinct neighbors in the other."
+        },
+        {
+            "id": 13,
+            "text": "Some planar graphs, such as planar bipartite graphs, satisfy strong coloring and matching properties that differ from those of dense non-planar graphs."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "undirected graph"
+        },
+        {
+            "id": 1,
+            "name": "directed graph"
+        },
+        {
+            "id": 2,
+            "name": "weighted graph"
+        },
+        {
+            "id": 3,
+            "name": "tree"
+        },
+        {
+            "id": 4,
+            "name": "directed acyclic graph"
+        },
+        {
+            "id": 5,
+            "name": "complete graph"
+        },
+        {
+            "id": 6,
+            "name": "bipartite graph"
+        },
+        {
+            "id": 7,
+            "name": "planar graph"
+        },
+        {
+            "id": 8,
+            "name": "sparse graph"
+        },
+        {
+            "id": 9,
+            "name": "dense graph"
+        },
+        {
+            "id": 10,
+            "name": "connected graph"
+        },
+        {
+            "id": 11,
+            "name": "cycle"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            10
+        ],
+        "1": [
+            1,
+            4
+        ],
+        "2": [
+            2,
+            11
+        ],
+        "3": [
+            3,
+            9
+        ],
+        "4": [
+            4,
+            11
+        ],
+        "5": [
+            5,
+            9
+        ],
+        "6": [
+            6,
+            12,
+            13
+        ],
+        "7": [
+            7,
+            13
+        ],
+        "8": [
+            8,
+            9
+        ],
+        "9": [
+            5,
+            8,
+            13
+        ],
+        "10": [
+            3,
+            10
+        ],
+        "11": [
+            3,
+            4,
+            11
+        ]
+    }
+}

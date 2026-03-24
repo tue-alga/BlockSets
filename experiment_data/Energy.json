@@ -1,0 +1,164 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "Solar power converts sunlight into electricity using photovoltaic panels or concentrated solar systems, with output peaking during clear daytime hours."
+        },
+        {
+            "id": 1,
+            "text": "Wind power uses large turbines to capture kinetic energy from moving air, so its electricity production varies with weather and local wind patterns."
+        },
+        {
+            "id": 2,
+            "text": "Hydropower generates electricity by passing water through turbines in rivers or reservoirs, often providing highly reliable long-term output where rainfall is stable."
+        },
+        {
+            "id": 3,
+            "text": "Geothermal energy taps heat from underground reservoirs to drive turbines or heat buildings, offering steady output in regions with suitable geology."
+        },
+        {
+            "id": 4,
+            "text": "Bioenergy produces heat or electricity by burning or fermenting organic matter such as crop residues, wood chips or biogas from waste streams."
+        },
+        {
+            "id": 5,
+            "text": "Compared with wind power, solar power is more predictable on a clear day but cannot generate at night, so a mixed portfolio can smooth overall variability."
+        },
+        {
+            "id": 6,
+            "text": "Hydropower and geothermal energy are often described as sources of firm or baseload power, because their output can remain relatively stable over long periods."
+        },
+        {
+            "id": 7,
+            "text": "Solar power and bioenergy can compete for land, since both solar farms and energy crops require space that might otherwise be used for food production or conservation."
+        },
+        {
+            "id": 8,
+            "text": "Wind power and solar power are frequently combined in the same grid region, because windy periods sometimes complement cloudy conditions that limit solar output."
+        },
+        {
+            "id": 9,
+            "text": "Compared with solar power and wind power, geothermal energy typically has a higher capacity factor, meaning its power plants operate close to their maximum output for more hours of the year."
+        },
+        {
+            "id": 10,
+            "text": "Hydropower plants with large reservoirs can store water and ramp their output up or down quickly, helping balance sudden changes in solar power or wind power generation."
+        },
+        {
+            "id": 11,
+            "text": "Bioenergy and hydropower plants both rely on rotating generators similar to those in fossil-fuel stations, which can make them easier to integrate into existing grids than some inverter-based renewable technologies."
+        },
+        {
+            "id": 12,
+            "text": "Investments in solar power and wind power are often praised for creating manufacturing and installation jobs, while bioenergy supports rural employment through biomass harvesting and transport."
+        },
+        {
+            "id": 13,
+            "text": "Hydropower projects can disrupt river ecosystems and fish migration, whereas wind power raises concerns about bird collisions and solar power can alter land habitats if not carefully sited."
+        },
+        {
+            "id": 14,
+            "text": "Geothermal energy and bioenergy can both provide direct heat for industry or buildings as well as electricity, which makes them attractive in regions with cold climates."
+        },
+        {
+            "id": 15,
+            "text": "In remote communities, decentralized systems often combine solar power and wind power with small bioenergy generators to keep lights on when the weather is unfavorable."
+        },
+        {
+            "id": 16,
+            "text": "Geothermal energy and hydropower are strongly constrained by local geology and hydrology, so suitable sites are less widely available than windy or very sunny locations for other renewables."
+        },
+        {
+            "id": 17,
+            "text": "Many countries design feed-in tariffs or auctions that specifically target solar power and wind power, while offering separate support schemes for geothermal energy or hydropower due to their higher upfront costs."
+        },
+        {
+            "id": 18,
+            "text": "Solar power, wind power and hydropower all have very low life-cycle greenhouse gas emissions compared with fossil fuels, while sustainably managed bioenergy can also be relatively low carbon."
+        },
+        {
+            "id": 19,
+            "text": "Electricity planners often model scenarios where variable solar power and wind power are backed up by flexible hydropower or bioenergy, reducing the need for fossil-fuel peaker plants."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "solar power"
+        },
+        {
+            "id": 1,
+            "name": "wind power"
+        },
+        {
+            "id": 2,
+            "name": "hydropower"
+        },
+        {
+            "id": 3,
+            "name": "geothermal energy"
+        },
+        {
+            "id": 4,
+            "name": "bioenergy"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            5,
+            7,
+            8,
+            9,
+            10,
+            12,
+            13,
+            15,
+            17,
+            18,
+            19
+        ],
+        "1": [
+            1,
+            5,
+            8,
+            9,
+            10,
+            12,
+            13,
+            15,
+            17,
+            18,
+            19
+        ],
+        "2": [
+            2,
+            6,
+            10,
+            11,
+            13,
+            16,
+            17,
+            18,
+            19
+        ],
+        "3": [
+            3,
+            6,
+            9,
+            14,
+            16,
+            17
+        ],
+        "4": [
+            4,
+            7,
+            11,
+            12,
+            14,
+            15,
+            18,
+            19
+        ]
+    }
+}

@@ -1,0 +1,246 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "The brain uses billions of neurons to process signals, allowing the human body to coordinate movement, sensation, and thought."
+        },
+        {
+            "id": 1,
+            "text": "Neurons communicate with one another through tiny electrical impulses and chemical signals, forming vast networks that link the brain to muscles and internal organs."
+        },
+        {
+            "id": 2,
+            "text": "The heart pumps blood through a branching network of vessels, ensuring that red blood cells deliver oxygen and nutrients to tissues throughout the body."
+        },
+        {
+            "id": 3,
+            "text": "In the lungs, inhaled air reaches microscopic alveoli where oxygen moves into the blood and carbon dioxide diffuses out to be exhaled."
+        },
+        {
+            "id": 4,
+            "text": "Red blood cells are packed with hemoglobin and travel continuously between the lungs and peripheral tissues, picking up oxygen in the alveoli and releasing it where it is needed."
+        },
+        {
+            "id": 5,
+            "text": "The liver filters blood coming from the digestive tract, modifies nutrients, and helps remove toxins before the blood returns to the heart."
+        },
+        {
+            "id": 6,
+            "text": "Kidneys regulate the composition of the blood by adjusting water and salt levels, excreting wastes into urine while returning useful substances to circulation."
+        },
+        {
+            "id": 7,
+            "text": "The small intestine provides a long folded surface where nutrients from digested food move into the blood and are carried to the liver and other organs."
+        },
+        {
+            "id": 8,
+            "text": "Before nutrients reach the small intestine, other digestive organs break food into smaller molecules that can cross into the bloodstream."
+        },
+        {
+            "id": 9,
+            "text": "The skin forms a protective barrier around the body, helping to prevent infection while also limiting water loss to the environment."
+        },
+        {
+            "id": 10,
+            "text": "Specialized nerve endings in the skin send signals through neurons to the brain, allowing a person to sense touch, temperature, and pain."
+        },
+        {
+            "id": 11,
+            "text": "The immune system depends on populations of white blood cells that patrol the blood and tissues, identifying and attacking invading microbes."
+        },
+        {
+            "id": 12,
+            "text": "During an infection, white blood cells can leave the blood vessels and enter nearby tissues, where they release chemical signals that coordinate the broader immune response."
+        },
+        {
+            "id": 13,
+            "text": "The skeleton provides a rigid framework that protects organs such as the brain and lungs while giving attachment points for muscles that move the limbs."
+        },
+        {
+            "id": 14,
+            "text": "Muscles contract when neurons trigger them with electrical signals, and together with the skeleton they allow the body to stand upright, walk, and manipulate objects."
+        },
+        {
+            "id": 15,
+            "text": "Within the bone marrow of certain skeletal bones, stem cells produce new red blood cells and white blood cells that enter the bloodstream."
+        },
+        {
+            "id": 16,
+            "text": "The heart and kidneys respond to signals from the nervous system and the immune system, adjusting blood pressure, fluid balance, and blood flow to muscles and inflamed tissues when needed."
+        },
+        {
+            "id": 17,
+            "text": "As the body grows and adapts, neurons, muscles, and bones change in response to activity levels, nutrition, and many other influences."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "brain"
+        },
+        {
+            "id": 1,
+            "name": "neurons"
+        },
+        {
+            "id": 2,
+            "name": "heart"
+        },
+        {
+            "id": 3,
+            "name": "blood"
+        },
+        {
+            "id": 4,
+            "name": "red blood cells"
+        },
+        {
+            "id": 5,
+            "name": "lungs"
+        },
+        {
+            "id": 6,
+            "name": "alveoli"
+        },
+        {
+            "id": 7,
+            "name": "liver"
+        },
+        {
+            "id": 8,
+            "name": "kidneys"
+        },
+        {
+            "id": 9,
+            "name": "small intestine"
+        },
+        {
+            "id": 10,
+            "name": "skin"
+        },
+        {
+            "id": 11,
+            "name": "immune system"
+        },
+        {
+            "id": 12,
+            "name": "white blood cells"
+        },
+        {
+            "id": 13,
+            "name": "skeleton"
+        },
+        {
+            "id": 14,
+            "name": "muscles"
+        },
+        {
+            "id": 15,
+            "name": "hemoglobin"
+        },
+        {
+            "id": 16,
+            "name": "oxygen"
+        },
+        {
+            "id": 17,
+            "name": "carbon dioxide"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            1,
+            10,
+            13
+        ],
+        "1": [
+            0,
+            1,
+            10,
+            14,
+            17
+        ],
+        "2": [
+            2,
+            5,
+            16
+        ],
+        "3": [
+            2,
+            3,
+            5,
+            6,
+            7,
+            8,
+            11,
+            12,
+            15,
+            16
+        ],
+        "4": [
+            2,
+            4,
+            15
+        ],
+        "5": [
+            3,
+            4,
+            13
+        ],
+        "6": [
+            3,
+            4
+        ],
+        "7": [
+            5,
+            7
+        ],
+        "8": [
+            6,
+            16
+        ],
+        "9": [
+            7,
+            8
+        ],
+        "10": [
+            9,
+            10
+        ],
+        "11": [
+            11,
+            12,
+            16
+        ],
+        "12": [
+            11,
+            12,
+            15
+        ],
+        "13": [
+            13,
+            14,
+            15,
+            17
+        ],
+        "14": [
+            1,
+            13,
+            14,
+            16,
+            17
+        ],
+        "15": [
+            4
+        ],
+        "16": [
+            2,
+            3,
+            4
+        ], 
+        "17": [
+            3
+        ]
+    }
+}

@@ -1,0 +1,251 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "Apollo 11 was the first crewed mission to land humans on the Moon, launched by NASA in July 1969 on a Saturn V rocket from Kennedy Space Center."
+        },
+        {
+            "id": 1,
+            "text": "The Apollo 11 crew consisted of commander Neil Armstrong, lunar module pilot Buzz Aldrin, and command module pilot Michael Collins."
+        },
+        {
+            "id": 2,
+            "text": "After launch, Apollo 11 entered Earth orbit and then performed a translunar injection burn to set the spacecraft on course toward the Moon."
+        },
+        {
+            "id": 3,
+            "text": "The command and service module Columbia remained in lunar orbit while the lunar module Eagle separated to carry Neil Armstrong and Buzz Aldrin to the surface of the Moon."
+        },
+        {
+            "id": 4,
+            "text": "On July 20, 1969, Eagle touched down on the Moon in the Sea of Tranquility and Armstrong reported to Houston, 'The Eagle has landed.'"
+        },
+        {
+            "id": 5,
+            "text": "When Neil Armstrong stepped off Eagle’s ladder onto the Moon, he described the moment as 'one small step for man, one giant leap for mankind.'"
+        },
+        {
+            "id": 6,
+            "text": "Buzz Aldrin soon joined Armstrong on the lunar surface, describing the Moon’s landscape as 'magnificent desolation.'"
+        },
+        {
+            "id": 7,
+            "text": "While his crewmates walked on the Moon, Michael Collins orbited alone in Columbia, maintaining systems and preparing for their return."
+        },
+        {
+            "id": 8,
+            "text": "The astronauts deployed scientific experiments on the Moon, including a seismometer and laser retroreflector to study moonquakes and precisely measure the Earth–Moon distance."
+        },
+        {
+            "id": 9,
+            "text": "The crew planted the United States flag in the lunar soil and left behind a plaque declaring that they came in peace for all mankind."
+        },
+        {
+            "id": 10,
+            "text": "After about twenty-one hours on the lunar surface, Armstrong and Aldrin lifted off in Eagle’s ascent stage to rejoin Collins in lunar orbit."
+        },
+        {
+            "id": 11,
+            "text": "Columbia performed a trans-Earth injection burn to leave lunar orbit and bring the Apollo 11 crew back toward Earth."
+        },
+        {
+            "id": 12,
+            "text": "On July 24, 1969, Apollo 11 reentered Earth’s atmosphere and splashed down in the Pacific Ocean, where the crew was recovered by the aircraft carrier USS Hornet."
+        },
+        {
+            "id": 13,
+            "text": "NASA placed the Apollo 11 astronauts in quarantine after splashdown to ensure that no harmful lunar microorganisms were brought back to Earth."
+        },
+        {
+            "id": 14,
+            "text": "The success of Apollo 11 fulfilled President John F. Kennedy’s 1961 goal of landing a man on the Moon and returning him safely to Earth before the decade ended."
+        },
+        {
+            "id": 15,
+            "text": "The Apollo 11 mission demonstrated the capabilities of the Saturn V rocket, advanced guidance computers, and worldwide tracking networks coordinated through Mission Control in Houston."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "Apollo 11"
+        },
+        {
+            "id": 1,
+            "name": "NASA"
+        },
+        {
+            "id": 2,
+            "name": "Saturn V"
+        },
+        {
+            "id": 3,
+            "name": "Kennedy Space Center"
+        },
+        {
+            "id": 4,
+            "name": "Moon [lunar]"
+        },
+        {
+            "id": 5,
+            "name": "Neil Armstrong [Armstrong]"
+        },
+        {
+            "id": 6,
+            "name": "Buzz Aldrin"
+        },
+        {
+            "id": 7,
+            "name": "Michael Collins"
+        },
+        {
+            "id": 8,
+            "name": "Earth"
+        },
+        {
+            "id": 9,
+            "name": "Columbia"
+        },
+        {
+            "id": 10,
+            "name": "Eagle"
+        },
+        {
+            "id": 11,
+            "name": "Sea of Tranquility"
+        },
+        {
+            "id": 12,
+            "name": "Houston"
+        },
+        {
+            "id": 13,
+            "name": "United States"
+        },
+        {
+            "id": 14,
+            "name": "plaque"
+        },
+        {
+            "id": 15,
+            "name": "Pacific Ocean"
+        },
+        {
+            "id": 16,
+            "name": "USS Hornet"
+        },
+        {
+            "id": 17,
+            "name": "John F. Kennedy"
+        },
+        {
+            "id": 18,
+            "name": "Mission Control"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            1,
+            2,
+            11,
+            12,
+            13,
+            14,
+            15
+        ],
+        "1": [
+            0,
+            13
+        ],
+        "2": [
+            0,
+            15
+        ],
+        "3": [
+            0
+        ],
+        "4": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+        ],
+        "5": [
+            1,
+            3,
+            4,
+            5,
+            6,
+            10
+        ],
+        "6": [
+            1,
+            3,
+            6,
+            10
+        ],
+        "7": [
+            1,
+            3,
+            7,
+            10,
+            11
+        ],
+        "8": [
+            2,
+            8,
+            11,
+            12,
+            13,
+            14
+        ],
+        "9": [
+            3,
+            7,
+            11
+        ],
+        "10": [
+            3,
+            4,
+            5,
+            10
+        ],
+        "11": [
+            4
+        ],
+        "12": [
+            4,
+            15
+        ],
+        "13": [
+            9
+        ],
+        "14": [
+            9
+        ],
+        "15": [
+            12
+        ],
+        "16": [
+            12
+        ],
+        "17": [
+            14
+        ],
+        "18": [
+            15
+        ]
+    }
+}

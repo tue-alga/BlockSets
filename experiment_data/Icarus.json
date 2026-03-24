@@ -1,0 +1,131 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "Daedalus, a master craftsman, comes to Crete to serve King Minos and designs the winding Labyrinth that will hold the monstrous Minotaur."
+        },
+        {
+            "id": 1,
+            "text": "King Minos boasts that the Labyrinth and the Minotaur secure his power over Crete, but he confines Icarus with his own father lest their knowledge of the maze betray him."
+        },
+        {
+            "id": 2,
+            "text": "In captivity, Daedalus gathers feathers and wax and fashions wings so that he and Icarus might escape the island of Crete by taking to the air."
+        },
+        {
+            "id": 3,
+            "text": "Before the flight, Daedalus warns Icarus to follow a middle path, neither too low where the waves might drench the wings nor too high where the sun’s heat may soften the wax."
+        },
+        {
+            "id": 4,
+            "text": "Soaring over the sea between Crete and distant Sicily, Icarus grows exultant, rises too near the blazing sun, and feels the wax of the wings begin to yield."
+        },
+        {
+            "id": 5,
+            "text": "Falling into the waters later called the Icarian Sea, Icarus vanishes beneath the waves while the shattered wings drift upon the surface."
+        },
+        {
+            "id": 6,
+            "text": "Grieving, Daedalus reaches Sicily and finds refuge with King Cocalus, who honors the wandering craftsman for his skill."
+        },
+        {
+            "id": 7,
+            "text": "When Minos pursues Daedalus to Sicily and seeks him in the halls of Cocalus, the Cretan king meets his death there, and the exile is freed from his old master at last."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "Daedalus"
+        },
+        {
+            "id": 1,
+            "name": "Icarus"
+        },
+        {
+            "id": 2,
+            "name": "Minos"
+        },
+        {
+            "id": 3,
+            "name": "Crete"
+        },
+        {
+            "id": 4,
+            "name": "Labyrinth"
+        },
+        {
+            "id": 5,
+            "name": "Minotaur"
+        },
+        {
+            "id": 6,
+            "name": "wings of feathers and wax"
+        },
+        {
+            "id": 7,
+            "name": "Icarian Sea"
+        },
+        {
+            "id": 8,
+            "name": "Sicily"
+        },
+        {
+            "id": 9,
+            "name": "Cocalus"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            2,
+            3,
+            6,
+            7
+        ],
+        "1": [
+            1,
+            2,
+            3,
+            4,
+            5
+        ],
+        "2": [
+            0,
+            1,
+            7
+        ],
+        "3": [
+            0,
+            1,
+            2,
+            4
+        ],
+        "4": [
+            0,
+            1
+        ],
+        "5": [
+            0,
+            1
+        ],
+        "6": [
+            2,
+            3,
+            4,
+            5
+        ],
+        "7": [
+            5
+        ],
+        "8": [
+            4,
+            6,
+            7
+        ],
+        "9": [
+            6,
+            7
+        ]
+    }
+}

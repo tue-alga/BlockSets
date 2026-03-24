@@ -1,0 +1,167 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "In most green plants, photosynthesis takes place in chloroplasts, where chlorophyll absorbs light to drive the conversion of carbon dioxide and water into sugars."
+        },
+        {
+            "id": 1,
+            "text": "Chloroplasts are concentrated in mesophyll cells of leaves so that photosynthesis can capture as much light as chlorophyll can absorb in the upper layers of the plant canopy."
+        },
+        {
+            "id": 2,
+            "text": "Stomata on the leaf surface open to let carbon dioxide diffuse in for photosynthesis and close to limit water loss, linking gas exchange to chloroplast activity deeper in the tissue."
+        },
+        {
+            "id": 3,
+            "text": "During active photosynthesis, xylem supplies water to the leaf while phloem carries newly synthesized sugars away, tying chloroplast metabolism to long-distance transport."
+        },
+        {
+            "id": 4,
+            "text": "In bright light, chlorophyll in chloroplasts can become overexcited, so plants adjust stomata and xylem water flow to keep photosynthesis efficient without overheating tissues."
+        },
+        {
+            "id": 5,
+            "text": "In shade leaves, chlorophyll content is often increased so that chloroplasts can harvest more light, while photosynthesis rates per unit leaf area remain lower than in full sun."
+        },
+        {
+            "id": 6,
+            "text": "When soil is dry, reduced xylem flow leads plants to close stomata, which protects the leaf from water loss but also decreases carbon dioxide supply for photosynthesis."
+        },
+        {
+            "id": 7,
+            "text": "In many species, phloem loading is strongest during the day when photosynthesis is active in chloroplasts, so sugars move from leaves to roots and growing tissues along phloem pathways."
+        },
+        {
+            "id": 8,
+            "text": "Under nutrient stress, chlorophyll may break down and chloroplasts lose their vivid green color, signaling that photosynthesis and phloem export of sugars are both declining."
+        },
+        {
+            "id": 9,
+            "text": "In young expanding leaves, xylem and phloem bundles develop alongside emerging chloroplasts, creating a coordinated network that supports photosynthesis as soon as the leaf is exposed to light."
+        },
+        {
+            "id": 10,
+            "text": "Guard cells surrounding stomata respond to light and internal signals, adjusting pore size to balance the needs of photosynthesis in chloroplasts with the risks of dehydration carried by xylem."
+        },
+        {
+            "id": 11,
+            "text": "In C3 plants, photosynthesis in chloroplasts is especially sensitive to stomatal closure, because reduced carbon dioxide raises the chance of wasteful oxygen fixation by chlorophyll-based reactions."
+        },
+        {
+            "id": 12,
+            "text": "In C4 plants, specialized leaf anatomy places chloroplasts in distinct cell layers so that photosynthesis can proceed efficiently even when stomata are only partially open."
+        },
+        {
+            "id": 13,
+            "text": "Seasonal changes in day length and temperature alter stomatal behavior and xylem transport, shifting the balance between photosynthesis, phloem loading, and growth across the year."
+        },
+        {
+            "id": 14,
+            "text": "In many trees, photosynthesis in sunlit canopy leaves supplies sugars through phloem to shaded lower branches, whose own chloroplasts and chlorophyll contribute less to the whole-plant carbon balance."
+        },
+        {
+            "id": 15,
+            "text": "During recovery from drought, rehydrated xylem allows stomata to reopen and restores photosynthesis in chloroplasts, which again fuels phloem transport of sugars to repair damaged tissues."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "photosynthesis"
+        },
+        {
+            "id": 1,
+            "name": "chloroplasts"
+        },
+        {
+            "id": 2,
+            "name": "chlorophyll"
+        },
+        {
+            "id": 3,
+            "name": "stomata"
+        },
+        {
+            "id": 4,
+            "name": "xylem"
+        },
+        {
+            "id": 5,
+            "name": "phloem"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+        ],
+        "1": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            14,
+            15
+        ],
+        "2": [
+            0,
+            1,
+            4,
+            5,
+            8,
+            11,
+            14
+        ],
+        "3": [
+            2,
+            4,
+            6,
+            10,
+            11,
+            12,
+            13,
+            15
+        ],
+        "4": [
+            3,
+            4,
+            6,
+            9,
+            10,
+            13,
+            15
+        ],
+        "5": [
+            3,
+            7,
+            8,
+            9,
+            13,
+            14,
+            15
+        ]
+    }
+}

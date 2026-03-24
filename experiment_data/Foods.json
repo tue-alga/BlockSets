@@ -1,0 +1,318 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "Leafy greens like spinach and kale are rich in vitamin K, folate, and fiber, which together support bone health and help keep digestion regular."
+        },
+        {
+            "id": 1,
+            "text": "Berries provide natural sweetness along with vitamin C and plant antioxidants, making them a colorful way to support blood vessel health."
+        },
+        {
+            "id": 2,
+            "text": "Whole grains such as oats or brown rice, paired with legumes like lentils or beans, deliver slowly digested carbohydrates and plant protein that help keep blood sugar steady."
+        },
+        {
+            "id": 3,
+            "text": "A small handful of nuts and seeds can add unsaturated fats, magnesium, and a bit of protein to meals or snacks without taking up much space on the plate."
+        },
+        {
+            "id": 4,
+            "text": "Fatty fish like salmon, when cooked with a drizzle of olive oil, supplies omega-3 fats that are linked with a lower risk of heart disease."
+        },
+        {
+            "id": 5,
+            "text": "Cruciferous vegetables such as broccoli and Brussels sprouts, alongside other leafy greens, are studied for compounds that may help cells repair damage and reduce inflammation."
+        },
+        {
+            "id": 6,
+            "text": "Citrus fruits and berries both contain vitamin C and other phytochemicals that support the immune system and help the body handle everyday oxidative stress."
+        },
+        {
+            "id": 7,
+            "text": "Plain yogurt is a simple example of fermented foods, providing live bacteria that can support a diverse gut microbiome when eaten regularly."
+        },
+        {
+            "id": 8,
+            "text": "Legumes and nuts appear together in many traditional cuisines, where they contribute plant protein and fiber that help people feel full on fewer calories."
+        },
+        {
+            "id": 9,
+            "text": "Green tea and coffee both contain caffeine and antioxidant compounds, but green tea is often highlighted for its catechins while coffee is studied for its links to lower risk of several chronic diseases."
+        },
+        {
+            "id": 10,
+            "text": "Sugary drinks deliver a quick burst of energy with little fiber or micronutrients, in contrast to whole grains that release energy more gradually and help avoid sudden spikes in blood sugar."
+        },
+        {
+            "id": 11,
+            "text": "Red meat can be a source of iron and vitamin B12, yet frequent intake of processed meat such as sausages and bacon is associated with higher risks of heart disease and some cancers."
+        },
+        {
+            "id": 12,
+            "text": "Replacing some processed meat in meals with legumes or nuts is one strategy researchers study when looking for diet patterns that support long-term cardiovascular health."
+        },
+        {
+            "id": 13,
+            "text": "A salad built from leafy greens, citrus fruits, and a dressing made with olive oil lets fat-soluble vitamins and plant pigments be absorbed more easily from the vegetables."
+        },
+        {
+            "id": 14,
+            "text": "A plate that combines fatty fish with cruciferous vegetables offers both omega-3 fats and a variety of fiber types that feed different microbes in the gut."
+        },
+        {
+            "id": 15,
+            "text": "A bowl of plain yogurt topped with berries and a small amount of dark chocolate can satisfy a sweet craving while still offering protein, probiotic cultures, and cocoa flavanols."
+        },
+        {
+            "id": 16,
+            "text": "Swapping one daily sugary drink for unsweetened green tea reduces added sugar intake while still giving the mild stimulation many people look for in a beverage."
+        },
+        {
+            "id": 17,
+            "text": "Coffee enjoyed alongside a few nuts and a small piece of dark chocolate is common in some cultures, combining bitter flavors with healthy fats and polyphenols."
+        },
+        {
+            "id": 18,
+            "text": "Fermented foods such as kimchi or sauerkraut often appear beside legumes and whole grains in traditional meals that support both gut health and steady energy levels."
+        },
+        {
+            "id": 19,
+            "text": "Citrus fruits are a common source of vitamin C in many diets, and their tart flavor can encourage people to drink more water when wedges of lemon or orange are added to plain drinks."
+        },
+        {
+            "id": 20,
+            "text": "People who eat large portions of red meat or processed meat are often advised to balance their plates with cruciferous vegetables, which add fiber and volume without much extra energy."
+        },
+        {
+            "id": 21,
+            "text": "Breakfasts built around whole grains, nuts, and seeds—such as muesli or oatmeal with toppings—tend to be higher in fiber and can help keep hunger in check through the morning."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "leafy greens"
+        },
+        {
+            "id": 1,
+            "name": "berries"
+        },
+        {
+            "id": 2,
+            "name": "whole grains"
+        },
+        {
+            "id": 3,
+            "name": "nuts"
+        },
+        {
+            "id": 4,
+            "name": "seeds"
+        },
+        {
+            "id": 5,
+            "name": "legumes"
+        },
+        {
+            "id": 6,
+            "name": "yogurt"
+        },
+        {
+            "id": 7,
+            "name": "fatty fish"
+        },
+        {
+            "id": 8,
+            "name": "vegetables"
+        },
+        {
+            "id": 9,
+            "name": "citrus fruits"
+        },
+        {
+            "id": 10,
+            "name": "olive oil"
+        },
+        {
+            "id": 11,
+            "name": "green tea"
+        },
+        {
+            "id": 12,
+            "name": "coffee"
+        },
+        {
+            "id": 13,
+            "name": "red meat"
+        },
+        {
+            "id": 14,
+            "name": "processed meat"
+        },
+        {
+            "id": 15,
+            "name": "sugary drinks"
+        },
+        {
+            "id": 16,
+            "name": "fermented foods"
+        },
+        {
+            "id": 17,
+            "name": "dark chocolate"
+        },
+        {
+            "id": 18,
+            "name": "vitamin C"
+        },
+        {
+            "id": 19,
+            "name": "vitamin K"
+        },
+        {
+            "id": 20,
+            "name": "vitamin B12"
+        },
+        {
+            "id": 21,
+            "name": "fiber"
+        },
+        {
+            "id": 22,
+            "name": "protein"
+        },
+        {
+            "id": 23,
+            "name": "fats"
+        },
+        {
+            "id": 24,
+            "name": "energy"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            5,
+            13
+        ],
+        "1": [
+            1,
+            6,
+            15
+        ],
+        "2": [
+            2,
+            10,
+            18,
+            21
+        ],
+        "3": [
+            3,
+            8,
+            12,
+            17,
+            21
+        ],
+        "4": [
+            3,
+            21
+        ],
+        "5": [
+            2,
+            8,
+            12,
+            18
+        ],
+        "6": [
+            7,
+            15
+        ],
+        "7": [
+            4,
+            14
+        ],
+        "8": [
+            5,
+            13,
+            14,
+            20
+        ],
+        "9": [
+            6,
+            13,
+            19
+        ],
+        "10": [
+            4,
+            13
+        ],
+        "11": [
+            9,
+            16
+        ],
+        "12": [
+            9,
+            17
+        ],
+        "13": [
+            11,
+            20
+        ],
+        "14": [
+            11,
+            12,
+            20
+        ],
+        "15": [
+            10,
+            16
+        ],
+        "16": [
+            7,
+            18
+        ],
+        "17": [
+            15,
+            17
+        ],
+        "18": [
+            1,
+            6,
+            19
+        ],
+        "19": [
+            0
+        ],
+        "20": [
+            11
+        ],
+        "21": [
+            0,
+            8,
+            10,
+            14,
+            20,
+            21
+        ],
+        "22": [
+            2,
+            3,
+            8,
+            15
+        ],
+        "23": [
+            3,
+            4,
+            13,
+            14,
+            17
+        ],
+        "24": [
+            10,
+            18,
+            20
+        ]
+    }
+}

@@ -1,0 +1,212 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "A set system is a family of sets visualized using Venn diagrams or Euler diagrams."
+        },
+        {
+            "id": 1,
+            "text": "Venn diagrams show all possible intersections among small set systems using overlapping closed curves."
+        },
+        {
+            "id": 2,
+            "text": "Euler diagrams remove empty regions from Venn diagrams, emphasizing actual relationships in a set system."
+        },
+        {
+            "id": 3,
+            "text": "Linear diagrams represent sets as parallel lines where overlapping segments encode intersections between set systems."
+        },
+        {
+            "id": 4,
+            "text": "UpSet plots replace overlapping regions of Venn diagrams with matrix layouts for large set systems."
+        },
+        {
+            "id": 5,
+            "text": "RectEuler diagrams draw each set in a set system as a rectangle, emphasizing containment relationships."
+        },
+        {
+            "id": 6,
+            "text": "Hypergraphs generalize set systems by treating sets as hyperedges, also visualized with bipartite graphs."
+        },
+        {
+            "id": 7,
+            "text": "Bipartite graphs represent a set system with element nodes connected to set nodes."
+        },
+        {
+            "id": 8,
+            "text": "Incidence matrices encode membership of elements in sets, linking set systems to linear algebraic operations."
+        },
+        {
+            "id": 9,
+            "text": "Contingency tables summarize frequencies for combinations of set memberships, closely related to incidence matrices."
+        },
+        {
+            "id": 10,
+            "text": "Hierarchical clustering groups similar sets or elements, and dendrograms reveal structure within large set systems."
+        },
+        {
+            "id": 11,
+            "text": "Multisets extend set systems by allowing repeated elements, which some visualization techniques must handle explicitly."
+        },
+        {
+            "id": 12,
+            "text": "UpSet plots and contingency tables highlight high-order intersections that overwhelm traditional Venn diagrams."
+        },
+        {
+            "id": 13,
+            "text": "RectEuler diagrams and Euler diagrams emphasize containment in set systems but handle disconnected regions differently."
+        },
+        {
+            "id": 14,
+            "text": "Linear diagrams and bipartite graphs can be easier to read than crowded Venn diagrams."
+        },
+        {
+            "id": 15,
+            "text": "Hypergraphs, incidence matrices and bipartite graphs form an algebraic and combinatorial view of set systems."
+        },
+        {
+            "id": 16,
+            "text": "Hierarchical clustering can be combined with UpSet plots to order sets and intersections coherently."
+        },
+        {
+            "id": 17,
+            "text": "Multisets and set systems with weights require extending incidence matrices and contingency tables with counts."
+        },
+        {
+            "id": 18,
+            "text": "Researchers compare Venn diagrams, UpSet plots and RectEuler diagrams when choosing set visualization techniques."
+        },
+        {
+            "id": 19,
+            "text": "Modern tools integrate multiple techniques, letting analysts switch between Euler diagrams and UpSet plots interactively."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "set systems"
+        },
+        {
+            "id": 1,
+            "name": "Venn diagrams"
+        },
+        {
+            "id": 2,
+            "name": "Euler diagrams"
+        },
+        {
+            "id": 3,
+            "name": "linear diagrams"
+        },
+        {
+            "id": 4,
+            "name": "UpSet plots"
+        },
+        {
+            "id": 5,
+            "name": "RectEuler diagrams"
+        },
+        {
+            "id": 6,
+            "name": "hypergraphs"
+        },
+        {
+            "id": 7,
+            "name": "bipartite graphs"
+        },
+        {
+            "id": 8,
+            "name": "incidence matrices"
+        },
+        {
+            "id": 9,
+            "name": "contingency tables"
+        },
+        {
+            "id": 10,
+            "name": "hierarchical clustering"
+        },
+        {
+            "id": 11,
+            "name": "multisets"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            10,
+            11,
+            13,
+            15,
+            17
+        ],
+        "1": [
+            0,
+            1,
+            2,
+            4,
+            12,
+            14,
+            18
+        ],
+        "2": [
+            0,
+            2,
+            13,
+            19
+        ],
+        "3": [
+            3,
+            14
+        ],
+        "4": [
+            4,
+            12,
+            16,
+            18,
+            19
+        ],
+        "5": [
+            5,
+            13,
+            18
+        ],
+        "6": [
+            6,
+            15
+        ],
+        "7": [
+            6,
+            7,
+            14,
+            15
+        ],
+        "8": [
+            8,
+            9,
+            15,
+            17
+        ],
+        "9": [
+            9,
+            12,
+            17
+        ],
+        "10": [
+            10,
+            16
+        ],
+        "11": [
+            11,
+            17
+        ]
+    }
+}

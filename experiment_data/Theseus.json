@@ -1,0 +1,185 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "Theseus, son of King Aegeus of Athens, is famed for his strength and daring among the youth of the city."
+        },
+        {
+            "id": 1,
+            "text": "King Minos of Crete forces Athens to send regular tributes of youths to his island as punishment for earlier offenses."
+        },
+        {
+            "id": 2,
+            "text": "Theseus volunteers to join one such tribute, assuring Aegeus that he will return alive from Crete."
+        },
+        {
+            "id": 3,
+            "text": "Daedalus designs the Labyrinth so cunningly that once inside, even the Minotaur cannot find a way out."
+        },
+        {
+            "id": 4,
+            "text": "The Minotaur, half man and half bull, prowls the corridors of the Labyrinth and devours those sent as tribute."
+        },
+        {
+            "id": 5,
+            "text": "Ariadne is moved to pity for one of the foreign youths chosen for the Labyrinth and secretly resolves to help him survive."
+        },
+        {
+            "id": 6,
+            "text": "Ariadne gives Theseus a ball of thread so that he can mark his path through the Labyrinth and find the entrance again."
+        },
+        {
+            "id": 7,
+            "text": "Deep within the Labyrinth, Theseus meets the Minotaur in combat and kills the monster with his sword."
+        },
+        {
+            "id": 8,
+            "text": "Following the unwound thread, Theseus retraces his steps and brings the surviving youths safely out of the Labyrinth."
+        },
+        {
+            "id": 9,
+            "text": "Theseus secretly sails away from Crete with Ariadne, taking her from her father’s island under cover of night."
+        },
+        {
+            "id": 10,
+            "text": "On the island of Naxos, Ariadne is left behind in one well-known version of the tale, and Dionysus later claims her as his bride."
+        },
+        {
+            "id": 11,
+            "text": "As Theseus’s ship approaches Athens, Aegeus looks for the promised white sail that would signal his son’s survival."
+        },
+        {
+            "id": 12,
+            "text": "Seeing only a dark sail, Aegeus throws himself into the water in despair, and later Greeks say the sea there bears his name."
+        },
+        {
+            "id": 13,
+            "text": "After news spreads that Theseus has slain the Minotaur, the people of Athens remember him as the hero who freed them from Crete’s tribute."
+        },
+        {
+            "id": 14,
+            "text": "In stories told on Crete, Minos remains a powerful king whose anger once made Athens fear the command that sent its youths into the Labyrinth."
+        },
+        {
+            "id": 15,
+            "text": "Bound to Minos in Crete, Daedalus knows that his knowledge of the Labyrinth and the fall of the Minotaur has made his own position precarious."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "Theseus"
+        },
+        {
+            "id": 1,
+            "name": "Minotaur"
+        },
+        {
+            "id": 2,
+            "name": "Aegeus"
+        },
+        {
+            "id": 3,
+            "name": "Minos"
+        },
+        {
+            "id": 4,
+            "name": "Athens"
+        },
+        {
+            "id": 5,
+            "name": "Crete"
+        },
+        {
+            "id": 6,
+            "name": "Labyrinth"
+        },
+        {
+            "id": 7,
+            "name": "Ariadne"
+        },
+        {
+            "id": 8,
+            "name": "Daedalus"
+        },
+        {
+            "id": 9,
+            "name": "Naxos"
+        },
+        {
+            "id": 10,
+            "name": "Dionysus"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            2,
+            6,
+            7,
+            8,
+            9,
+            11,
+            13
+        ],
+        "1": [
+            3,
+            4,
+            7,
+            13,
+            15
+        ],
+        "2": [
+            0,
+            2,
+            11,
+            12
+        ],
+        "3": [
+            1,
+            14,
+            15
+        ],
+        "4": [
+            0,
+            1,
+            11,
+            13,
+            14
+        ],
+        "5": [
+            1,
+            2,
+            9,
+            13,
+            14,
+            15
+        ],
+        "6": [
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            14,
+            15
+        ],
+        "7": [
+            5,
+            6,
+            9,
+            10
+        ],
+        "8": [
+            3,
+            15
+        ],
+        "9": [
+            10
+        ],
+        "10": [
+            10
+        ]
+    }
+}

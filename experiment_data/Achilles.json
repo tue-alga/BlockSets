@@ -1,0 +1,197 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "Achilles, son of the sea nymph Thetis, is praised in song as the greatest warrior among the Achaeans fighting before the walls of Troy."
+        },
+        {
+            "id": 1,
+            "text": "When Agamemnon seizes the captive Briseis, Achilles withdraws in anger from the war, brooding in his hut by the Achaean ships while the Achaeans struggle without their mightiest fighter."
+        },
+        {
+            "id": 2,
+            "text": "Patroclus puts on Achilles' own armor and leads the Achaeans against the Trojans, driving them from the ships until Hector kills him near the walls of Troy."
+        },
+        {
+            "id": 3,
+            "text": "Hector, champion of Troy, holds the Trojan line against the Achaeans and knows that one day a greater warrior will return to the field in unstoppable rage."
+        },
+        {
+            "id": 4,
+            "text": "Old King Priam stands on the walls of Troy, pleading with Hector not to face the Achaean spears alone, while the city holds its breath."
+        },
+        {
+            "id": 5,
+            "text": "Hearing that Patroclus has fallen, Thetis rises from the sea and goes to Olympus, where she begs Zeus and Hephaestus to forge new divine armor for her grieving son Achilles."
+        },
+        {
+            "id": 6,
+            "text": "In his blazing forge, Hephaestus hammers out shining armor and a vast shield, covering it with cities, stars, and harvest fields under the gaze of the gods on Olympus."
+        },
+        {
+            "id": 7,
+            "text": "When the war horns sound again, Achilles strides onto the plain with Athena at his side, and the Achaeans take heart while the warriors of Troy fall back before his fury."
+        },
+        {
+            "id": 8,
+            "text": "Beside the walls of Troy, Achilles slaughters so many foes that the river Scamander rises against him in anger, its swollen waters struggling to sweep him away."
+        },
+        {
+            "id": 9,
+            "text": "Zeus weighs the fates of Hector and the Achaeans on his golden scales, while Athena and other gods on Olympus debate the doom of Troy."
+        },
+        {
+            "id": 10,
+            "text": "Agamemnon commands a host of Achaean kings at Troy, yet their quarrels and wounded pride often wound the Achaeans more deeply than the spears of the Trojans."
+        },
+        {
+            "id": 11,
+            "text": "Thetis tells Achilles of the choice before him: a long, quiet life far from Troy, or a brief blaze of glory among the Achaeans that will make his name deathless."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "Achilles"
+        },
+        {
+            "id": 1,
+            "name": "Thetis"
+        },
+        {
+            "id": 2,
+            "name": "Agamemnon"
+        },
+        {
+            "id": 3,
+            "name": "Patroclus"
+        },
+        {
+            "id": 4,
+            "name": "Hector"
+        },
+        {
+            "id": 5,
+            "name": "Priam"
+        },
+        {
+            "id": 6,
+            "name": "Troy"
+        },
+        {
+            "id": 7,
+            "name": "Achaeans"
+        },
+        {
+            "id": 8,
+            "name": "Zeus"
+        },
+        {
+            "id": 9,
+            "name": "Athena"
+        },
+        {
+            "id": 10,
+            "name": "Scamander"
+        },
+        {
+            "id": 11,
+            "name": "Hephaestus"
+        },
+        {
+            "id": 12,
+            "name": "Olympus"
+        },
+        {
+            "id": 13,
+            "name": "Briseis"
+        },
+        {
+            "id": 14,
+            "name": "Trojans [Trojan]"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            1,
+            2,
+            5,
+            7,
+            8,
+            11
+        ],
+        "1": [
+            0,
+            5,
+            11
+        ],
+        "2": [
+            1,
+            10
+        ],
+        "3": [
+            2,
+            5
+        ],
+        "4": [
+            2,
+            3,
+            4,
+            9
+        ],
+        "5": [
+            4
+        ],
+        "6": [
+            0,
+            2,
+            3,
+            4,
+            7,
+            8,
+            9,
+            10,
+            11
+        ],
+        "7": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            7,
+            9,
+            10,
+            11
+        ],
+        "8": [
+            5,
+            9
+        ],
+        "9": [
+            7,
+            9
+        ],
+        "10": [
+            8
+        ],
+        "11": [
+            5,
+            6
+        ],
+        "12": [
+            5,
+            6,
+            9
+        ],
+        "13": [
+            1
+        ],
+        "14": [
+            2,
+            3,
+            10
+        ]
+    }
+}

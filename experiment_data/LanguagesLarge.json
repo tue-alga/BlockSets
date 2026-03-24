@@ -1,0 +1,487 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "Indo-European languages include Romance languages, Germanic languages and Slavic languages, which share a distant common ancestor."
+        },
+        {
+            "id": 1,
+            "text": "Romance languages developed from spoken Latin, and many still share similar verb endings and basic vocabulary."
+        },
+        {
+            "id": 2,
+            "text": "Germanic languages are known for consonant shifts and strong versus weak verbs in their historical development."
+        },
+        {
+            "id": 3,
+            "text": "Slavic languages often mark grammatical case on nouns, distinguishing roles that Romance languages express with prepositions."
+        },
+        {
+            "id": 4,
+            "text": "Sino-Tibetan languages commonly use tone and relatively fixed word order instead of heavy case marking."
+        },
+        {
+            "id": 5,
+            "text": "Afro-Asiatic languages include many Semitic languages, which build related words from shared consonant roots."
+        },
+        {
+            "id": 6,
+            "text": "Indo-European languages and Afro-Asiatic languages have both spread widely through trade, religion and empire across continents."
+        },
+        {
+            "id": 7,
+            "text": "Dravidian languages are mainly spoken in South India and differ structurally from neighboring Indo-European languages."
+        },
+        {
+            "id": 8,
+            "text": "Turkic languages stretch from Turkey to Central Asia, forming a family distinct from Indo-European languages."
+        },
+        {
+            "id": 9,
+            "text": "Uralic languages, including Finnish and Hungarian, often use long strings of suffixes rather than many separate function words."
+        },
+        {
+            "id": 10,
+            "text": "Austronesian languages are spread across islands from Madagascar to the Pacific, linked by shared vocabulary and sound patterns."
+        },
+        {
+            "id": 11,
+            "text": "Language isolates like Basque do not fit neatly into any known family of related languages."
+        },
+        {
+            "id": 12,
+            "text": "Creole languages often emerge in ports or plantations where speakers of different families, including Indo-European languages, must communicate daily."
+        },
+        {
+            "id": 13,
+            "text": "Sign languages are full natural languages with their own grammar, unrelated to surrounding spoken Indo-European languages or Sino-Tibetan languages."
+        },
+        {
+            "id": 14,
+            "text": "Many Romance languages and Germanic languages are written with alphabets originally adapted from scripts used for Semitic languages."
+        },
+        {
+            "id": 15,
+            "text": "Slavic languages, Turkic languages and Uralic languages have all borrowed vocabulary from nearby Indo-European languages during contact."
+        },
+        {
+            "id": 16,
+            "text": "Some Germanic languages share word order features with Uralic languages because of long-term contact in Northern Europe."
+        },
+        {
+            "id": 17,
+            "text": "Romance languages and Slavic languages are often studied together in European universities as branches of Indo-European languages."
+        },
+        {
+            "id": 18,
+            "text": "Sino-Tibetan languages and Austronesian languages dominate much of Asia and the Pacific, despite belonging to separate families."
+        },
+        {
+            "id": 19,
+            "text": "Afro-Asiatic languages extend across North Africa and the Middle East, where many Semitic languages play major cultural roles."
+        },
+        {
+            "id": 20,
+            "text": "Dravidian languages and Indo-European languages coexist in South Asia, leading many speakers to grow up bilingually."
+        },
+        {
+            "id": 21,
+            "text": "Turkic languages interact with Slavic languages and Indo-European languages in multilingual cities from the Balkans to Central Asia."
+        },
+        {
+            "id": 22,
+            "text": "Uralic languages and Turkic languages sometimes share grammatical features through contact, despite belonging to distinct language families."
+        },
+        {
+            "id": 23,
+            "text": "Austronesian languages and Dravidian languages are often compared in typology, though no close genetic relationship is widely accepted."
+        },
+        {
+            "id": 24,
+            "text": "Language isolates stand apart from Indo-European languages, Afro-Asiatic languages and Sino-Tibetan languages in standard classification charts."
+        },
+        {
+            "id": 25,
+            "text": "Creole languages typically simplify certain features of Indo-European languages while innovating new, systematic ways to mark tense."
+        },
+        {
+            "id": 26,
+            "text": "Sign languages can borrow finger-spelled alphabets from Indo-European languages while preserving their own visual grammar."
+        },
+        {
+            "id": 27,
+            "text": "Romance languages and Germanic languages contribute many loanwords to creole languages in former colonial regions."
+        },
+        {
+            "id": 28,
+            "text": "Slavic languages sometimes influence creole languages and sign languages through contact in multilingual European or diasporic communities."
+        },
+        {
+            "id": 29,
+            "text": "Sino-Tibetan languages and sign languages often coexist in cities where Deaf communities build separate linguistic traditions."
+        },
+        {
+            "id": 30,
+            "text": "Afro-Asiatic languages and Indo-European languages meet around the Mediterranean, encouraging multilingualism and complex patterns of borrowing."
+        },
+        {
+            "id": 31,
+            "text": "Semitic languages are the best-known branch of Afro-Asiatic languages and influence many neighboring Indo-European languages."
+        },
+        {
+            "id": 32,
+            "text": "Dravidian languages sometimes adopt loanwords from Indo-European languages, Turkic languages and even Austronesian languages through trade networks."
+        },
+        {
+            "id": 33,
+            "text": "Turkic languages and Austronesian languages rarely share vocabulary genetically, but modern contact can still produce small sets of loanwords."
+        },
+        {
+            "id": 34,
+            "text": "Uralic languages stand out in Europe because most surrounding national languages are Indo-European languages of various branches."
+        },
+        {
+            "id": 35,
+            "text": "Austronesian languages and Indo-European languages both span oceans today, but they reflect very different migration histories."
+        },
+        {
+            "id": 36,
+            "text": "Language isolates often neighbor Indo-European languages, Afro-Asiatic languages or Uralic languages without showing clear genetic ties."
+        },
+        {
+            "id": 37,
+            "text": "Creole languages can later influence Indo-European languages in the same region, adding local expressions to standard varieties."
+        },
+        {
+            "id": 38,
+            "text": "Sign languages and creole languages both demonstrate that human language structure can emerge quickly in new communities."
+        },
+        {
+            "id": 39,
+            "text": "Romance languages, Germanic languages and Slavic languages share many international scientific terms, often borrowed together from classical sources."
+        },
+        {
+            "id": 40,
+            "text": "Sino-Tibetan languages and Indo-European languages are frequently compared in typology courses to illustrate differences in word order and morphology."
+        },
+        {
+            "id": 41,
+            "text": "Afro-Asiatic languages, Dravidian languages and Indo-European languages sometimes show similar patterns purely by chance, not shared ancestry."
+        },
+        {
+            "id": 42,
+            "text": "Semitic languages, Indo-European languages and Turkic languages all served historically as lingua francas in overlapping trade networks."
+        },
+        {
+            "id": 43,
+            "text": "Dravidian languages, Uralic languages and language isolates remind linguists that Europe and Asia contain deep, pre-Indo-European histories."
+        },
+        {
+            "id": 44,
+            "text": "Austronesian languages, Sino-Tibetan languages and Indo-European languages are common options in university programs for comparative historical linguistics."
+        },
+        {
+            "id": 45,
+            "text": "Creole languages, Austronesian languages and Afro-Asiatic languages can intersect in port cities along Indian Ocean trade routes."
+        },
+        {
+            "id": 46,
+            "text": "Sign languages, Romance languages and Germanic languages share communities, but Deaf culture maintains distinct norms and linguistic practices."
+        },
+        {
+            "id": 47,
+            "text": "Romance languages, Sino-Tibetan languages and creole languages are all used online, where new slang spreads quickly across platforms."
+        },
+        {
+            "id": 48,
+            "text": "Germanic languages, Turkic languages and Uralic languages share certain vowel harmony patterns, though the historical sources of these features differ."
+        },
+        {
+            "id": 49,
+            "text": "Slavic languages, Afro-Asiatic languages and Austronesian languages rarely intersect geographically, yet comparative studies still highlight interesting typological parallels."
+        },
+        {
+            "id": 50,
+            "text": "Indo-European languages, Turkic languages and Dravidian languages can all be written in shared scripts, masking their genetic differences."
+        },
+        {
+            "id": 51,
+            "text": "Sino-Tibetan languages, Uralic languages and language isolates show that Eurasia contains many unrelated linguistic families beyond Indo-European languages."
+        },
+        {
+            "id": 52,
+            "text": "Semitic languages, Dravidian languages and Uralic languages often appear together in surveys of non-Indo-European languages for students."
+        },
+        {
+            "id": 53,
+            "text": "Afro-Asiatic languages, Semitic languages and language isolates challenge simple tree diagrams, prompting models with waves and contact zones."
+        },
+        {
+            "id": 54,
+            "text": "Creole languages, sign languages and language isolates demonstrate that new or unusual categories can be fully expressive and systematic."
+        },
+        {
+            "id": 55,
+            "text": "Austronesian languages, creole languages and sign languages are increasingly documented, reducing the imbalance favoring major Indo-European languages in grammars."
+        },
+        {
+            "id": 56,
+            "text": "Sino-Tibetan languages, Afro-Asiatic languages and Turkic languages contribute important data to understanding how word order evolves worldwide."
+        },
+        {
+            "id": 57,
+            "text": "Romance languages, Dravidian languages and sign languages each show complex agreement systems, expressed through endings, particles or movement patterns."
+        },
+        {
+            "id": 58,
+            "text": "Germanic languages, Sino-Tibetan languages and creole languages all adapt quickly to technology, coining terms for apps, memes and platforms."
+        },
+        {
+            "id": 59,
+            "text": "Indo-European languages, Sino-Tibetan languages and sign languages frequently appear together in comparative courses introducing major language categories."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "Indo-European languages"
+        },
+        {
+            "id": 1,
+            "name": "Romance languages"
+        },
+        {
+            "id": 2,
+            "name": "Germanic languages"
+        },
+        {
+            "id": 3,
+            "name": "Slavic languages"
+        },
+        {
+            "id": 4,
+            "name": "Sino-Tibetan languages"
+        },
+        {
+            "id": 5,
+            "name": "Afro-Asiatic languages"
+        },
+        {
+            "id": 6,
+            "name": "Semitic languages"
+        },
+        {
+            "id": 7,
+            "name": "Dravidian languages"
+        },
+        {
+            "id": 8,
+            "name": "Turkic languages"
+        },
+        {
+            "id": 9,
+            "name": "Uralic languages"
+        },
+        {
+            "id": 10,
+            "name": "creole languages"
+        },
+        {
+            "id": 11,
+            "name": "sign languages"
+        },
+        {
+            "id": 12,
+            "name": "Austronesian languages"
+        },
+        {
+            "id": 13,
+            "name": "language isolates"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            6,
+            7,
+            8,
+            12,
+            13,
+            15,
+            17,
+            20,
+            21,
+            24,
+            25,
+            26,
+            30,
+            31,
+            32,
+            34,
+            35,
+            36,
+            37,
+            40,
+            41,
+            42,
+            43,
+            44,
+            50,
+            51,
+            52,
+            55,
+            59
+        ],
+        "1": [
+            0,
+            1,
+            3,
+            14,
+            17,
+            27,
+            39,
+            46,
+            47,
+            57
+        ],
+        "2": [
+            0,
+            2,
+            14,
+            16,
+            27,
+            39,
+            46,
+            48,
+            58
+        ],
+        "3": [
+            0,
+            3,
+            15,
+            17,
+            21,
+            28,
+            39,
+            49
+        ],
+        "4": [
+            4,
+            13,
+            18,
+            24,
+            29,
+            40,
+            44,
+            47,
+            51,
+            56,
+            58,
+            59
+        ],
+        "5": [
+            5,
+            6,
+            19,
+            24,
+            30,
+            31,
+            36,
+            41,
+            45,
+            49,
+            53,
+            56
+        ],
+        "6": [
+            5,
+            14,
+            19,
+            31,
+            42,
+            52,
+            53
+        ],
+        "7": [
+            7,
+            20,
+            23,
+            32,
+            41,
+            43,
+            50,
+            52,
+            57
+        ],
+        "8": [
+            8,
+            15,
+            21,
+            22,
+            32,
+            33,
+            42,
+            48,
+            50,
+            56
+        ],
+        "9": [
+            9,
+            15,
+            16,
+            22,
+            34,
+            36,
+            43,
+            48,
+            51,
+            52
+        ],
+        "10": [
+            12,
+            25,
+            27,
+            28,
+            37,
+            38,
+            45,
+            47,
+            54,
+            55,
+            58
+        ],
+        "11": [
+            13,
+            26,
+            28,
+            29,
+            38,
+            46,
+            54,
+            55,
+            57,
+            59
+        ],
+        "12": [
+            10,
+            18,
+            23,
+            32,
+            33,
+            35,
+            44,
+            45,
+            49,
+            55
+        ],
+        "13": [
+            11,
+            24,
+            36,
+            43,
+            51,
+            53,
+            54
+        ]
+    }
+}

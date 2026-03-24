@@ -1,0 +1,161 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "Force acting on a mass produces acceleration, changing the object's velocity over time."
+        },
+        {
+            "id": 1,
+            "text": "Velocity describes speed and direction, while acceleration links changing velocity to the net force on mass."
+        },
+        {
+            "id": 2,
+            "text": "Kinetic energy depends on an object's mass and velocity, increasing rapidly as velocity grows."
+        },
+        {
+            "id": 3,
+            "text": "Momentum combines mass and velocity, remaining conserved in isolated systems where no external force acts."
+        },
+        {
+            "id": 4,
+            "text": "Gravitational potential energy increases as an object is lifted against gravity, storing reversible mechanical energy."
+        },
+        {
+            "id": 5,
+            "text": "Friction opposes motion between surfaces, converting mechanical energy into heat and reducing momentum over time."
+        },
+        {
+            "id": 6,
+            "text": "In free fall, gravity accelerates a mass downward, converting gravitational potential energy into increasing kinetic energy."
+        },
+        {
+            "id": 7,
+            "text": "Work transfers energy when a force moves an object, linking force, distance and kinetic energy."
+        },
+        {
+            "id": 8,
+            "text": "Power measures how quickly work is done, relating transferred energy to the time interval involved."
+        },
+        {
+            "id": 9,
+            "text": "Balanced forces like friction produce constant velocity, while unbalanced forces create acceleration, changing momentum and mechanical energy."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "force"
+        },
+        {
+            "id": 1,
+            "name": "mass"
+        },
+        {
+            "id": 2,
+            "name": "acceleration"
+        },
+        {
+            "id": 3,
+            "name": "velocity"
+        },
+        {
+            "id": 4,
+            "name": "energy"
+        },
+        {
+            "id": 5,
+            "name": "kinetic energy"
+        },
+        {
+            "id": 6,
+            "name": "potential energy"
+        },
+        {
+            "id": 7,
+            "name": "momentum"
+        },
+        {
+            "id": 8,
+            "name": "friction"
+        },
+        {
+            "id": 9,
+            "name": "gravity"
+        },
+        {
+            "id": 10,
+            "name": "work"
+        },
+        {
+            "id": 11,
+            "name": "power"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            1,
+            3,
+            7,
+            9
+        ],
+        "1": [
+            0,
+            1,
+            2,
+            3,
+            6
+        ],
+        "2": [
+            0,
+            1,
+            6,
+            9
+        ],
+        "3": [
+            0,
+            1,
+            2,
+            3,
+            9
+        ],
+        "4": [
+            2,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+        ],
+        "5": [
+            2,
+            6,
+            7
+        ],
+        "6": [
+            4,
+            6
+        ],
+        "7": [
+            3,
+            5,
+            9
+        ],
+        "8": [
+            5,
+            9
+        ],
+        "9": [
+            4,
+            6
+        ],
+        "10": [
+            7,
+            8
+        ],
+        "11": [
+            8
+        ]
+    }
+}
