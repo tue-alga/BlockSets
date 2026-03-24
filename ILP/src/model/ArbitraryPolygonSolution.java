@@ -59,6 +59,16 @@ public class ArbitraryPolygonSolution implements Solution {
     }
 
     @Override
+    public int endX() {
+        return startX + getW();
+    }
+
+    @Override
+    public int endY() {
+        return startY + getH();
+    }
+
+    @Override
     public StatementEntityInstance getInstance() {
         return this.instance;
     }

@@ -61,6 +61,16 @@ public class PolygonSolution implements Solution {
     }
 
     @Override
+    public int endX() {
+        return startX + getW();
+    }
+
+    @Override
+    public int endY() {
+        return startY + getH();
+    }
+
+    @Override
     public String getStatement(int x, int y) {
         for (int k = 0; k != this.statementCoordinates.length; ++k) {
             var coord = this.statementCoordinates[k];

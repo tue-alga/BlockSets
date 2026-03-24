@@ -7,22 +7,13 @@ import java.util.Set;
 import java.util.List;
 
 public interface Solution {
-    public int startX = 0;
-    public int startY = 0;
-
     public int startX();
     public int startY();
+    public int endX();
+    public int endY();
+
     public void setStartX(int x);
     public void setStartY(int y);
-
-    public default int endX() {
-        return startX + getW();
-    }
-
-
-    public default int endY() {
-        return startY + getH();
-    }
 
     StatementEntityInstance getInstance();
 
@@ -85,8 +76,8 @@ public interface Solution {
     public default List<Point> usedCells() {
         ArrayList<Point> used = new ArrayList<>();
 
-        for (int x = startX; x <= endX(); x++) {
-            for (int y = startY; y <= endY(); y++) {
+        for (int x = startX(); x <= endX(); x++) {
+            for (int y = startY(); y <= endY(); y++) {
                 if (isUsed(x, y)) used.add(new Point(x, y));
             }
         }
@@ -99,10 +90,10 @@ public interface Solution {
     /// Note that in most cases we are interested in the blank orthoconvex hull cells of the PositionedSolution.
     public default List<Point> blankOrthoconvexHullCells() {
         Set<Point> gaps = new HashSet<>();
-        for (int x = startX; x <= endX(); ++x) {
+        for (int x = startX(); x <= endX(); ++x) {
             int minY = endY();
-            int maxY = startY;
-            for (int y = startY; y <= endY(); ++y) {
+            int maxY = startY();
+            for (int y = startY(); y <= endY(); ++y) {
                 if (isUsed(x, y)) {
                     if (y < minY) {
                         minY = y;
@@ -119,10 +110,10 @@ public interface Solution {
                 }
             }
         }
-        for (int y = startY; y <= endY(); ++y) {
+        for (int y = startY(); y <= endY(); ++y) {
             int minX = endX();
-            int maxX = startX;
-            for (int x = startX; x <= endX(); ++x) {
+            int maxX = startX();
+            for (int x = startX(); x <= endX(); ++x) {
                 if (isUsed(x, y)) {
                     if (x < minX) {
                         minX = x;
