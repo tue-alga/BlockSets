@@ -13,6 +13,7 @@ public class PolygonSolution implements Solution {
     public int[][][] entities;
     public int[][] statementCoordinates;
     public ArrayList<Point> cells;
+    public boolean shifted = false;
 
     public PolygonSolution(StatementEntityInstance inst, int w, int h, ArrayList<Integer> eIds, int[][][] entities,
             int[][] sCoords) {
@@ -122,10 +123,22 @@ public class PolygonSolution implements Solution {
     }
 
     private boolean entityCovers(int x, int y) {
-        for (int i = 0; i < entities.length; i++) {
-            if (entities[i][y][0] == 1) {
-                if (entities[i][y][1] <= x && entities[i][y][2] >= x) {
-                    return true;
+        if (!shifted) {
+            for (int i = 0; i < entities.length; i++) {
+                if (entities[i][y][0] == 1) {
+                    if (entities[i][y][1] <= x && entities[i][y][2] >= x) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < entities.length; i++) {
+                for (int r = 0; r < entities[i].length; r++) {
+                    if (entities[i][r][0] == y + 1) {
+                        if (entities[i][r][1] <= x && entities[i][r][2] >= x) {
+                            return true;
+                        }
+                    }
                 }
             }
         }

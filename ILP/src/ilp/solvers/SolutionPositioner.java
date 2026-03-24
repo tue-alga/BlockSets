@@ -364,6 +364,7 @@ public class SolutionPositioner {
                             entity[i][0] += i + y;
                         }
                     }
+                    ps.shifted = true;
                 }
 
                 for (int[] statement : ps.statementCoordinates) {
