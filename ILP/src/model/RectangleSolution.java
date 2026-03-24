@@ -7,6 +7,8 @@ public class RectangleSolution implements Solution {
     public StatementEntityInstance instance;
     public int w;
     public int h;
+    public int startX = 0;
+    public int startY = 0;
     ArrayList<Integer> entityIds;
     public int[][] entityCoordinates;
     public int[][] statementCoordinates;
@@ -20,7 +22,7 @@ public class RectangleSolution implements Solution {
         this.entityIds = eIds;
         this.entityCoordinates = eCoords;
         this.statementCoordinates = sCoords;
-        this.cells = setCells();
+        setCells();
     }
 
     @Override
@@ -36,6 +38,26 @@ public class RectangleSolution implements Solution {
     @Override
     public int getH() {
         return this.h;
+    }
+
+    @Override
+    public int startX() {
+        return startX;
+    }
+
+    @Override
+    public void setStartX(int x) {
+        startX = x;
+    }
+
+    @Override
+    public int startY() {
+        return startY;
+    }
+
+    @Override
+    public void setStartY(int y) {
+        startY = y;
     }
 
     @Override
@@ -77,18 +99,16 @@ public class RectangleSolution implements Solution {
     }
 
 //    @Override
-    public ArrayList<Point> setCells() {
-        ArrayList<Point> coveredCells = new ArrayList<>();
+    public void setCells() {
+        cells = new ArrayList<>();
 
-        for (int i = 0; i <= w; i++) {
-            for (int j = 0; j <= h; j++) {
+        for (int i = startX; i <= endX(); i++) {
+            for (int j = startY; j <= endY(); j++) {
                 if (entityCovers(i, j)) {
-                    coveredCells.add(new Point(i, j));
+                    cells.add(new Point(i, j));
                 }
             }
         }
-
-        return coveredCells;
     }
 
     private boolean entityCovers(int x, int y) {
@@ -103,6 +123,7 @@ public class RectangleSolution implements Solution {
         return false;
     }
 
+    /// The below transformation functions work only when startX and startY are 0.
     public void mirror(boolean mirrorX, boolean mirrorY) {
         for (int i = 0; i < entityCoordinates.length; i++) {
             int x1 = entityCoordinates[i][0];
@@ -144,7 +165,7 @@ public class RectangleSolution implements Solution {
         }
 
         // regenerate cells
-        this.cells = setCells();
+        setCells();
     }
 
     /// Clockwise
@@ -217,7 +238,7 @@ public class RectangleSolution implements Solution {
         }
 
         // recompute cells
-        this.cells = setCells();
+        setCells();
     }
 
     public RectangleSolution copy() {

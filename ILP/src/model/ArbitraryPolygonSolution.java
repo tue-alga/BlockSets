@@ -9,6 +9,8 @@ public class ArbitraryPolygonSolution implements Solution {
     public StatementEntityInstance instance;
     public int w;
     public int h;
+    public int startX = 0;
+    public int startY = 0;
     ArrayList<Integer> entityIds;
 //    public ArrayList<ArrayList<Point>> entityBoundaries;
     public ArrayList<ArrayList<Point>> entityCells;
@@ -35,7 +37,27 @@ public class ArbitraryPolygonSolution implements Solution {
         this.w = maxX;
         this.h = maxY;
     }
-    
+
+    @Override
+    public int startX() {
+        return startX;
+    }
+
+    @Override
+    public void setStartX(int x) {
+        startX = x;
+    }
+
+    @Override
+    public int startY() {
+        return startY;
+    }
+
+    @Override
+    public void setStartY(int y) {
+        startY = y;
+    }
+
     @Override
     public StatementEntityInstance getInstance() {
         return this.instance;

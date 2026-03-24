@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
@@ -17,7 +16,6 @@ import ilp.solvers.OrthoconvexSolver;
 import ilp.solvers.Solver;
 import io.SolutionWriter;
 import io.StatementEntityReader;
-import model.ArbitraryPolygonSolution;
 import io.StatsRecorder;
 import model.PositionedSolution;
 import model.Solution;
@@ -55,18 +53,16 @@ public class Orchestrator {
 
         while (!queue.isEmpty()) {
             StatementEntityInstance inst = queue.removeFirst();
+            long beforeSolve = System.nanoTime();
             Solution sol = solver.solve(inst, this.componentLayoutTimeLimit);
+            long afterSolve = System.nanoTime();
+            double layoutTimeS = (afterSolve - beforeSolve) / 1_000_000_000.0;
+            stats.totalLayoutTime += layoutTimeS;
+
             if (sol != null) {
-                // Check whether components do not have too many empty spots.
-                int numGaps = 0;
-                for (Point cell : sol.getCells()) {
-                    // No statement coordinates on this cell
-                    if (!sol.getStatementCells().stream().anyMatch(p -> p.x == cell.x && p.y == cell.y)) {
-                        numGaps++;
-                    }
-                }
-                System.out.println("#gaps: " + numGaps + "  #statements: " + sol.getInstance().numberOfStatements);
-                if (numGaps <= (polygonType == PolygonType.Rectangle ? sol.getInstance().numberOfStatements / 2 : sol.getInstance().numberOfStatements / 5)) {
+                int vacant = sol.vacantCells().size();
+                System.out.println("#vacant: " + vacant + "  #statements: " + sol.getInstance().numberOfStatements);
+                if (vacant <= (polygonType == PolygonType.Rectangle ? sol.getInstance().numberOfStatements / 2 : sol.getInstance().numberOfStatements / 5)) {
                     solutions.add(sol);
 
                     // Record shape stats for this solution
@@ -83,6 +79,9 @@ public class Orchestrator {
 
             // Too large or no optimal -> split
             List<StatementEntityInstance> parts;
+
+            // Record start time
+            long beforeSplit = System.nanoTime();
             if (rectEulerSplit) {
                 ClusterSplit splitter = new ClusterSplit(inst);
                 String os = System.getProperty("os.name").toLowerCase();
@@ -98,10 +97,15 @@ public class Orchestrator {
                         5);
             } else {
                 GreedySplit splitInst = new GreedySplit(inst);
-                parts = splitInst.findSplit(splitK, splitRatio, stats);
+                parts = splitInst.findSplit(splitK, splitRatio);
                 // Record deletions
                 deletedNodes.addAll(splitInst.deletedEntities);
             }
+            // Measure total runtime for this split
+            long afterSplit = System.nanoTime();
+            double splitTimeS = (afterSplit - beforeSplit) / 1_000_000_000.0;
+            stats.totalSplitTime += splitTimeS;
+
 
             // Enqueue parts
             queue.addAll(parts);
@@ -113,7 +117,7 @@ public class Orchestrator {
         return solutions;
     }
 
-    public PositionedSolution runBlockSets(StatementEntityInstance instance, PolygonType polygonType, Writer writer, StatsRecorder stats) {
+    public PositionedSolution runBlockSets(StatementEntityInstance instance, PolygonType polygonType, StatsRecorder stats) {
         List<ConstraintModule> constraints = null;
         ObjectiveModule objective = null;
         int solutionType = -1;
@@ -205,8 +209,6 @@ public class Orchestrator {
         try {
             List<Solution> sols;
             sols = solveWithSplits(solver, instance, false, stats, polygonType);
-            if (writer != null)
-                writer.write("Number of components: " + sols.size() + "\n");
 
             int totalNumberOfDuplicateEntities = 0;
             int numberOfDuplicatedEntities = 0;
@@ -222,18 +224,15 @@ public class Orchestrator {
                     totalNumberOfDuplicateEntities += occurences - 1;
                 }
             }
-            if (writer != null) {
-                writer.write("Total number of duplicate entities: " + totalNumberOfDuplicateEntities + "\n");
-                writer.write("Number of duplicated entities: " + numberOfDuplicatedEntities + "\n");
-            }
+
+            long beforeArrange = System.nanoTime();
             PositionedSolution finalLayout = SolutionPositioner.computeCompleteSolution((ArrayList<Solution>) sols, polygonType, componentArrangementTimeLimit);
+            long afterArrange = System.nanoTime();
+            double arrangeTimeS = (afterArrange - beforeArrange) / 1_000_000_000.0;
+            stats.totalArrangeTime += arrangeTimeS;
 
             stats.updateShapeStatsFinalLayout(finalLayout);
 
-            if (writer != null) {
-                writer.write("Width: " + finalLayout.width + "\n");
-                writer.write("Height: " + finalLayout.height + "\n");
-            }
             return finalLayout;
         } catch (Exception e) {
             e.printStackTrace();
@@ -309,7 +308,7 @@ public class Orchestrator {
             StatsRecorder stats = new StatsRecorder(instance, runParams);
 
             Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, componentLayoutTimeLimit, componentArrangementTimeLimit);
-            PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, null, stats);
+            PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, stats);
 
             // Write solution stats to file
             stats.appendToCsv(statsFile);

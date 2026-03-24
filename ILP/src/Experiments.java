@@ -22,7 +22,7 @@ public class Experiments {
 
         var uniqueID = System.currentTimeMillis();
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("log_" + uniqueID + ".txt"))) {
+        try {
             for (var file : inputFolderDir.listFiles()) {
                 var inputName = file.getName().split("\\.(?=[^\\.]+$)")[0];
                 for (var polygonType : new PolygonType[]{PolygonType.Orthoconvex, PolygonType.Nabla, PolygonType.Gamma, PolygonType.Rectangle}) {
@@ -31,15 +31,13 @@ public class Experiments {
                     if (outputFile.exists()) continue;
 
                     System.out.println(outputName);
-                    writer.write(outputName + "\n");
-                    writer.flush();
 
                     StatementEntityInstance instance = StatementEntityReader.readFromFile(file.getPath());
 
                     String[] runParams = {inputName, "BlockSets", polygonType.name()};
                     StatsRecorder stats = new StatsRecorder(instance, runParams);
-                    Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, 60, 60);
-                    PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, writer, stats);
+                    Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, 120, 120);
+                    PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, stats);
 
                     // Write solution stats to file
                     stats.appendToCsv(statsFile);

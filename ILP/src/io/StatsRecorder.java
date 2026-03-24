@@ -2,7 +2,6 @@ package io;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.awt.Point;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -30,10 +29,15 @@ public class StatsRecorder {
     public int maxMinComponentDiffSets = 0;
     public int maxMinComponentDiffElements = 0;
     public double totalSplitTime = 0; // in seconds
+    public double totalLayoutTime = 0; // in seconds
+    public double totalArrangeTime = 0; // in seconds
 
+    public int bboxWidth = 0;
+    public int bboxHeight = 0;
     public int totalBBoxSize = 0;
-    public int numUnusedCells = 0; // cells covered by a set but with no element
-    public int numEmptyCells = 0; // completely empty cells, i.e. no set and no element
+    public int numVacantCells = 0; // cells covered by a set but with no element
+    public int numBlankCells = 0; // cells with no set and no element
+    public int numBlankOrthoconvexHullCells = 0;
     public double sparsity = 0;
     public double averageNumSetVertices = 0;
     public double averageNumStraightSetSides = 0;
@@ -68,10 +72,15 @@ public class StatsRecorder {
             int[][] set = sol.entities[i];
 
             // Bounding box
-            int xStart = Integer.MAX_VALUE, xEnd = -1, yStart = -1, yEnd = sol.h;
-            for (int j = 0; j < set.length - 1; j++) {
+            int xStart = Integer.MAX_VALUE, xEnd = -1, yStart = -1, yEnd = -1;
+            for (int j = 0; j < set.length; j++) {
                 if (yStart == -1 && set[j][0] == 1) {
                     yStart = j;
+                }
+
+                if (j == set.length - 1) {
+                    yEnd = j;
+                    break;
                 }
 
                 if (yEnd == -1 && set[j][0] == 1 && set[j + 1][0] == 0) {
@@ -152,33 +161,32 @@ public class StatsRecorder {
         if (sol instanceof PolygonSolution) {
             updateSetStatsPolygons((PolygonSolution) sol);
         }
-        for (Point cell : sol.getCells()) {
-            // No statement coordinates on this cell
-            if (!sol.getStatementCells().stream().anyMatch(p -> p.x == cell.x && p.y == cell.y)) {
-                this.numUnusedCells++;
-            }
-        }
+        this.numVacantCells += sol.vacantCells().size();
     }
 
     public void updateShapeStatsFinalLayout(PositionedSolution sol) {
+        this.bboxWidth = sol.width + 1;
+        this.bboxHeight = sol.height + 1;
         this.totalBBoxSize = (sol.width + 1) * (sol.height + 1);
 
         // Collect the number of all cells covered by any component in the layout
-        int coveredCells = 0;
+        int usedCells = 0;
         for (Solution s : sol.solutions) {
-            coveredCells += s.getCells().size();
+            usedCells += s.usedCells().size();
         }
 
-        // Any cell in the bounding box that is not covered by any component counts as empty
-        this.numEmptyCells = this.totalBBoxSize - coveredCells;
+        this.numBlankOrthoconvexHullCells = sol.blankOrthoconvexHullCells().size();
 
-        // Individiual set stats only store totals so far, divide to get the average
+        // Any cell in the bounding box that is not used by any component counts as blank
+        this.numBlankCells = this.totalBBoxSize - usedCells;
+
+        // Individual set stats only store totals so far, divide to get the average
         this.averageNumSetVertices /= (this.numSets + this.numSetCopies);
         this.averageNumStraightSetSides /= (this.numSets + this.numSetCopies);
         this.averageSetSquareness /= (this.numSets + this.numSetCopies);
 
-        // Get the fraction of unused cells
-        this.sparsity = (double) this.numUnusedCells / this.totalBBoxSize;
+        // Get the fraction of vacant cells
+        this.sparsity = (double) this.numVacantCells / this.totalBBoxSize;
     }
 
     public void updateSplitComponentStats(ArrayList<StatementEntityInstance> instances) {
@@ -224,6 +232,10 @@ public class StatsRecorder {
         }
     }
 
+    public void updateRunningTimeStats() {
+
+    }
+
     // Get actual connected components (merge could have combined two or more disjoint components into one)
     private ArrayList<StatementEntityInstance> getDisjointSplitInstances(ArrayList<StatementEntityInstance> instances) {
         ArrayList<StatementEntityInstance> disjointInstances = new ArrayList<>();
@@ -245,7 +257,7 @@ public class StatsRecorder {
         System.out.println("Set copies: " + this.numSetCopies);
         System.out.println("Max set size difference: " + this.maxMinComponentDiffSets);
         System.out.println("Max element size difference: " + this.maxMinComponentDiffElements);
-        System.out.println("Unused grid cells: " + this.numUnusedCells);
+        System.out.println("Vacant cells: " + this.numVacantCells);
         System.out.println("Sparcity (%): " + this.sparsity * 100 + "%");
         System.out.println("Total split time: " + this.totalSplitTime + "s");
         System.out.println("-------------------------------------------");
@@ -254,7 +266,7 @@ public class StatsRecorder {
 
         System.out.println("----------------SHAPE STATS----------------");
         System.out.println("Bounding box (cells): " + this.totalBBoxSize);
-        System.out.println("Empty cells: " + this.numEmptyCells);
+        System.out.println("Blank cells: " + this.numBlankCells);
         System.out.println("Average set squareness (normalized range: 0 - 1): " + this.averageSetSquareness);
         System.out.println("Average set vertices: " + this.averageNumSetVertices);
         System.out.println("Average set straight sides: " + this.averageNumStraightSetSides);
@@ -275,8 +287,9 @@ public class StatsRecorder {
                         "Dataset,Split,Shape," +
                                 "Components,Duplicated sets,Set copies," +
                                 "Max set size difference,Max element size difference," +
-                                "Unused grid cells,Sparsity (%),Total split time (s)," +
-                                "Bounding box (cells),Empty cells," +
+                                "Vacant cells,Sparsity (%),Total split time (s),Total layout time (s),Total arrange time (s)," +
+                                "Bounding box width,Bounding box height," +
+                                "Bounding box (cells),Blank cells,Blank orthoconvex hull cells," +
                                 "Average set squareness,Average set vertices,Average set straight sides");
                 writer.newLine();
             }
@@ -291,11 +304,16 @@ public class StatsRecorder {
                             this.numSetCopies + "," +
                             this.maxMinComponentDiffSets + "," +
                             this.maxMinComponentDiffElements + "," +
-                            this.numUnusedCells + "," +
+                            this.numVacantCells + "," +
                             String.format("%.2f", this.sparsity * 100) + "," +
                             String.format("%.4f", this.totalSplitTime) + "," +
+                            String.format("%.4f", this.totalLayoutTime) + "," +
+                            String.format("%.4f", this.totalArrangeTime) + "," +
+                            this.bboxWidth + "," +
+                            this.bboxHeight + "," +
                             this.totalBBoxSize + "," +
-                            this.numEmptyCells + "," +
+                            this.numBlankCells + "," +
+                            this.numBlankOrthoconvexHullCells + "," +
                             String.format("%.4f", this.averageSetSquareness) + "," +
                             String.format("%.4f", this.averageNumSetVertices) + "," +
                             String.format("%.4f", this.averageNumStraightSetSides));

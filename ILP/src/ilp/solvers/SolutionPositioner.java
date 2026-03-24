@@ -331,6 +331,9 @@ public class SolutionPositioner {
             int x = offsets[s][0];
             int y = offsets[s][1];
 
+            components.get(s).setStartX(x);
+            components.get(s).setStartY(y);
+
             if (components.get(s) instanceof RectangleSolution rs) {
                 for (int[] entity : rs.entityCoordinates) {
                     entity[0] += x;
@@ -343,6 +346,7 @@ public class SolutionPositioner {
                     statement[0] += x;
                     statement[1] += y;
                 }
+                rs.setCells();
             } else if (components.get(s) instanceof PolygonSolution ps) {
                 for (int[][] entity : ps.entities) {
                     // Shift x coordinates
@@ -366,6 +370,7 @@ public class SolutionPositioner {
                     statement[0] += x;
                     statement[1] += y;
                 }
+                ps.setCells();
             }
         }
     }
