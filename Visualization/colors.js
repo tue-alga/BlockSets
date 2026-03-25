@@ -287,30 +287,6 @@ function applyAssignments(entitiesToColor, colors, assignment) {
     for (let ent = 0; ent < entitiesToColor.length; ent++) {
         const name = entitiesToColor[ent].headers[0];
         let color = colors[assignment[ent]];
-        console.log(name);
-        console.log(color);
-        if (name == "Basil Hallward (the painter) [Basil Hallward, Basil, the artist]") {
-            color = "rgb(73, 152, 148)";
-        } else if (name == "Lord Henry Wotton (Harry) [Lord Henry]") {
-            color = "rgb(225, 87, 89)";
-        } else if (name == "Sibyl Vane [Sibyl]") {
-            color = "rgb(89, 161, 79)";
-        } else if (name == "James Vane [James]") {
-            color = "rgb(157, 118, 96)";
-        } else if (name == "Dorian Gray [Dorian]") {
-            color = "rgb(242, 142, 43)";
-        } else if (name == "London") {
-            color = "rgb(176, 122, 161)";
-        } else if (name == "Basil’s studio [the silent studio, studio]") {
-            color = "rgb(140, 209, 125)";
-        } else if (name == "The attic [attic chamber]") {
-            color = "rgb(211, 114, 149)";
-        } else if (name == "Mayfair") {
-            color = "rgb(78, 121, 167)";
-        } else if (name == "The portrait [portrait]") {
-            color = "rgb(121, 112, 110)";
-        }
-
 
         if (groupedMap.has(name)) {
             groupedMap.get(name).forEach(e => (e.colors = [color]));
