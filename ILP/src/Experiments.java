@@ -25,7 +25,7 @@ public class Experiments {
         try {
             for (var file : inputFolderDir.listFiles()) {
                 var inputName = file.getName().split("\\.(?=[^\\.]+$)")[0];
-                for (var polygonType : new PolygonType[]{PolygonType.Orthoconvex, PolygonType.Nabla, PolygonType.Gamma, PolygonType.Rectangle}) {
+                for (var polygonType : new PolygonType[]{PolygonType.Arbitrary, PolygonType.Orthoconvex, PolygonType.Nabla, PolygonType.Gamma, PolygonType.Rectangle}) {
                     String outputName = inputName + "_" + polygonType.name();
                     var outputFile = new File(outputFolder + outputName + ".txt");
                     if (outputFile.exists()) continue;

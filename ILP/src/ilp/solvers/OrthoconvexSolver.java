@@ -52,13 +52,13 @@ public class OrthoconvexSolver implements Solver {
 
     @Override
     public Solution solve(StatementEntityInstance inst, double timeLimit, int dimensions) throws Exception, GRBException {
-        int maxCells = (dimensions + 1) * (dimensions + 1);
+        int maxCells = dimensions * dimensions;
         if (inst.numberOfStatements > maxCells) {
             System.out.println("Instance too large");
             return null;
         }
 
-        try (ModelContext ctx = new ModelContext(inst, dimensions, gridMin, maxSizeSum, wTopLeft, wMaxExtents,
+        try (ModelContext ctx = new ModelContext(inst, dimensions - 1, gridMin, maxSizeSum, wTopLeft, wMaxExtents,
                 solutionType)) {
             // Add constraints
             for (ConstraintModule c : constraints)
