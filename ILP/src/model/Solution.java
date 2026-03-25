@@ -24,8 +24,6 @@ public interface Solution {
     ArrayList<Integer> getEntityIds();
     ArrayList<Point> getStatementCells();
 
-//    ArrayList<Point> setCells();
-
     ArrayList<Point> getCells();
 
     String getStatement(int x, int y);

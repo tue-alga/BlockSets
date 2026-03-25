@@ -108,7 +108,6 @@ public class RectangleSolution implements Solution {
         return this.cells;
     }
 
-//    @Override
     public void setCells() {
         cells = new ArrayList<>();
 

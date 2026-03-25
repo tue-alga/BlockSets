@@ -71,8 +71,8 @@ public class SetEmbedder<T extends Comparable<T>> {
    * 
    * @return Assignments of graph nodes to set elements
    */
-  public Map<Point2D.Double, T> optimize(String resultPath) {
-    return this.optimize(0, null, false, resultPath);
+  public Map<Point2D.Double, T> optimize(double timeLimit, String resultPath) {
+    return this.optimize(timeLimit, 0, null, false, resultPath);
   }
 
   /**
@@ -81,8 +81,8 @@ public class SetEmbedder<T extends Comparable<T>> {
    * @param  mipGap Maximum gap for optimization
    * @return        Assignments of graph nodes to set elements
    */
-  public Map<Point2D.Double, T> optimize(double mipGap, String resultPath) {
-    return this.optimize(mipGap, null, false, resultPath);
+  public Map<Point2D.Double, T> optimize(double timeLimit, double mipGap, String resultPath) {
+    return this.optimize(timeLimit, mipGap, null, false, resultPath);
   }
 
   /**
@@ -91,8 +91,8 @@ public class SetEmbedder<T extends Comparable<T>> {
    * @param  setCenters Predefined set centers in the same order as the sets
    * @return            Assignments of graph nodes to set elements
    */
-  public Map<Point2D.Double, T> optimize(List<Point2D.Double> setCenters, String resultPath) {
-    return this.optimize(0, setCenters, false, resultPath);
+  public Map<Point2D.Double, T> optimize(double timeLimit, List<Point2D.Double> setCenters, String resultPath) {
+    return this.optimize(timeLimit, 0, setCenters, false, resultPath);
   }
 
   /**
@@ -102,9 +102,9 @@ public class SetEmbedder<T extends Comparable<T>> {
    * @param  setCenters Predefined set centers in the same order as the sets
    * @return            Assignments of graph nodes to set elements
    */
-  public Map<Point2D.Double, T> optimize(double mipGap,
+  public Map<Point2D.Double, T> optimize(double timeLimit, double mipGap,
       List<Point2D.Double> setCenters, String resultPath) {
-    return this.optimize(mipGap, setCenters, false, resultPath);
+    return this.optimize(timeLimit, mipGap, setCenters, false, resultPath);
   }
 
   /**
@@ -116,7 +116,7 @@ public class SetEmbedder<T extends Comparable<T>> {
    *                       further optimization
    * @return               Assignments of graph nodes to set elements
    */
-  public Map<Point2D.Double, T> optimize(double mipGap,
+  public Map<Point2D.Double, T> optimize(double timeLimit, double mipGap,
       List<Point2D.Double> setCenters, boolean subsequentRun, String resultPath) {
     if (!setCenters.isEmpty())
       assert setCenters.size() == sets.size();
@@ -173,12 +173,12 @@ public class SetEmbedder<T extends Comparable<T>> {
     Map<T, List<T>> elementsToOriginal = new HashMap<>();
 
     List<T> orig = null;
-    System.out.println("Elements With Sets");
+//    System.out.println("Elements With Sets");
     ElementWithSets<T> pred = null;
 
     int counter = 0;
     for (ElementWithSets<T> ews : a) {
-      System.out.println(ews);
+//      System.out.println(ews);
       if (!ews.equals(pred)) {
         if (pred != null) {
           elementsWithWeights.put(pred.element, counter);
@@ -222,9 +222,9 @@ public class SetEmbedder<T extends Comparable<T>> {
     }
 
     // report centers
-    for (int i = 0; i < centers.size(); i++) {
-      System.out.println("set " + i + " " + centers.get(i));
-    }
+//    for (int i = 0; i < centers.size(); i++) {
+//      System.out.println("set " + i + " " + centers.get(i));
+//    }
 
     // compute elementsWithWeights again, but this time keep centers alone
     elementsWithWeights = new HashMap<>();
@@ -260,10 +260,10 @@ public class SetEmbedder<T extends Comparable<T>> {
       elementsToOriginal.put(pred.element, orig);
     }
 
-    System.out.println("Elements With Weights");
-    for (Entry<T, Integer> eww : elementsWithWeights.entrySet()) {
-      System.out.println(eww.getKey() + ":" + eww.getValue());
-    }
+//    System.out.println("Elements With Weights");
+//    for (Entry<T, Integer> eww : elementsWithWeights.entrySet()) {
+//      System.out.println(eww.getKey() + ":" + eww.getValue());
+//    }
 
     // points associated with node ids
     Map<Point2D.Double, Integer> pointsToIDs = new HashMap<Point2D.Double, Integer>();
@@ -346,8 +346,7 @@ public class SetEmbedder<T extends Comparable<T>> {
 
       GRBEnv env = new GRBEnv();
       // Maximum time limit of one hour when minimizing boundary length
-      if (SetEmbedder.MINIMIZE_BOUNDARIES)
-        env.set(GRB.DoubleParam.TimeLimit, 3600);
+      env.set(GRB.DoubleParam.TimeLimit, timeLimit);
       env.set(GRB.DoubleParam.MIPGap, mipGap);
 
       GRBModel model = new GRBModel(env);
@@ -585,6 +584,15 @@ public class SetEmbedder<T extends Comparable<T>> {
       }
       // optimize
       model.optimize();
+
+      int status = model.get(GRB.IntAttr.Status);
+      int solCount = model.get(GRB.IntAttr.SolCount);
+      if (status == GRB.Status.INFEASIBLE ||
+              status == GRB.Status.INF_OR_UNBD ||
+              solCount == 0) {
+
+        return null;
+      }
       if (!subsequentRun)
         model.write(resultPath + "model.mst");
 

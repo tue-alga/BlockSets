@@ -12,11 +12,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.json.JSONArray;
@@ -120,8 +116,51 @@ public class SolutionWriter {
             String entityString = "Entity " + s.getInstance().entities.get(entity) + ": ";
             ArrayList<Point> entityCorners = new ArrayList<>();
 
+            var input = s.entityCells.get(i).stream()
+                    .sorted((cell1, cell2) -> {
+                        int cmp = Integer.compare(cell1.y, cell2.y);
+                        if (cmp != 0) return cmp;
+                        return Integer.compare(cell1.x, cell2.x);
+                    })
+                    .toList();
+
+            List<Point> result = new ArrayList<>();
+
+            Point start = null;
+            Point prev = null;
+
+            for (Point curr : input) {
+                if (start == null) {
+                    start = curr;
+                    prev = curr;
+                    continue;
+                }
+
+                boolean sameRow = curr.y == prev.y;
+                boolean consecutive = curr.x == prev.x + 1;
+
+                if (sameRow && consecutive) {
+                    // still in the same run
+                    prev = curr;
+                } else {
+                    // run ended → add start and end
+                    result.add(start);
+                    result.add(prev);
+
+                    // start new run
+                    start = curr;
+                    prev = curr;
+                }
+            }
+
+// handle last run
+            if (start != null) {
+                result.add(start);
+                result.add(prev);
+            }
+
             // Combine points into a string
-            String cells = s.entityCells.get(i).stream()
+            String cells = result.stream()
                     .map(p -> "(" + p.x + ", " + p.y + ")")
                     .collect(Collectors.joining(" - "));
 
@@ -190,7 +229,7 @@ public class SolutionWriter {
             } else if (solutions.get(0) instanceof PolygonSolution) {
                 writer.write("type: polygons\n");
             } else if (solutions.get(0) instanceof ArbitraryPolygonSolution) {
-                writer.write("type: arbitrary\n");
+                writer.write("type: polygons\n");
             }
             writer.write("w: " + w + "\n");
             writer.write("h: " + h + "\n");

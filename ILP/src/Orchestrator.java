@@ -210,21 +210,6 @@ public class Orchestrator {
             List<Solution> sols;
             sols = solveWithSplits(solver, instance, false, stats, polygonType);
 
-            int totalNumberOfDuplicateEntities = 0;
-            int numberOfDuplicatedEntities = 0;
-            for (int eId = 0; eId < instance.numberOfEntities; ++eId) {
-                int occurences = 0;
-                for (var sol : sols) {
-                    if (sol.getEntityIds().contains(eId)) {
-                        ++occurences;
-                    }
-                }
-                if (occurences > 1) {
-                    ++numberOfDuplicatedEntities;
-                    totalNumberOfDuplicateEntities += occurences - 1;
-                }
-            }
-
             long beforeArrange = System.nanoTime();
             PositionedSolution finalLayout = SolutionPositioner.computeCompleteSolution((ArrayList<Solution>) sols, polygonType, componentArrangementTimeLimit);
             long afterArrange = System.nanoTime();

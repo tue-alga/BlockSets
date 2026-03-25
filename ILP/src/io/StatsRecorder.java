@@ -1,18 +1,13 @@
 package io;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.awt.*;
+import java.util.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Locale;
 
-import model.PolygonSolution;
-import model.PositionedSolution;
-import model.RectangleSolution;
-import model.Solution;
-import model.StatementEntityInstance;
+import model.*;
 import split.IntersectionGraph;
 import split.SplitIntanceFactory;
 
@@ -22,6 +17,8 @@ public class StatsRecorder {
     public int numSets;
     public int numElements;
     public int numNonSingletonSets = 0;
+
+    public Set<Integer> singletons;
 
     public int numComponents = 0;
     public int numSetCopies = 0;
@@ -49,14 +46,20 @@ public class StatsRecorder {
         this.numSets = inst.numberOfEntities;
         this.numElements = inst.numberOfStatements;
 
-        for (int[] elementList : inst.entityIndToStatements.values()) {
-            if (elementList.length > 1)
+        singletons = new HashSet<>();
+        for (var entry : inst.entityIndToStatements.entrySet()) {
+            if (entry.getValue().length > 1)
                 numNonSingletonSets++;
+            else
+                singletons.add(entry.getKey());
         }
     }
 
     public void updateSetStatsRectangles(RectangleSolution sol) {
         for (int i = 0; i < sol.entityCoordinates.length; i++) {
+            int eId = sol.getEntityIds().get(i);
+            if (singletons.contains(eId)) continue; // skip singletons
+
             int[] coords = sol.entityCoordinates[i];
             int setWidth = coords[2] - coords[0] + 1;
             int setHeight = coords[3] - coords[1] + 1;
@@ -69,6 +72,9 @@ public class StatsRecorder {
 
     public void updateSetStatsPolygons(PolygonSolution sol) {
         for (int i = 0; i < sol.entities.length; i++) {
+            int eId = sol.getEntityIds().get(i);
+            if (singletons.contains(eId)) continue; // skip singletons
+
             int[][] set = sol.entities[i];
 
             // Bounding box
@@ -77,13 +83,7 @@ public class StatsRecorder {
                 if (yStart == -1 && set[j][0] == 1) {
                     yStart = j;
                 }
-
-                if (j == set.length - 1) {
-                    yEnd = j;
-                    break;
-                }
-
-                if (yEnd == -1 && set[j][0] == 1 && set[j + 1][0] == 0) {
+                if (set[j][0] == 1) {
                     yEnd = j;
                 }
             }
@@ -113,8 +113,6 @@ public class StatsRecorder {
             int numVertices = 4;
 
             for (int j = yStart; j < yEnd; j++) {
-                if (set[j][0] == 0 || set[j][1] == 0) continue;
-
                 if (set[j][1] != set[j + 1][1]) {
                     numVertices += 2;
                 }
@@ -159,12 +157,88 @@ public class StatsRecorder {
         }
     }
 
-    public void updateShapeStatsSingleComponent(Solution sol) {
-        if (sol instanceof RectangleSolution) {
-            updateSetStatsRectangles((RectangleSolution) sol);
+    boolean isHorizontalStraight(int y, int minX, int maxX, Set<Point> set) {
+        for (int x = minX; x <= maxX; x++) {
+            if (!set.contains(new Point(x, y))) return false;
         }
-        if (sol instanceof PolygonSolution) {
-            updateSetStatsPolygons((PolygonSolution) sol);
+        return true;
+    }
+
+    boolean isVerticalStraight(int x, int minY, int maxY, Set<Point> set) {
+        for (int y = minY; y <= maxY; y++) {
+            if (!set.contains(new Point(x, y))) return false;
+        }
+        return true;
+    }
+
+
+    public void updateSetStatsArbitraryPolygons(ArbitraryPolygonSolution sol) {
+        int entityI = 0;
+        for (var eCells : sol.entityCells) {
+            int eId = sol.getEntityIds().get(entityI);
+            if (singletons.contains(eId)) {
+                entityI++;
+                continue;
+            } // skip singletons
+
+            int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+
+            for (var cell : eCells) {
+                if (cell.x < minX) minX = cell.x;
+                if (cell.x > maxX) maxX = cell.x;
+                if (cell.y < minY) minY = cell.y;
+                if (cell.y > maxY) maxY = cell.y;
+            }
+
+            double setWidth = maxX - minX + 1;
+            double setHeight = maxY - minY + 1;
+
+            this.averageSetSquareness += (Math.min(setWidth, setHeight) / Math.max(setWidth, setHeight));
+
+            Set<Point> cellSet = new HashSet<>(eCells);
+            boolean bottomStraight = isHorizontalStraight(minY, minX, maxX, cellSet);
+            boolean topStraight    = isHorizontalStraight(maxY, minX, maxX, cellSet);
+            boolean leftStraight   = isVerticalStraight(minX, minY, maxY, cellSet);
+            boolean rightStraight  = isVerticalStraight(maxX, minY, maxY, cellSet);
+
+            if (bottomStraight) averageNumStraightSetSides++;
+            if (topStraight) averageNumStraightSetSides++;
+            if (leftStraight) averageNumStraightSetSides++;
+            if (rightStraight) averageNumStraightSetSides++;
+
+            int vertices = 0;
+
+            for (int x = minX; x <= maxX + 1; x++) {
+                for (int y = minY; y <= maxY + 1; y++) {
+
+                    int count = 0;
+
+                    if (cellSet.contains(new Point(x-1, y-1))) count++;
+                    if (cellSet.contains(new Point(x , y-1))) count++;
+                    if (cellSet.contains(new Point(x-1, y))) count++;
+                    if (cellSet.contains(new Point(x, y))) count++;
+
+                    if (count == 1 || count == 3) {
+                        vertices++;
+                    }
+                }
+            }
+
+            this.averageNumSetVertices += vertices;
+
+            entityI++;
+        }
+    }
+
+    public void updateShapeStatsSingleComponent(Solution sol) {
+        if (sol instanceof RectangleSolution rs) {
+            updateSetStatsRectangles(rs);
+        } else if (sol instanceof PolygonSolution ps) {
+            updateSetStatsPolygons(ps);
+        } else if (sol instanceof ArbitraryPolygonSolution aps) {
+            updateSetStatsArbitraryPolygons(aps);
+        } else {
+            System.out.println("Unknown solution type!");
         }
         this.numVacantCells += sol.vacantCells().size();
     }
@@ -186,9 +260,9 @@ public class StatsRecorder {
         this.numBlankCells = this.totalBBoxSize - usedCells;
 
         // Individual set stats only store totals so far, divide to get the average
-        this.averageNumSetVertices /= (this.numSets + this.numSetCopies);
-        this.averageNumStraightSetSides /= (this.numSets + this.numSetCopies);
-        this.averageSetSquareness /= (this.numSets + this.numSetCopies);
+        this.averageNumSetVertices /= (this.numNonSingletonSets + this.numSetCopies);
+        this.averageNumStraightSetSides /= (this.numNonSingletonSets + this.numSetCopies);
+        this.averageSetSquareness /= (this.numNonSingletonSets + this.numSetCopies);
 
         // Get the fraction of vacant cells
         this.sparsity = (double) this.numVacantCells / this.totalBBoxSize;

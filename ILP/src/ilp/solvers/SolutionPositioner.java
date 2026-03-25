@@ -11,10 +11,7 @@ import com.gurobi.gurobi.GRBModel;
 import com.gurobi.gurobi.GRBVar;
 
 import ilp.PolygonType;
-import model.PolygonSolution;
-import model.PositionedSolution;
-import model.RectangleSolution;
-import model.Solution;
+import model.*;
 
 public class SolutionPositioner {
     static final int GRID_WIDTH = 30;
@@ -372,6 +369,20 @@ public class SolutionPositioner {
                     statement[1] += y;
                 }
                 ps.setCells();
+            } else if (components.get(s) instanceof ArbitraryPolygonSolution aps) {
+                for (ArrayList<Point> entityCells : aps.entityCells) {
+                    // Shift cells
+                    for (var cell : entityCells) {
+                        cell.x += x;
+                        cell.y += y;
+                    }
+                }
+
+                for (Point statement : aps.statementCoordinates) {
+                    statement.x += x;
+                    statement.y += y;
+                }
+                aps.setCells();
             }
         }
     }

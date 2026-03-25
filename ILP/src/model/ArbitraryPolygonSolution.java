@@ -24,18 +24,21 @@ public class ArbitraryPolygonSolution implements Solution {
 //        this.entityBoundaries = entityBoundaries;
         this.entityCells = entityCells;
         this.statementCoordinates = sCoords;
-        this.cells = setCells();
 
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
 
-        for (Point p : cells) {
-            if (p.x > maxX) maxX = p.x;
-            if (p.y > maxY) maxY = p.y;
+        for (var eCells : this.entityCells) {
+            for (Point p : eCells) {
+                if (p.x > maxX) maxX = p.x;
+                if (p.y > maxY) maxY = p.y;
+            }
         }
 
         this.w = maxX;
         this.h = maxY;
+
+        setCells();
     }
 
     @Override
@@ -115,18 +118,16 @@ public class ArbitraryPolygonSolution implements Solution {
         return this.cells;
     }
 
-    public ArrayList<Point> setCells() {
-        ArrayList<Point> coveredCells = new ArrayList<>();
+    public void setCells() {
+        cells = new ArrayList<>();
 
-        for (int i = 0; i <= w; i++) {
-            for (int j = 0; j <= h; j++) {
+        for (int i = startX; i <= endX(); i++) {
+            for (int j = startY; j <= endY(); j++) {
                 if (entityCovers(i, j)) {
-                    coveredCells.add(new Point(i, j));
+                    cells.add(new Point(i, j));
                 }
             }
         }
-
-        return coveredCells;
     }
 
     private boolean entityCovers(int x, int y) {
@@ -167,8 +168,6 @@ public class ArbitraryPolygonSolution implements Solution {
             }
         }
 
-        this.cells = setCells();
-
         for (Point statementCoordinate : statementCoordinates) {
             int x = statementCoordinate.x;
             int y = statementCoordinate.y;
@@ -181,7 +180,7 @@ public class ArbitraryPolygonSolution implements Solution {
         }
 
         // Recompute cells after transformation
-        this.cells = setCells();
+        setCells();
     }
 
     // Clockwise 90 degree rotation
@@ -226,7 +225,7 @@ public class ArbitraryPolygonSolution implements Solution {
         this.h = oldW;
 
         // Recompute cells after transformation
-        this.cells = setCells();
+        setCells();
     }
 
 

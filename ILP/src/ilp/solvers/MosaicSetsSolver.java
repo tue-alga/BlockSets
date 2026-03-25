@@ -79,30 +79,42 @@ public class MosaicSetsSolver implements Solver {
 
         long startTime = System.currentTimeMillis(), endTimeFirst = 0,
                 endTimeSecond = 0;
-        Map<Point2D.Double, String> solution = ge.optimize(maxMIPgapInitIt, centers, resultPath);
+        Map<Point2D.Double, String> solution = ge.optimize(timeLimit, maxMIPgapInitIt, centers, resultPath);
+        if (solution == null) {
+            return null;
+        }
         endTimeFirst = System.currentTimeMillis();
         List<Point2D.Double> usedCenters = new ArrayList<>();
         for (int i = 1; i < iterations; i++) {
             usedCenters = getCenters(solution, ge.sets);
 
             // Use the second optimize with mean center positions
-            solution = ge.optimize(maxMIPgapSubseqIt, usedCenters, true, resultPath);
+            solution = ge.optimize(timeLimit, maxMIPgapSubseqIt, usedCenters, true, resultPath);
             endTimeSecond = System.currentTimeMillis();
         }
 
         int maxX = 0;
         int maxY = 0;
         for (var k : solution.keySet()) {
-            System.out.println(k.toString());
             if (k.getX() > maxX) maxX = (int) k.getX();
             if (k.getY() > maxY) maxY = (int) k.getY();
         }
 
         var statementCoordinates = new Point[inst.numberOfStatements];
+        HashMap<String, Point> statementToPoint = new HashMap<>();
         for (var entry : solution.entrySet()) {
-            int i = statementToStatementIndex.get(entry.getValue());
-            var p2d = entry.getKey();
-            statementCoordinates[i] = new Point((int) Math.round(p2d.x), (int) Math.round(p2d.y));
+            var str = entry.getValue();
+            var pt = entry.getKey();
+            statementToPoint.put(str, new Point((int) Math.round(pt.x), (int) Math.round(pt.y)));
+        }
+
+        // The code assumes that statementCoordinates are in the same order as in inst.statements.
+        var statementIndexToStatementCoordinatesIndex = new HashMap<Integer, Integer>();
+        int i = 0;
+        for (var entry : inst.statements.entrySet()) {
+            statementCoordinates[i] = statementToPoint.get(entry.getValue());
+            statementIndexToStatementCoordinatesIndex.put(entry.getKey(), i);
+            ++i;
         }
 
         var entityIds = new ArrayList<Integer>();
@@ -121,7 +133,7 @@ public class MosaicSetsSolver implements Solver {
             // Check where the single statement was placed.
             if (inst.entityIndToStatements.get(entityIndex).length == 1) {
                 var statement = inst.entityIndToStatements.get(entityIndex)[0];
-                cells.add(statementCoordinates[statement]);
+                cells.add(statementCoordinates[statementIndexToStatementCoordinatesIndex.get(statement)]);
             }
             entityCells.add(new ArrayList<>(cells));
         }
