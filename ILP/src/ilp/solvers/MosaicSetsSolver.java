@@ -88,7 +88,12 @@ public class MosaicSetsSolver implements Solver {
             usedCenters = getCenters(solution, ge.sets);
 
             // Use the second optimize with mean center positions
-            solution = ge.optimize(timeLimit, maxMIPgapSubseqIt, usedCenters, true, resultPath);
+            var newSolution = ge.optimize(timeLimit, maxMIPgapSubseqIt, usedCenters, true, resultPath);
+            if (newSolution != null) {
+                solution = newSolution;
+            } else {
+                break;
+            }
             endTimeSecond = System.currentTimeMillis();
         }
 
