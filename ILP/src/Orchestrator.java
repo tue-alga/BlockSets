@@ -28,7 +28,6 @@ public class Orchestrator {
     private final int splitK; // Maximum number of nodes to be deleted (usually 5)
     private final double splitRatio; // Coefficient that determines how wide is the range of acceptable components'
                                      // sizes produced from the split
-    private final int maxDimensions = 7;
     private final double componentLayoutTimeLimit;
     private final double componentArrangementTimeLimit;
 
@@ -54,7 +53,8 @@ public class Orchestrator {
         while (!queue.isEmpty()) {
             StatementEntityInstance inst = queue.removeFirst();
             long beforeSolve = System.nanoTime();
-            Solution sol = solver.solve(inst, this.componentLayoutTimeLimit);
+            int dimension = (int) (Math.ceil(Math.sqrt(inst.numberOfStatements)) + 1);
+            Solution sol = solver.solve(inst, this.componentLayoutTimeLimit, dimension);
             long afterSolve = System.nanoTime();
             double layoutTimeS = (afterSolve - beforeSolve) / 1_000_000_000.0;
             stats.totalLayoutTime += layoutTimeS;
@@ -201,9 +201,9 @@ public class Orchestrator {
 
         Solver solver;
         if (polygonType == PolygonType.Arbitrary) {
-            solver = new MosaicSetsSolver(maxDimensions - 1, 0.01, 0.01);
+            solver = new MosaicSetsSolver(0.01, 0.01);
         } else {
-            solver = new OrthoconvexSolver(maxDimensions - 1, constraints, objective, solutionType);
+            solver = new OrthoconvexSolver(constraints, objective, solutionType);
         }
 
         try {

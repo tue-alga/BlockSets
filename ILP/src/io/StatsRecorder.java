@@ -88,6 +88,11 @@ public class StatsRecorder {
                 }
             }
 
+            if (yStart == -1) {
+                System.out.println("Found entity in component without any associated statements!");
+                continue;
+            }
+
             for (int j = yStart; j <= yEnd; j++) {
                 if (xStart > set[j][1]) {
                     xStart = set[j][1];

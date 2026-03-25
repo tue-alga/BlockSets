@@ -17,7 +17,6 @@ import java.util.*;
 import java.util.List;
 
 public class MosaicSetsSolver implements Solver {
-    private final int dimensions;
     private final double maxMIPgapInitIt;
     private final double maxMIPgapSubseqIt;
     private final String resultPath = "MosaicSets_run_data";
@@ -29,15 +28,14 @@ public class MosaicSetsSolver implements Solver {
     // of gravity
     boolean projects_centered = true;
 
-    public MosaicSetsSolver(int dimensions, double maxMIPgapInitIt, double maxMIPgapSubseqIt) {
-        this.dimensions = dimensions;
+    public MosaicSetsSolver(double maxMIPgapInitIt, double maxMIPgapSubseqIt) {
         this.maxMIPgapSubseqIt = maxMIPgapSubseqIt;
         this.maxMIPgapInitIt = maxMIPgapInitIt;
     }
 
     /// Uses the eccentricity-based compactness measure
     @Override
-    public Solution solve(StatementEntityInstance inst, double timeLimit) throws Exception, GRBException {
+    public Solution solve(StatementEntityInstance inst, double timeLimit, int dimensions) throws Exception, GRBException {
         // todo: check if grid dimensions are consistent
         Grid grid = new Grid(dimensions, dimensions, 1, 0.0, 0.0, Grid.TYPE_SQUARE);
 

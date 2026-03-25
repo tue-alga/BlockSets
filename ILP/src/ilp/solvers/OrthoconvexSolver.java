@@ -12,8 +12,6 @@ import model.Solution;
 import model.StatementEntityInstance;
 
 public class OrthoconvexSolver implements Solver {
-
-    private final int dimensions;
     private final int gridMin = 0;
     private final int maxSizeSum = 8;
     private final double wTopLeft = 0.5;
@@ -27,8 +25,7 @@ public class OrthoconvexSolver implements Solver {
 
     // Constructor with default constraints and objective (produces rectangle
     // solutions)
-    public OrthoconvexSolver(int dimensions, int solutionType) {
-        this.dimensions = dimensions;
+    public OrthoconvexSolver(int solutionType) {
         this.constraints = List.of(
                 new C00NonNegativity(),
                 new C01UpperBound(),
@@ -46,16 +43,15 @@ public class OrthoconvexSolver implements Solver {
 
     // Constructor that allows you to define your own list of constraints and
     // objective function
-    public OrthoconvexSolver(int dimensions, List<ConstraintModule> constraints, ObjectiveModule objective,
+    public OrthoconvexSolver(List<ConstraintModule> constraints, ObjectiveModule objective,
                              int solutionType) {
-        this.dimensions = dimensions;
         this.constraints = constraints;
         this.objective = objective;
         this.solutionType = solutionType;
     }
 
     @Override
-    public Solution solve(StatementEntityInstance inst, double timeLimit) throws Exception, GRBException {
+    public Solution solve(StatementEntityInstance inst, double timeLimit, int dimensions) throws Exception, GRBException {
         int maxCells = (dimensions + 1) * (dimensions + 1);
         if (inst.numberOfStatements > maxCells) {
             System.out.println("Instance too large");
