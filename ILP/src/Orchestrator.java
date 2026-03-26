@@ -209,6 +209,7 @@ public class Orchestrator {
         try {
             List<Solution> sols;
             sols = solveWithSplits(solver, instance, false, stats, polygonType);
+            sols.removeIf(solution -> solution.getEntityIds().isEmpty());
 
             long beforeArrange = System.nanoTime();
             PositionedSolution finalLayout = SolutionPositioner.computeCompleteSolution((ArrayList<Solution>) sols, polygonType, componentArrangementTimeLimit);
