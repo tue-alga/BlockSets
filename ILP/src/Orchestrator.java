@@ -117,7 +117,8 @@ public class Orchestrator {
         return solutions;
     }
 
-    public PositionedSolution runBlockSets(StatementEntityInstance instance, PolygonType polygonType, StatsRecorder stats) {
+    public PositionedSolution runBlockSets(StatementEntityInstance instance, PolygonType polygonType,
+                                           StatsRecorder stats, boolean useRectEulerSplit) {
         List<ConstraintModule> constraints = null;
         ObjectiveModule objective = null;
         int solutionType = -1;
@@ -208,7 +209,7 @@ public class Orchestrator {
 
         try {
             List<Solution> sols;
-            sols = solveWithSplits(solver, instance, false, stats, polygonType);
+            sols = solveWithSplits(solver, instance, useRectEulerSplit, stats, polygonType);
             sols.removeIf(solution -> solution.getEntityIds().isEmpty());
 
             long beforeArrange = System.nanoTime();
@@ -294,7 +295,7 @@ public class Orchestrator {
             StatsRecorder stats = new StatsRecorder(instance, runParams);
 
             Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, componentLayoutTimeLimit, componentArrangementTimeLimit);
-            PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, stats);
+            PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, stats, false);
 
             // Write solution stats to file
             stats.appendToCsv(statsFile);

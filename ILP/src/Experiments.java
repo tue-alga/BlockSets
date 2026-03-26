@@ -15,6 +15,7 @@ public class Experiments {
         String inputFolder = "experiment_data/";
         String outputFolder = "experiment_solutions/";
         var statsFile = new File("experiment_statistics.csv");
+        boolean useRectEulerSplit = true;
 
         var inputFolderDir = new File(inputFolder);
         var outputFolderDir = new File(outputFolder);
@@ -34,10 +35,10 @@ public class Experiments {
 
                     StatementEntityInstance instance = StatementEntityReader.readFromFile(file.getPath());
 
-                    String[] runParams = {inputName, "BlockSets", polygonType.name()};
+                    String[] runParams = {inputName, useRectEulerSplit ? "RectEuler" : "BlockSets", polygonType.name()};
                     StatsRecorder stats = new StatsRecorder(instance, runParams);
                     Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, 120, 120);
-                    PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, stats);
+                    PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, stats, useRectEulerSplit);
 
                     // Write solution stats to file
                     stats.appendToCsv(statsFile);
