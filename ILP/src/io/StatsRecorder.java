@@ -64,6 +64,11 @@ public class StatsRecorder {
             int setWidth = coords[2] - coords[0] + 1;
             int setHeight = coords[3] - coords[1] + 1;
 
+            if (setWidth <= 0 || setHeight <= 0) {
+                System.out.println("Invalid rectangle");
+                continue;
+            }
+
             this.averageSetSquareness += (Math.min(setWidth, setHeight) / Math.max(setWidth, setHeight));
             this.averageNumStraightSetSides += 4;
             this.averageNumSetVertices += 4;

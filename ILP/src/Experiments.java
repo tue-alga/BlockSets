@@ -30,7 +30,7 @@ public class Experiments {
                     var outputFile = new File(outputFolder + outputName + ".txt");
                     if (outputFile.exists()) continue;
 
-                    System.out.println(outputName);
+                    System.out.println("==== " + outputName + " ====");
 
                     StatementEntityInstance instance = StatementEntityReader.readFromFile(file.getPath());
 
