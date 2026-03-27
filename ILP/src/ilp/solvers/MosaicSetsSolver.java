@@ -2,7 +2,9 @@ package ilp.solvers;
 
 import com.gurobi.gurobi.GRBException;
 import ilp.solvers.mosaicsets.Grid;
+import ilp.solvers.mosaicsets.GridCanvas;
 import ilp.solvers.mosaicsets.SetEmbedder;
+import ilp.solvers.mosaicsets.VertexColoring;
 import io.StatsRecorder;
 import model.ArbitraryPolygonSolution;
 import model.Solution;
@@ -19,24 +21,33 @@ import java.util.List;
 public class MosaicSetsSolver implements Solver {
     private final double maxMIPgapInitIt;
     private final double maxMIPgapSubseqIt;
-    private final String resultPath = "MosaicSets_run_data";
+    private final String resultPath = "MosaicSets_run_data_";
+    private final boolean renderMosaicSetsSvgs;
+    int gridSize = 100;
+
+    boolean drawGrid = false;
+    boolean drawOutline = true;
+
+    boolean minPerimeter = false;
 
     /// The number of ILP iterations (for the eccentricity-based compactness measure)
-    private final int iterations = 5;
+    private final int iterations = minPerimeter ? 1 : 5;
 
     // Do not sample the project on the k-gon. Instead place them in the center
     // of gravity
     boolean projects_centered = true;
 
-    public MosaicSetsSolver(double maxMIPgapInitIt, double maxMIPgapSubseqIt) {
+    public MosaicSetsSolver(double maxMIPgapInitIt, double maxMIPgapSubseqIt, boolean renderMosaicSetsSvgs) {
         this.maxMIPgapSubseqIt = maxMIPgapSubseqIt;
         this.maxMIPgapInitIt = maxMIPgapInitIt;
+        this.renderMosaicSetsSvgs = renderMosaicSetsSvgs;
     }
 
     /// Uses the eccentricity-based compactness measure
     @Override
     public Solution solve(StatementEntityInstance inst, double timeLimit, int dimensions) throws Exception, GRBException {
-        Grid grid = new Grid(dimensions, dimensions, 1, 0.0, 0.0, Grid.TYPE_SQUARE);
+        SetEmbedder.MINIMIZE_BOUNDARIES = minPerimeter;
+        Grid grid = new Grid(dimensions, dimensions, gridSize, 0.0, 0.0, Grid.TYPE_SQUARE);
 
         List<Set<String>> basemap = new ArrayList<>();
         var allStatements = new HashSet<String>();
@@ -109,16 +120,16 @@ public class MosaicSetsSolver implements Solver {
         for (var entry : solution.entrySet()) {
             var str = entry.getValue();
             var pt = entry.getKey();
-            statementToPoint.put(str, new Point((int) Math.round(pt.x), (int) Math.round(pt.y)));
+            statementToPoint.put(str, new Point((int) Math.round(pt.x / gridSize), (int) Math.round(pt.y / gridSize)));
         }
 
         // The code assumes that statementCoordinates are in the same order as in inst.statements.
         var statementIndexToStatementCoordinatesIndex = new HashMap<Integer, Integer>();
-        int i = 0;
+        int scI = 0;
         for (var entry : inst.statements.entrySet()) {
-            statementCoordinates[i] = statementToPoint.get(entry.getValue());
-            statementIndexToStatementCoordinatesIndex.put(entry.getKey(), i);
-            ++i;
+            statementCoordinates[scI] = statementToPoint.get(entry.getValue());
+            statementIndexToStatementCoordinatesIndex.put(entry.getKey(), scI);
+            ++scI;
         }
 
         var entityIds = new ArrayList<Integer>();
@@ -130,8 +141,8 @@ public class MosaicSetsSolver implements Solver {
             Set<Point> cells = new HashSet<>();
 
             for (var v : ge.setsToSelectedArcs.get(k)) {
-                cells.add(new Point((int) Math.round(v.x1), (int) Math.round(v.y1)));
-                cells.add(new Point((int) Math.round(v.x2), (int) Math.round(v.y2)));
+                cells.add(new Point((int) Math.round(v.x1 / gridSize), (int) Math.round(v.y1 / gridSize)));
+                cells.add(new Point((int) Math.round(v.x2 / gridSize), (int) Math.round(v.y2 / gridSize)));
             }
             // If the entity is a singleton, then it will have no arcs.
             // Check where the single statement was placed.
@@ -140,6 +151,52 @@ public class MosaicSetsSolver implements Solver {
                 cells.add(statementCoordinates[statementIndexToStatementCoordinatesIndex.get(statement)]);
             }
             entityCells.add(new ArrayList<>(cells));
+        }
+
+        if (renderMosaicSetsSvgs) {
+            GridCanvas<String> gc = new GridCanvas<>(grid);
+
+            Color borderColor = Color.white;
+            int borderSize = 5;
+            int maxFontSize = 20;
+            Color fontColor = Color.decode("#353535");
+
+            var basemapColor = Arrays.asList("#eeeeee");
+            var overlayColor = Arrays.asList(
+                    "#4E79A7", "#E15759", "#59A14F", "#D37295", "#F28E2B",
+                    "#9D7660", "#499894", "#79706E", "#B07AA1", "#B6992D",
+                    "#d9eaf5", "#f2d5b9", "#d1eccb", "#f9ebc0", "#d4cee1",
+                    "#ffd7d6", "#BAB0AC", "#FABFD2", "#D4A6C8", "#D7B5A6"
+            );
+
+            // Running the vertex coloring takes too long so skip that for now
+//            VertexColoring<String> vc = new VertexColoring<>(overlays, solution,
+//                    grid.graph, Grid.TYPE_SQUARE);
+//            vc.colorGraph();
+//            vc.numOfColors = 25;
+//            vc.solveColoring(0);
+
+            // define colors for sets
+            Color[] instituteFillColors = new Color[basemap.size()];
+            Color[] projectArcColors = new Color[overlays.size()];
+            int[] arcOrder = new int[overlays.size()];
+            for (int i = 0; i < basemap.size(); i++) {
+                Color c = Color.decode(basemapColor.get(i));
+                instituteFillColors[i] = c;
+            }
+            for (int i = 0; i < overlays.size(); i++) {
+                projectArcColors[i] = Color.decode(overlayColor.get(i));
+            }
+            for (int i = 0; i < overlays.size(); i++) {
+//                arcOrder[i] = vc.getColor(i);
+                arcOrder[i] = i;
+            }
+            
+            gc.addSolution(basemap, solution, ge.setsToSelectedArcs, centers,
+                    usedCenters, instituteFillColors, projectArcColors, drawGrid,
+                    drawOutline, false, arcOrder, borderColor, borderSize, true,
+                    maxFontSize, fontColor, false, false);
+            gc.export(resultPath + "gridset.svg");
         }
 
         return new ArbitraryPolygonSolution(inst, entityIds, entityCells, statementCoordinates);

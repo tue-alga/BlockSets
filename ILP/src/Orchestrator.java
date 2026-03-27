@@ -202,7 +202,7 @@ public class Orchestrator {
 
         Solver solver;
         if (polygonType == PolygonType.Arbitrary) {
-            solver = new MosaicSetsSolver(0.01, 0.01);
+            solver = new MosaicSetsSolver(0, 0, false);
         } else {
             solver = new OrthoconvexSolver(constraints, objective, solutionType);
         }

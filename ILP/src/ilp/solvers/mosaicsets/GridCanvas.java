@@ -312,19 +312,19 @@ public class GridCanvas<T> extends Canvas {
    * 
    * @param path filepath of the output
    */
-//  public void export(String path) {
-//    SVGExport exp = new SVGExport();
-//    Graphics2D graphic;
-//
-//    graphic = exp.createContext();
-//    this.paint(graphic);
-//    try {
-//      exp.writeToFile(path);
-//    } catch (TransformerException e) {
-//      e.printStackTrace();
-//    }
-//
-//  }
+  public void export(String path) {
+    SVGExport exp = new SVGExport();
+    Graphics2D graphic;
+
+    graphic = exp.createContext();
+    this.paint(graphic);
+    try {
+      exp.writeToFile(path);
+    } catch (TransformerException e) {
+      e.printStackTrace();
+    }
+
+  }
 
   /**
    * Function to draw the boundary style.
