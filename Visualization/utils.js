@@ -188,25 +188,30 @@ function stackEntity(nonPlacedEntities) {
             return a.count - b.count;
         }
 
-        // If counts are equal, sort by number of intervals (decreasing)
+        // If counts are equal, sort by size (decreasing)
+        const aCells = a.entity.cells.size;
+        const bCells = b.entity.cells.size;
+        if (aCells !== bCells) {
+            return bCells - aCells;
+        }
+
+        // If size is equal, sort by number of intervals (decreasing)
         const aIntervals = a.entity.intervals.top.length + a.entity.intervals.bottom.length + a.entity.intervals.left.length + a.entity.intervals.right.length;
         const bIntervals = b.entity.intervals.top.length + b.entity.intervals.bottom.length + b.entity.intervals.left.length + b.entity.intervals.right.length;
         if (aIntervals !== bIntervals) {
             return bIntervals - aIntervals;
         }
-
-        // If intervals also equal, sort by size (decreasing)
-        const aCells = a.entity.cells.size;
-        const bCells = b.entity.cells.size;
-        return bCells - aCells;
     });
 
     // Remove and return chosen entity
     nonPlacedEntities.splice(nonPlacedEntities.indexOf(counts[0].entity), 1);
     if (counts[0].count > 0) {
-        for (const side in counts[0].entity.intervals) {
-            for (const interval of counts[0].entity.intervals[side]) {
-                if (intervalIsCovered(interval, nonPlacedEntities)) console.log(interval);
+        for (const countsEntity of counts) {
+            console.log(countsEntity.entity.headers[0]);
+            for (const side in countsEntity.entity.intervals) {
+                for (const interval of countsEntity.entity.intervals[side]) {
+                    if (intervalIsCovered(interval, nonPlacedEntities)) console.log(interval);
+                }
             }
         }
     }
@@ -247,475 +252,88 @@ function intervalIsCovered(interval, remainingEntities) {
 }
 
 function singleCellIntervalIsCovered(interval, remainingEntities) {
+    const isVertical = interval.side === "top" || interval.side === "bottom";
+    const dir = (interval.side === "top" || interval.side === "left") ? -1 : 1;
+
+    const get = (p, axis) => axis === "a" ? (isVertical ? p.x : p.y) : (isVertical ? p.y : p.x);
+
+    const has = (cells, a, b) =>
+        [...cells].some(p => get(p, "a") === a && get(p, "b") === b);
+
+    const check = (entity, offset) => {
+        const a = interval.start + offset;
+        const b = interval.otherCoord;
+
+        const adjacent = has(entity.cells, a, b);
+        const diagonal = has(entity.cells, a, b + dir);
+        const base = has(entity.cells, interval.start, b) &&
+            has(entity.cells, interval.start, b + dir);
+
+        const blocked = has(interval.entity.cells, a, b + dir);
+
+        if (base && adjacent) {
+            if (diagonal) {
+                return true;
+            }
+            if (blocked) return false;
+            let willBeExpanded = false;
+            for (const entity of remainingEntities) {
+                const entityExpandsCorner = has(entity.cells, interval.start, b) && !has(entity.cells, a, b) && !has(entity.cells, interval.start, b + dir);
+                if (entityExpandsCorner) {
+                    willBeExpanded = true;
+                    break;
+                }
+            }
+            return !willBeExpanded;
+        }
+
+        return ((adjacent && !blocked) || (adjacent && diagonal)) && base;
+    };
+
     let startCovered = false;
     let endCovered = false;
 
     for (const entity of remainingEntities) {
-        if (interval.side == "top") {
-            if ((([...entity.cells].some(point =>
-                point.x == interval.start - 1 &&
-                point.y == interval.otherCoord
-            ) 
-            && ![...interval.entity.cells].some(point =>
-                point.x == interval.start - 1 &&
-                point.y == interval.otherCoord - 1
-            )) || ([...entity.cells].some(point =>
-                point.x == interval.start - 1 &&
-                point.y == interval.otherCoord
-            ) 
-            && [...entity.cells].some(point =>
-                point.x == interval.start - 1 &&
-                point.y == interval.otherCoord - 1
-            )))
-            && ([...entity.cells].some(point =>
-                point.x == interval.start &&
-                point.y == interval.otherCoord
-            ) && [...entity.cells].some(point =>
-                point.x == interval.start &&
-                point.y == interval.otherCoord - 1
-            ))) {
-                startCovered = true;
-            }
+        if (check(entity, -1)) startCovered = true;
+        if (check(entity, +1)) endCovered = true;
 
-            if ((([...entity.cells].some(point =>
-                point.x == interval.start + 1 &&
-                point.y == interval.otherCoord
-            ) 
-            && ![...interval.entity.cells].some(point =>
-                point.x == interval.start + 1 &&
-                point.y == interval.otherCoord - 1
-            )) || ([...entity.cells].some(point =>
-                point.x == interval.start + 1 &&
-                point.y == interval.otherCoord
-            ) 
-            && [...entity.cells].some(point =>
-                point.x == interval.start + 1 &&
-                point.y == interval.otherCoord - 1
-            )))
-            && ([...entity.cells].some(point =>
-                point.x == interval.start &&
-                point.y == interval.otherCoord
-            ) && [...entity.cells].some(point =>
-                point.x == interval.start &&
-                point.y == interval.otherCoord - 1
-            ))) {
-                endCovered = true;
-            }
-        }
-
-        if (interval.side == "bottom") {
-            if ((([...entity.cells].some(point =>
-                point.x == interval.start - 1 &&
-                point.y == interval.otherCoord
-            ) 
-            && ![...interval.entity.cells].some(point =>
-                point.x == interval.start - 1 &&
-                point.y == interval.otherCoord + 1
-            )) || ([...entity.cells].some(point =>
-                point.x == interval.start - 1 &&
-                point.y == interval.otherCoord
-            ) 
-            && [...entity.cells].some(point =>
-                point.x == interval.start - 1 &&
-                point.y == interval.otherCoord + 1
-            )))
-            && ([...entity.cells].some(point =>
-                point.x == interval.start &&
-                point.y == interval.otherCoord
-            ) && [...entity.cells].some(point =>
-                point.x == interval.start &&
-                point.y == interval.otherCoord + 1
-            ))) {
-                startCovered = true;
-            }
-
-            if ((([...entity.cells].some(point =>
-                point.x == interval.start + 1 &&
-                point.y == interval.otherCoord
-            ) 
-            && ![...interval.entity.cells].some(point =>
-                point.x == interval.start + 1 &&
-                point.y == interval.otherCoord + 1
-            )) || ([...entity.cells].some(point =>
-                point.x == interval.start + 1 &&
-                point.y == interval.otherCoord
-            ) 
-            && [...entity.cells].some(point =>
-                point.x == interval.start + 1 &&
-                point.y == interval.otherCoord + 1
-            )))
-            && ([...entity.cells].some(point =>
-                point.x == interval.start &&
-                point.y == interval.otherCoord
-            ) && [...entity.cells].some(point =>
-                point.x == interval.start &&
-                point.y == interval.otherCoord + 1
-            ))) {
-                endCovered = true;
-            }
-        }
-
-        if (interval.side == "left") {
-            if ((([...entity.cells].some(point =>
-                point.y == interval.start - 1 &&
-                point.x == interval.otherCoord
-            ) 
-            && ![...interval.entity.cells].some(point =>
-                point.y == interval.start - 1 &&
-                point.x == interval.otherCoord - 1
-            )) || ([...entity.cells].some(point =>
-                point.y == interval.start - 1 &&
-                point.x == interval.otherCoord
-            )
-            && [...entity.cells].some(point =>
-                point.y == interval.start - 1 &&
-                point.x == interval.otherCoord - 1
-            )))
-            && ([...entity.cells].some(point =>
-                point.y == interval.start &&
-                point.x == interval.otherCoord
-            ) && [...entity.cells].some(point =>
-                point.y == interval.start &&
-                point.x == interval.otherCoord - 1
-            ))) {
-                startCovered = true;
-            }
-
-            if ((([...entity.cells].some(point =>
-                point.y == interval.start + 1 &&
-                point.x == interval.otherCoord
-            ) 
-            && ![...interval.entity.cells].some(point =>
-                point.y == interval.start + 1 &&
-                point.x == interval.otherCoord - 1
-            )) || ([...entity.cells].some(point =>
-                point.y == interval.start + 1 &&
-                point.x == interval.otherCoord
-            )
-            && [...entity.cells].some(point =>
-                point.y == interval.start + 1 &&
-                point.x == interval.otherCoord - 1
-            )))
-            && ([...entity.cells].some(point =>
-                point.y == interval.start &&
-                point.x == interval.otherCoord
-            ) && [...entity.cells].some(point =>
-                point.y == interval.start &&
-                point.x == interval.otherCoord - 1
-            ))) {
-                endCovered = true;
-            }
-        }
-
-        if (interval.side == "right") {
-            if ((([...entity.cells].some(point =>
-                point.y == interval.start - 1 &&
-                point.x == interval.otherCoord
-            ) 
-            && ![...interval.entity.cells].some(point =>
-                point.y == interval.start - 1 &&
-                point.x == interval.otherCoord + 1
-            )) || ([...entity.cells].some(point =>
-                point.y == interval.start - 1 &&
-                point.x == interval.otherCoord
-            ) 
-            && [...entity.cells].some(point =>
-                point.y == interval.start - 1 &&
-                point.x == interval.otherCoord + 1
-            )))
-            && ([...entity.cells].some(point =>
-                point.y == interval.start &&
-                point.x == interval.otherCoord
-            ) && [...entity.cells].some(point =>
-                point.y == interval.start &&
-                point.x == interval.otherCoord + 1
-            ))) {
-                startCovered = true;
-            }
-
-            if ((([...entity.cells].some(point =>
-                point.y == interval.start + 1 &&
-                point.x == interval.otherCoord
-            ) 
-            && ![...interval.entity.cells].some(point =>
-                point.y == interval.start + 1 &&
-                point.x == interval.otherCoord + 1
-            )) || ([...entity.cells].some(point =>
-                point.y == interval.start + 1 &&
-                point.x == interval.otherCoord
-            ) 
-            && [...entity.cells].some(point =>
-                point.y == interval.start + 1 &&
-                point.x == interval.otherCoord + 1
-            )))
-            && ([...entity.cells].some(point =>
-                point.y == interval.start &&
-                point.x == interval.otherCoord
-            ) && [...entity.cells].some(point =>
-                point.y == interval.start &&
-                point.x == interval.otherCoord + 1
-            ))) {
-                endCovered = true;
-            }
-        }
+        if (startCovered && endCovered) return true;
     }
 
-    return startCovered && endCovered;
+    return false;
 }
 
 // Check if the i-th cell of this interval is covered 
 function intervalPartOverlaps(interval, i, entity) {
-    if (interval.side == "top") {
-        if (i == 0) {
-            return (([...entity.cells].some(point =>    // Case 2
-                point.x == interval.start + i - 1 &&
-                point.y == interval.otherCoord
-            )
-                && ![...interval.entity.cells].some(point =>
-                    point.x == interval.start + i - 1 &&
-                    point.y == interval.otherCoord - 1
-                )
-            ) || ([...entity.cells].some(point =>   // Case 1
-                point.x == interval.start + i - 1 &&
-                point.y == interval.otherCoord
-            )
-                && [...entity.cells].some(point =>
-                    point.x == interval.start + i - 1 &&
-                    point.y == interval.otherCoord - 1
-                )
-            )) // Same as internal
-                && ([...entity.cells].some(point =>
-                    point.x == interval.start + i &&
-                    point.y == interval.otherCoord
-                ) && [...entity.cells].some(point =>
-                    point.x == interval.start + i &&
-                    point.y == interval.otherCoord - 1
-                ));
-        }
-        else if (i == interval.end - interval.start) {
-            return (([...entity.cells].some(point =>    // Case 2
-                point.x == interval.start + i + 1 &&
-                point.y == interval.otherCoord
-            )
-                && ![...interval.entity.cells].some(point =>
-                    point.x == interval.start + i + 1 &&
-                    point.y == interval.otherCoord - 1
-                )
-            ) || ([...entity.cells].some(point =>   // Case 1
-                point.x == interval.start + i + 1 &&
-                point.y == interval.otherCoord
-            )
-                && [...entity.cells].some(point =>
-                    point.x == interval.start + i + 1 &&
-                    point.y == interval.otherCoord - 1
-                )
-            ))  // Same as internal
-                && ([...entity.cells].some(point =>
-                    point.x == interval.start + i &&
-                    point.y == interval.otherCoord
-                ) && [...entity.cells].some(point =>
-                    point.x == interval.start + i &&
-                    point.y == interval.otherCoord - 1
-                ));
-        }
-        // Internal
-        return [...entity.cells].some(point =>
-            point.x == interval.start + i &&
-            point.y == interval.otherCoord
-        ) && [...entity.cells].some(point =>
-            point.x == interval.start + i &&
-            point.y == interval.otherCoord - 1
-        );
+    const isVertical = interval.side === "top" || interval.side === "bottom";
+    const dir = (interval.side === "top" || interval.side === "left") ? -1 : 1;
+
+    const get = (p, axis) => axis === "a" ? (isVertical ? p.x : p.y) : (isVertical ? p.y : p.x);
+
+    const has = (cells, a, b) =>
+        [...cells].some(p => get(p, "a") === a && get(p, "b") === b);
+
+    const a = interval.start + i;
+    const b = interval.otherCoord;
+
+    const base =
+        has(entity.cells, a, b) &&
+        has(entity.cells, a, b + dir);
+
+    // Internal cells are simple
+    if (i !== 0 && i !== interval.end - interval.start) {
+        return base;
     }
 
-    if (interval.side == "bottom") {
-        if (i == 0) {
-            return (([...entity.cells].some(point =>    // Case 2
-                point.x == interval.start + i - 1 &&
-                point.y == interval.otherCoord
-            )
-                && ![...interval.entity.cells].some(point =>
-                    point.x == interval.start + i - 1 &&
-                    point.y == interval.otherCoord + 1
-                )
-            ) || ([...entity.cells].some(point =>   // Case 1
-                point.x == interval.start + i - 1 &&
-                point.y == interval.otherCoord
-            )
-                && [...entity.cells].some(point =>
-                    point.x == interval.start + i - 1 &&
-                    point.y == interval.otherCoord + 1
-                )
-            ))  // Same as internal
-                && ([...entity.cells].some(point =>
-                    point.x == interval.start + i &&
-                    point.y == interval.otherCoord
-                ) && [...entity.cells].some(point =>
-                    point.x == interval.start + i &&
-                    point.y == interval.otherCoord + 1
-                ));
-        }
-        else if (i == interval.end - interval.start) {
-            return (([...entity.cells].some(point =>    // Case 2
-                point.x == interval.start + i + 1 &&
-                point.y == interval.otherCoord
-            )
-                && ![...interval.entity.cells].some(point =>
-                    point.x == interval.start + i + 1 &&
-                    point.y == interval.otherCoord + 1
-                )
-            ) || ([...entity.cells].some(point =>   // Case 1
-                point.x == interval.start + i + 1 &&
-                point.y == interval.otherCoord
-            )
-                && [...entity.cells].some(point =>
-                    point.x == interval.start + i + 1 &&
-                    point.y == interval.otherCoord + 1
-                )
-            ))  // Same as internal
-                && ([...entity.cells].some(point =>
-                    point.x == interval.start + i &&
-                    point.y == interval.otherCoord
-                ) && [...entity.cells].some(point =>
-                    point.x == interval.start + i &&
-                    point.y == interval.otherCoord + 1
-                ));
-        }
-        // Internal
-        return [...entity.cells].some(point =>
-            point.x == interval.start + i &&
-            point.y == interval.otherCoord
-        ) && [...entity.cells].some(point =>
-            point.x == interval.start + i &&
-            point.y == interval.otherCoord + 1
-        );
-    }
+    // Edge handling (start/end)
+    const offset = (i === 0) ? -1 : +1;
+    const edgeA = a + offset;
 
-    if (interval.side == "left") {
-        if (i == 0) {
-            return (([...entity.cells].some(point =>    // Case 2
-                point.y == interval.start + i - 1 &&
-                point.x == interval.otherCoord
-            )
-                && ![...interval.entity.cells].some(point =>
-                    point.y == interval.start + i - 1 &&
-                    point.x == interval.otherCoord - 1
-                )
-            ) || ([...entity.cells].some(point =>   // Case 1
-                point.y == interval.start + i - 1 &&
-                point.x == interval.otherCoord
-            )
-                && [...entity.cells].some(point =>
-                    point.y == interval.start + i - 1 &&
-                    point.x == interval.otherCoord - 1
-                )
-            ))  // Same as internal
-                && ([...entity.cells].some(point =>
-                    point.y == interval.start + i &&
-                    point.x == interval.otherCoord
-                ) && [...entity.cells].some(point =>
-                    point.y == interval.start + i &&
-                    point.x == interval.otherCoord - 1
-                ));
-        }
-        else if (i == interval.end - interval.start) {
-            return (([...entity.cells].some(point =>    // Case 2
-                point.y == interval.start + i + 1 &&
-                point.x == interval.otherCoord
-            )
-                && ![...interval.entity.cells].some(point =>
-                    point.y == interval.start + i + 1 &&
-                    point.x == interval.otherCoord - 1
-                )
-            ) || ([...entity.cells].some(point =>   // Case 1
-                point.y == interval.start + i + 1 &&
-                point.x == interval.otherCoord
-            )
-                && [...entity.cells].some(point =>
-                    point.y == interval.start + i + 1 &&
-                    point.x == interval.otherCoord - 1
-                )
-            ))  // Same as internal
-                && ([...entity.cells].some(point =>
-                    point.y == interval.start + i &&
-                    point.x == interval.otherCoord
-                ) && [...entity.cells].some(point =>
-                    point.y == interval.start + i &&
-                    point.x == interval.otherCoord - 1
-                ));
-        }   
-        // Internal
-        return [...entity.cells].some(point =>
-            point.y == interval.start + i &&
-            point.x == interval.otherCoord
-        ) && [...entity.cells].some(point =>
-            point.y == interval.start + i &&
-            point.x == interval.otherCoord - 1
-        );
-    }
+    const adjacent = has(entity.cells, edgeA, b);
+    const diagonal = has(entity.cells, edgeA, b + dir);
+    const blocked = has(interval.entity.cells, edgeA, b + dir);
 
-    if (interval.side == "right") {
-        if (i == 0) {
-            return (([...entity.cells].some(point =>    // Case 2
-                point.y == interval.start + i - 1 &&
-                point.x == interval.otherCoord
-            )
-                && ![...interval.entity.cells].some(point =>
-                    point.y == interval.start + i - 1 &&
-                    point.x == interval.otherCoord + 1
-                )
-            ) || ([...entity.cells].some(point =>   // Case 1
-                point.y == interval.start + i - 1 &&
-                point.x == interval.otherCoord
-            )
-                && [...entity.cells].some(point =>
-                    point.y == interval.start + i - 1 &&
-                    point.x == interval.otherCoord + 1
-                )
-            ))  // Same as internal
-                && ([...entity.cells].some(point =>
-                    point.y == interval.start + i &&
-                    point.x == interval.otherCoord
-                ) && [...entity.cells].some(point =>
-                    point.y == interval.start + i &&
-                    point.x == interval.otherCoord + 1
-                ));
-        }
-        else if (i == interval.end - interval.start) {
-            return (([...entity.cells].some(point =>    // Case 2
-                point.y == interval.start + i + 1 &&
-                point.x == interval.otherCoord
-            )
-                && ![...interval.entity.cells].some(point =>
-                    point.y == interval.start + i + 1 &&
-                    point.x == interval.otherCoord - 1
-                )
-            ) || ([...entity.cells].some(point =>   // Case 1
-                point.y == interval.start + i + 1 &&
-                point.x == interval.otherCoord
-            )
-                && [...entity.cells].some(point =>
-                    point.y == interval.start + i + 1 &&
-                    point.x == interval.otherCoord - 1
-                )
-            ))  // Same as internal
-                && ([...entity.cells].some(point =>
-                    point.y == interval.start + i &&
-                    point.x == interval.otherCoord
-                ) && [...entity.cells].some(point =>
-                    point.y == interval.start + i &&
-                    point.x == interval.otherCoord + 1
-                ));
-        }
-        // Internal
-        return [...entity.cells].some(point =>
-            point.y == interval.start + i &&
-            point.x == interval.otherCoord
-        ) && [...entity.cells].some(point =>
-            point.y == interval.start + i &&
-            point.x == interval.otherCoord + 1
-        );
-    }
+    return ((adjacent && !blocked) || (adjacent && diagonal)) && base;
 }
 
 function roundedPolygonPath(originalPoints, radius, removeLastPoint) {
