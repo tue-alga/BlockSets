@@ -15,7 +15,6 @@ public class Experiments {
         String inputFolder = "experiment_data/";
         String outputFolder = "experiment_solutions/";
         var statsFile = new File("experiment_statistics.csv");
-//        boolean useRectEulerSplit = true;
 
         var inputFolderDir = new File(inputFolder);
         var outputFolderDir = new File(outputFolder);
@@ -38,6 +37,9 @@ public class Experiments {
                             String outputName = inputName + "_" + polygonType.name();
                             if (mosaicSetsPerimeter) {
                                 outputName += "_perimeter";
+                            }
+                            if (useRectEulerSplit) {
+                                outputName += "_rectEulerSplit";
                             }
                             var outputFile = new File(outputFolder + outputName + ".txt");
                             if (outputFile.exists()) continue;
