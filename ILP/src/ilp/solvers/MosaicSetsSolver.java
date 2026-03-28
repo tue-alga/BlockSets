@@ -28,19 +28,21 @@ public class MosaicSetsSolver implements Solver {
     boolean drawGrid = false;
     boolean drawOutline = true;
 
-    boolean minPerimeter = false;
+    boolean minPerimeter;
 
     /// The number of ILP iterations (for the eccentricity-based compactness measure)
-    private final int iterations = minPerimeter ? 1 : 5;
+    private final int iterations;
 
     // Do not sample the project on the k-gon. Instead place them in the center
     // of gravity
     boolean projects_centered = true;
 
-    public MosaicSetsSolver(double maxMIPgapInitIt, double maxMIPgapSubseqIt, boolean renderMosaicSetsSvgs) {
+    public MosaicSetsSolver(double maxMIPgapInitIt, double maxMIPgapSubseqIt, boolean renderMosaicSetsSvgs, boolean minPerimeter) {
         this.maxMIPgapSubseqIt = maxMIPgapSubseqIt;
         this.maxMIPgapInitIt = maxMIPgapInitIt;
         this.renderMosaicSetsSvgs = renderMosaicSetsSvgs;
+        this.minPerimeter = minPerimeter;
+        this.iterations = minPerimeter ? 1 : 5;
     }
 
     /// Uses the eccentricity-based compactness measure

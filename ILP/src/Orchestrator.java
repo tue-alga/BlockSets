@@ -118,7 +118,7 @@ public class Orchestrator {
     }
 
     public PositionedSolution runBlockSets(StatementEntityInstance instance, PolygonType polygonType,
-                                           StatsRecorder stats, boolean useRectEulerSplit) {
+                                           StatsRecorder stats, boolean useRectEulerSplit, boolean mosaicSetsPerimeter) {
         List<ConstraintModule> constraints = null;
         ObjectiveModule objective = null;
         int solutionType = -1;
@@ -202,7 +202,7 @@ public class Orchestrator {
 
         Solver solver;
         if (polygonType == PolygonType.Arbitrary) {
-            solver = new MosaicSetsSolver(0, 0, false);
+            solver = new MosaicSetsSolver(0, 0, false, mosaicSetsPerimeter);
         } else {
             solver = new OrthoconvexSolver(constraints, objective, solutionType);
         }
@@ -295,7 +295,7 @@ public class Orchestrator {
             StatsRecorder stats = new StatsRecorder(instance, runParams);
 
             Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, componentLayoutTimeLimit, componentArrangementTimeLimit);
-            PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, stats, false);
+            PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, stats, false, false);
 
             // Write solution stats to file
             stats.appendToCsv(statsFile);
