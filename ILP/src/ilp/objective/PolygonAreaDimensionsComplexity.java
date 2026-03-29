@@ -73,6 +73,11 @@ public class PolygonAreaDimensionsComplexity implements ObjectiveModule {
                                                         "rows_" + j + "_" + j + 1 + "_negative_difference_left_side");
                                         ctx.model.addGenConstrIndicator(larger, 1, difference, GRB.GREATER_EQUAL, 1.0,
                                                         "rows_" + j + "_" + j + 1 + "_positive_difference_left_side");
+                                        ctx.model.addGenConstrIndicator(lesser, 0, difference, GRB.GREATER_EQUAL, 0.0,
+                                                        "rows_" + j + "_" + (j + 1) + "_not_lesser_left");
+
+                                        ctx.model.addGenConstrIndicator(larger, 0, difference, GRB.LESS_EQUAL, 0.0,
+                                                        "rows_" + j + "_" + (j + 1) + "_not_larger_left");
 
                                         // diff_inLeftSide => e_{j,0} != e_{j+1,0}
                                         GRBLinExpr orExpr = new GRBLinExpr();
@@ -116,6 +121,11 @@ public class PolygonAreaDimensionsComplexity implements ObjectiveModule {
                                                         GRB.GREATER_EQUAL,
                                                         1.0,
                                                         "rows_" + j + "_" + j + 1 + "_positive_difference_right_side");
+                                        ctx.model.addGenConstrIndicator(lesser_right, 0, difference_right, GRB.GREATER_EQUAL, 0.0,
+                                                        "rows_" + j + "_" + (j + 1) + "_not_lesser_right");
+
+                                        ctx.model.addGenConstrIndicator(larger_right, 0, difference_right, GRB.LESS_EQUAL, 0.0,
+                                                        "rows_" + j + "_" + (j + 1) + "_not_larger_right");
 
                                         // diff_inRightSide => e_{j,1} != e_{j+1,1}
                                         GRBLinExpr orExpr_right = new GRBLinExpr();
