@@ -7,7 +7,9 @@ import ilp.variables.Vars;
 import ilp.variables.VarsFactory;
 import model.StatementEntityInstance;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public final class ModelContext implements AutoCloseable {
   public final StatementEntityInstance inst;
@@ -40,7 +42,7 @@ public final class ModelContext implements AutoCloseable {
                       int gridMin,
                       int maxSizeSum,
                       double wTopLeft,
-                      double wMaxExtents, int modelType) throws GRBException {
+                      double wMaxExtents, int modelType, Map<Integer, Point> initialStatementPositions) throws GRBException {
     this.inst = inst;
     this.dimensions = dimensions;
     this.gridMin = gridMin;
@@ -62,7 +64,7 @@ public final class ModelContext implements AutoCloseable {
     this.env = new GRBEnv();
     this.model = new GRBModel(env);
 
-    this.v = VarsFactory.create(model, entityIds.size(), statementIds.size(), gridMin, gridMax, modelType);
+    this.v = VarsFactory.create(model, entityIds.size(), statementIds.size(), gridMin, gridMax, modelType, statementIds, initialStatementPositions);
   }
 
   @Override public void close() throws GRBException {

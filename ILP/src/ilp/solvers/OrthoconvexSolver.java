@@ -1,6 +1,13 @@
 package ilp.solvers;
 
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.gurobi.gurobi.*;
 
@@ -58,8 +65,35 @@ public class OrthoconvexSolver implements Solver {
             return null;
         }
 
+//        var statementFile = new FileReader("CountryFlags_arbitrary_MSP.txt");
+        var statementFile = new FileReader("CountryFlags_1_really.json");
+
+        BufferedReader reader = new BufferedReader(statementFile);
+        String line;
+
+        Pattern pattern = Pattern.compile("Statement (.+?): \\(([^,]+), ([^)]+)\\)");
+
+        HashMap<Integer, Point> statementPositions = new HashMap<>();
+
+        while ((line = reader.readLine()) != null) {
+            Matcher matcher = pattern.matcher(line);
+
+            if (matcher.matches()) {
+                String label = matcher.group(1);
+                int x = Integer.parseInt(matcher.group(2).trim());
+                int y = Integer.parseInt(matcher.group(3).trim());
+
+                for (var entry : inst.statements.entrySet()) {
+                    if (entry.getValue().equals(label)) {
+                        statementPositions.put(entry.getKey(), new Point(x, y));
+                    }
+                }
+            }
+        }
+        reader.close();
+
         try (ModelContext ctx = new ModelContext(inst, dimensions - 1, gridMin, maxSizeSum, wTopLeft, wMaxExtents,
-                solutionType)) {
+                solutionType, statementPositions)) {
             // Add constraints
             for (ConstraintModule c : constraints)
                 c.add(ctx);
