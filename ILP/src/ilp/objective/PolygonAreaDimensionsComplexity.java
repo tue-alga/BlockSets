@@ -170,7 +170,7 @@ public class PolygonAreaDimensionsComplexity implements ObjectiveModule {
                                                         GRB.EQUAL, 0,
                                                         "if_active_consecutive_rows_then_sumComplexity");
 
-                                        objective.addTerm(1.0, sumComplexity);
+                                        objective.addTerm(0.1, sumComplexity);
                                 }
                         }
                 }
