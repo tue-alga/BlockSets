@@ -38,33 +38,33 @@ public class H6DisjointEntitiesDoNotOverlap implements ConstraintModule {
                             vars[k] = ctx.model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "H6_" + i + "_" + j + "_" + k);
                         }
 
-                        // x1_e1 - x2_e2 + M * vars[0] >= 0
+                        // x1_e1 - x2_e2 + M * vars[0] >= 1
                         GRBLinExpr expr = new GRBLinExpr();
                         expr.addTerm(-1.0, v.entityCoordinates[j][2]);
                         expr.addTerm(1.0, v.entityCoordinates[i][0]);
                         expr.addTerm(M, vars[0]);
-                        ctx.model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H6_" + i + "_" + j + "_left");
+                        ctx.model.addConstr(expr, GRB.GREATER_EQUAL, 1, "H6_" + i + "_" + j + "_left");
 
-                        // x2_e1 - x1_e2 + M * vars[1] >= 0
+                        // x2_e1 - x1_e2 + M * vars[1] >= 1
                         expr = new GRBLinExpr();
                         expr.addTerm(1.0, v.entityCoordinates[j][0]);
                         expr.addTerm(-1.0, v.entityCoordinates[i][2]);
                         expr.addTerm(M, vars[1]);
-                        ctx.model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H6_" + i + "_" + j + "_right");
+                        ctx.model.addConstr(expr, GRB.GREATER_EQUAL, 1, "H6_" + i + "_" + j + "_right");
 
-                        // y1_e1 - y2_e2 + M * vars[2] >= 0
+                        // y1_e1 - y2_e2 + M * vars[2] >= 1
                         expr = new GRBLinExpr();
                         expr.addTerm(-1.0, v.entityCoordinates[j][3]);
                         expr.addTerm(1.0, v.entityCoordinates[i][1]);
                         expr.addTerm(M, vars[2]);
-                        ctx.model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H6_" + i + "_" + j + "_top");
+                        ctx.model.addConstr(expr, GRB.GREATER_EQUAL, 1, "H6_" + i + "_" + j + "_top");
 
-                        // y1_e2 - y2_e1 + M * vars[3] >= 0
+                        // y1_e2 - y2_e1 + M * vars[3] >= 1
                         expr = new GRBLinExpr();
                         expr.addTerm(1.0, v.entityCoordinates[j][1]);
                         expr.addTerm(-1.0, v.entityCoordinates[i][3]);
                         expr.addTerm(M, vars[3]);
-                        ctx.model.addConstr(expr, GRB.GREATER_EQUAL, 0, "H6_" + i + "_" + j + "_bottom");
+                        ctx.model.addConstr(expr, GRB.GREATER_EQUAL, 1, "H6_" + i + "_" + j + "_bottom");
 
                         expr = new GRBLinExpr();
                         expr.addTerm(1.0, vars[0]);
