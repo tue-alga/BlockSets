@@ -54,27 +54,28 @@ public class Orchestrator {
             StatementEntityInstance inst = queue.removeFirst();
             long beforeSolve = System.nanoTime();
             int dimension = (int) (Math.ceil(Math.sqrt(inst.numberOfStatements)) + 1);
+            if (polygonType == PolygonType.Nabla) {
+                dimension += 1;
+            } else if (polygonType == PolygonType.Gamma) {
+                dimension += 2;
+            } else if (polygonType == PolygonType.Rectangle) {
+                dimension += 3;
+            }
             Solution sol = solver.solve(inst, this.componentLayoutTimeLimit, dimension);
             long afterSolve = System.nanoTime();
             double layoutTimeS = (afterSolve - beforeSolve) / 1_000_000_000.0;
             stats.totalLayoutTime += layoutTimeS;
 
             if (sol != null) {
-                int vacant = sol.vacantCells().size();
-                System.out.println("#vacant: " + vacant + "  #statements: " + sol.getInstance().numberOfStatements);
-                if (vacant <= (polygonType == PolygonType.Rectangle ? sol.getInstance().numberOfStatements / 2 : sol.getInstance().numberOfStatements / 5)) {
-                    solutions.add(sol);
+                solutions.add(sol);
 
-                    // Record shape stats for this solution
-                    stats.updateShapeStatsSingleComponent(sol);
+                // Record shape stats for this solution
+                stats.updateShapeStatsSingleComponent(sol);
 
-                    // Add solved instance to global solved list
-                    solvedInstances.add(inst);
+                // Add solved instance to global solved list
+                solvedInstances.add(inst);
 
-                    continue;
-                } else {
-                    System.out.println("Splitting component as there are too many gaps.");
-                }
+                continue;
             }
 
             // Too large or no optimal -> split
