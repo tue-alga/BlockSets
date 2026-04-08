@@ -1,0 +1,21 @@
+type: rectangles
+w: 4
+h: 3
+Entity Daedalus: (0, 0) - (4, 2)
+Entity Icarus: (0, 2) - (4, 3)
+Entity Minos: (0, 0) - (1, 3)
+Entity Crete: (0, 1) - (3, 3)
+Entity Labyrinth: (0, 1) - (0, 3)
+Entity Minotaur: (0, 1) - (0, 3)
+Entity wings of feathers and wax: (2, 2) - (4, 3)
+Entity Icarian Sea: (4, 3) - (4, 3)
+Entity Sicily: (1, 0) - (2, 3)
+Entity Cocalus: (1, 0) - (2, 0)
+Statement Daedalus, a master craftsman, comes to Crete to serve King Minos and designs the winding Labyrinth that will hold the monstrous Minotaur.: (0, 1)
+Statement King Minos boasts that the Labyrinth and the Minotaur secure his power over Crete, but he confines Icarus with his own father lest their knowledge of the maze betray him.: (0, 3)
+Statement In captivity, Daedalus gathers feathers and wax and fashions wings so that he and Icarus might escape the island of Crete by taking to the air.: (3, 2)
+Statement Before the flight, Daedalus warns Icarus to follow a middle path, neither too low where the waves might drench the wings nor too high where the sun’s heat may soften the wax.: (4, 2)
+Statement Soaring over the sea between Crete and distant Sicily, Icarus grows exultant, rises too near the blazing sun, and feels the wax of the wings begin to yield.: (2, 3)
+Statement Falling into the waters later called the Icarian Sea, Icarus vanishes beneath the waves while the shattered wings drift upon the surface.: (4, 3)
+Statement Grieving, Daedalus reaches Sicily and finds refuge with King Cocalus, who honors the wandering craftsman for his skill.: (2, 0)
+Statement When Minos pursues Daedalus to Sicily and seeks him in the halls of Cocalus, the Cretan king meets his death there, and the exile is freed from his old master at last.: (1, 0)
