@@ -1,34 +1,135 @@
+const SOFT_HYPHEN = "\u00AD";
+
+const hyphenateWord = createHyphenator(hyphenationPatternsEnUs, {
+    hyphenChar: SOFT_HYPHEN,
+    minWordLength: 5,
+    html: false
+});
+
 // Split text into lines to fit into a statement cell
 function splitTextIntoLines(text, lineLength) {
-    // Ensure the correct font is used when measuring the text width
     c.font = font;
 
-    let lines = [];
-
-    let words = text.split(" ");
+    const lines = [];
     let line = "";
 
-    // Build line word by word
-    for (let word of words) {
-        let testLine = line + word;
-        let metrics = c.measureText(testLine);
+    const fits = (value) =>
+        c.measureText(value).width <= lineLength;
 
-        if (metrics.width >= lineLength && line !== "") {
-            lines.push(line);
-            line = word + " ";
-        } else {
-            line = testLine + " ";
+    function pushLine() {
+        if (line !== "") {
+            lines.push(line + " ");
+            line = "";
         }
     }
 
-    lines.push(line);
+    // Split a word only at valid hyphenation positions
+    function placeWord(word) {
+        const normalCandidate = line === "" ? word : line + " " + word;
 
-    // Remove leading spaces
-    for (let i = 0; i < lines.length; i++) {
-        if (lines[i][0] == " ") lines[i] = lines[i].slice(1);
+        // Complete word fits
+        if (fits(normalCandidate)) {
+            line = normalCandidate;
+            return;
+        }
+
+        // Library returns something like: "extra\u00ADor\u00ADdi\u00ADnary"
+        const pieces = hyphenateWord(word).split(SOFT_HYPHEN);
+        let pieceIndex = 0;
+
+        while (pieceIndex < pieces.length) {
+            const prefix = line === "" ? "" : line + " ";
+            let piece = "";
+            let bestEndIndex = -1;
+
+            // Find the longest valid hyphenation prefix that fits
+            for (let i = pieceIndex; i < pieces.length; i++) {
+                piece += pieces[i];
+
+                const isLastPiece = i === pieces.length - 1;
+                const candidate = prefix + piece + (isLastPiece ? "" : "-");
+
+                if (fits(candidate)) {
+                    bestEndIndex = i;
+                } else {
+                    break;
+                }
+            }
+
+            // If nothing fits in the remaining space, start a new line
+            if (bestEndIndex === -1) {
+                if (line !== "") {
+                    pushLine();
+                    continue;
+                }
+
+                // Fallback for an unbreakable segment wider than the line:
+                // split character by character
+                let partial = "";
+
+                for (const character of pieces[pieceIndex]) {
+                    if (fits(partial + character + "-")) {
+                        partial += character;
+                    } else {
+                        break;
+                    }
+                }
+
+                if (partial === "") {
+                    partial = pieces[pieceIndex][0];
+                }
+
+                lines.push(partial + "-");
+                pieces[pieceIndex] = pieces[pieceIndex].slice(partial.length);
+                continue;
+            }
+
+            piece = pieces
+                .slice(pieceIndex, bestEndIndex + 1)
+                .join("");
+
+            const hasRemainingPieces = bestEndIndex < pieces.length - 1;
+            line = prefix + piece + (hasRemainingPieces ? "-" : "");
+
+            pieceIndex = bestEndIndex + 1;
+
+            // A hyphenated part finishes this line
+            if (hasRemainingPieces) {
+                pushLine();
+            }
+        }
     }
 
+    for (const word of text.split(" ")) {
+        placeWord(word);
+    }
+
+    pushLine();
     return lines;
+}
+
+// Find all variations of a string that can be obtained as a result of hyphenation
+function getHyphenatedVariations(str) {
+    let syllables = hyphenateWord(str).split(SOFT_HYPHEN);
+    let variations = [str];
+
+    for (let i = 0; i < syllables.length - 1; i++) {
+        let variation = "";
+
+        for (let j = 0; j <= i; j++) {
+            variation += syllables[j];
+        }
+
+        variation += "- ";
+
+        for (let j = i + 1; j < syllables.length; j++) {
+            variation += syllables[j];
+        }
+
+        variations.push(variation);
+    }
+
+    return variations;
 }
 
 // Find all indices of a string in a text

@@ -42,7 +42,11 @@ class Statement {
 
         // Combine names and colors into a single array
         for (let i = 0; i < names.length; i++) {
-            combined[i] = [names[i], colors[i]];
+            let hyphenatedVariants = getHyphenatedVariations(names[i]);
+            
+            for (let j = 0; j < hyphenatedVariants.length; j++) {
+                combined.push([hyphenatedVariants[j], colors[i]]);
+            }
         }
 
         // Sort by name length in increasing order
@@ -102,7 +106,7 @@ class Statement {
         // Find name indices in the text
         let nameIndices = [];
         for (let i = 0; i < namesAndColors.length; i++) {
-            nameIndices.push(getIndicesOf(namesAndColors[i][0], this.text, false));
+            nameIndices.push(getIndicesOf(namesAndColors[i][0], this.textLines.join(""), false));
         }
 
         // Pointers
