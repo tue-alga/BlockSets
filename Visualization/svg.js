@@ -176,7 +176,7 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
         let nameIndices = [];
 
         for (let i = 0; i < namesAndColors.length; i++) {
-            nameIndices.push(getIndicesOf(namesAndColors[i][0], statement.text, false));
+            nameIndices.push(getIndicesOf(namesAndColors[i][0], statement.textLines.join(""), false));
         }
 
         // Store text to be draw after all entity name backgrounds (for highlight type "background")
