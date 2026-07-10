@@ -1,0 +1,168 @@
+{
+    "statements": [
+        {
+            "id": 0,
+            "text": "In Basil’s London studio, the painter introduced Dorian Gray to Lord Henry Wotton, and the meeting stirred in Basil a mingled pride and dread he scarcely understood."
+        },
+        {
+            "id": 1,
+            "text": "The portrait Basil created in that studio became his masterpiece, for Dorian’s beauty awakened in him an artistic devotion bordering on spiritual worship."
+        },
+        {
+            "id": 2,
+            "text": "The shabby theatre where Sibyl Vane performed seemed transformed each night by her genius, drawing both London’s weary crowds and Dorian’s rapt attention."
+        },
+        {
+            "id": 3,
+            "text": "James Vane warned Sibyl that gentlemen from Mayfair brought ruin more often than romance."
+        },
+        {
+            "id": 4,
+            "text": "In Basil’s studio, Harry’s glittering paradoxes fell upon Dorian like spells, and the painter feared the influence long before he dared speak of it."
+        },
+        {
+            "id": 5,
+            "text": "Sibyl’s acting collapsed the night she discovered real love, for the very feelings that redeemed her heart shattered the illusions upon which her art depended."
+        },
+        {
+            "id": 6,
+            "text": "The portrait hanging in Dorian’s locked attic chamber altered subtly after Sibyl’s suicide, as though the painted face itself had begun to accuse someone in silence."
+        },
+        {
+            "id": 7,
+            "text": "Basil confided to Harry that he feared the corruption of Dorian’s soul, admitting he had once worshipped the boy too passionately."
+        },
+        {
+            "id": 8,
+            "text": "James Vane hunted through London’s opium dens for the mysterious gentleman tied to Sibyl’s fall, driven by a vengeance no moral appeal could soften."
+        },
+        {
+            "id": 9,
+            "text": "The portrait’s face grew cruel and shadowed with each new sin committed, even as the living Dorian walked through Mayfair untouched by time."
+        },
+        {
+            "id": 10,
+            "text": "Basil confronted the altered portrait in the attic and felt an anguish deeper than fear, for he realized his art had recorded a spiritual corruption he could neither explain nor rectify."
+        },
+        {
+            "id": 11,
+            "text": "On the night before departing for France, Basil Hallward vanished, leaving behind only the silent studio and a mystery that neither friends nor acquaintances could unravel."
+        }
+    ],
+    "entities": [
+        {
+            "id": 0,
+            "name": "Basil Hallward (the painter) [Basil Hallward, Basil, the artist]"
+        },
+        {
+            "id": 1,
+            "name": "Lord Henry Wotton (Harry) [Lord Henry]"
+        },
+        {
+            "id": 2,
+            "name": "Sibyl Vane [Sibyl]"
+        },
+        {
+            "id": 3,
+            "name": "James Vane [James]"
+        },
+        {
+            "id": 4,
+            "name": "Dorian Gray [Dorian]"
+        },
+        {
+            "id": 5,
+            "name": "London"
+        },
+        {
+            "id": 6,
+            "name": "Basil’s studio [the silent studio, studio]"
+        },
+        {
+            "id": 7,
+            "name": "The theatre [the shabby theatre]"
+        },
+        {
+            "id": 8,
+            "name": "The attic [attic chamber]"
+        },
+        {
+            "id": 9,
+            "name": "Mayfair"
+        },
+        {
+            "id": 10,
+            "name": "France"
+        },
+        {
+            "id": 11,
+            "name": "The portrait [portrait]"
+        }
+    ],
+    "entity_statements": {
+        "0": [
+            0,
+            1,
+            4,
+            7,
+            10,
+            11
+        ],
+        "1": [
+            0,
+            4,
+            7
+        ],
+        "2": [
+            2,
+            3,
+            5,
+            6,
+            8
+        ],
+        "3": [
+            3,
+            8
+        ],
+        "4": [
+            0,
+            1,
+            2,
+            4,
+            6,
+            7,
+            9
+        ],
+        "5": [
+            0,
+            2,
+            8
+        ],
+        "6": [
+            0,
+            1,
+            4,
+            11
+        ],
+        "7": [
+            2
+        ],
+        "8": [
+            6,
+            10
+        ],
+        "9": [
+            3,
+            9
+        ],
+        "10": [
+            11
+        ],
+        "11": [
+            1,
+            6,
+            9,
+            10
+        ]
+    }
+}
