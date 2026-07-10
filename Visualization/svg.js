@@ -43,7 +43,7 @@ function drawEntities(svg, svgNS, VisualizationSettings) {
     entityRects.forEach(entity => {
         const entityGroup = document.createElementNS(svgNS, "g");
         entityGroup.setAttribute("id", `entity-${entity.id}`);
-        entityGroup.setAttribute("font-size", `${backgroundCellSize}px`);
+        entityGroup.setAttribute("font-size", `${VisualizationSettings.fontSize}px`);
         entityGroup.setAttribute("font-family", "Cambria");
         entityGroups.set(entity.id, entityGroup);
     });
@@ -139,7 +139,7 @@ function labelEntity(entity, entityGroup, svgNS) {
                 // Header text
                 const text = document.createElementNS(svgNS, "text");
                 text.setAttribute("x", entity.pixelCoords[0].x + backgroundCellSize + 1);
-                text.setAttribute("y", headerY + 1.25 * backgroundCellSize + 1);
+                text.setAttribute("y", headerY + (c.measureText("G").actualBoundingBoxAscent) + ((2 * backgroundCellSize - (c.measureText("G").actualBoundingBoxAscent)) / 2));
                 text.setAttribute("fill", "white");
                 text.textContent = entity.displayHeaders[i];
                 entityGroup.appendChild(text);
@@ -156,7 +156,7 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
         // Group elements in this statement
         const statementGroup = document.createElementNS(svgNS, "g");
         statementGroup.setAttribute("id", `statement-${statement.id || "group"}`);
-        statementGroup.setAttribute("font-size", `${backgroundCellSize}px`);
+        statementGroup.setAttribute("font-size", `${VisualizationSettings.fontSize}px`);
         statementGroup.setAttribute("font-family", "Cambria");
 
         const xStart = statement.pixelCoords[0].x;
@@ -230,8 +230,8 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                 // Background behind the text
                 const height = c.measureText("G").actualBoundingBoxAscent + 4;
                 const textBackground = document.createElementNS(svgNS, "rect");
-                textBackground.setAttribute("x", xStart + backgroundCellSize + lengthSoFar);
-                textBackground.setAttribute("y", yStart + (2 + i) * backgroundCellSize - height + 2);
+                textBackground.setAttribute("x", xStart + Number(VisualizationSettings.margins) + lengthSoFar);
+                textBackground.setAttribute("y", yStart + (i) * height + Number(VisualizationSettings.margins) - 2);
                 textBackground.setAttribute("width", width);
                 textBackground.setAttribute("height", height);
                 textBackground.setAttribute("fill", lightenRGB(fillColor, 0.7));
@@ -239,16 +239,16 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
 
                 // Text
                 const textElem = document.createElementNS(svgNS, "text");
-                textElem.setAttribute("x", xStart + backgroundCellSize + lengthSoFar);
-                textElem.setAttribute("y", yStart + (2 + i) * backgroundCellSize);
+                textElem.setAttribute("x", xStart + Number(VisualizationSettings.margins) + lengthSoFar);
+                textElem.setAttribute("y", yStart + (1 + i) * height + Number(VisualizationSettings.margins) - 4);
                 textElem.textContent = statement.textLines[i][j];
 
                 // Underline
                 const underline = document.createElementNS(svgNS, "line");
-                underline.setAttribute("x1", xStart + backgroundCellSize + lengthSoFar);
-                underline.setAttribute("x2", xStart + backgroundCellSize + lengthSoFar + width);
-                underline.setAttribute("y1", yStart + (2 + i) * backgroundCellSize + 1);
-                underline.setAttribute("y2", yStart + (2 + i) * backgroundCellSize + 1);
+                underline.setAttribute("x1", xStart + Number(VisualizationSettings.margins) + lengthSoFar);
+                underline.setAttribute("x2", xStart + Number(VisualizationSettings.margins) + lengthSoFar + width);
+                underline.setAttribute("y1", yStart + (1 + i) * height + Number(VisualizationSettings.margins) - 4 + 1);
+                underline.setAttribute("y2", yStart + (1 + i) * height + Number(VisualizationSettings.margins) - 4 + 1);
                 underline.setAttribute("stroke", "#000");
                 underline.setAttribute("stroke-width", "1");
 

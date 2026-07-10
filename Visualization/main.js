@@ -1,3 +1,8 @@
+// Grid sizes
+const backgroundCellSize = 10;
+const cellWidth = 20; // In background cells
+let cellHeights = []; // In background cells
+
 // Solution
 let solutionWidth;
 let solutionHeight;
@@ -23,20 +28,16 @@ let VisualizationSettings = {
     outlineNonRepeated: document.getElementById("outlineNonRepeatedToggle").checked, // Whether or not to outline non-repeated entities
     outlineRepeated: document.getElementById("outlineRepeatedToggle").checked, // Whether or not to outline repeated entities
     dashRepeated: document.getElementById("dashRepeatedToggle").checked, // Whether or not to use a dashed outline for repeated entities
-    textHighlight: "text" // How to highlight entity names in statements (none, text or background)
+    textHighlight: "text", // How to highlight entity names in statements (none, text or background)
+    margins: Number(document.getElementById("margins").value) * backgroundCellSize, // Whitespace around statement text
+    fontSize: Number(document.getElementById("fontSize").value) * backgroundCellSize // Statement text size (also header text size if entity render is transparent)
 };
-
-
-// Grid sizes
-const backgroundCellSize = 10;
-const cellWidth = 20; // In background cells
-let cellHeights = []; // In background cells
 
 // Canvas
 const canvas = document.getElementById('canvas');
 const c = canvas.getContext('2d');
-const font = `normal ${backgroundCellSize}px Cambria`;
-const boldFont = `bolder ${backgroundCellSize}px Cambria`;
+let font = `normal ${VisualizationSettings.fontSize}px Cambria`;
+let boldFont = `bolder ${VisualizationSettings.fontSize}px Cambria`;
 c.globalCompositeOperation = "source-over";
 
 // Canvas elements to be drawn
@@ -295,8 +296,8 @@ function setup() {
 function visualize() {
     c.clearRect(0, 0, canvas.width, canvas.height);
 
-    // drawBackgroundGrid();
     drawElements(entityRects, statementCells, VisualizationSettings);
+    // drawBackgroundGrid();
     
     setTimeout(() => { recomputeAndUpdateCache(colors);}, 1000);
 }

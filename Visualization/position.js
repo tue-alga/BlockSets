@@ -376,6 +376,8 @@ function calculatePixelGapsAndMargins(entityRects, rowGaps, columnGaps, rowSegme
 
 // Set dynamic cell heights for each row
 function calculateCellHeights(cellHeights, statementCells, totalHeight) {
+    // Use correct font for calculation
+    c.font = font;
 
     // Initialize all heights to 0
     for (let i = 0; i <= totalHeight; i++) {
@@ -384,14 +386,15 @@ function calculateCellHeights(cellHeights, statementCells, totalHeight) {
 
     for (let i = 0; i < statementCells.length; i++) {
         // Increase the row's cell height to fit a statement that's currently too long
-        if (statementCells[i].textLines.length > cellHeights[statementCells[i].y]) {
-            cellHeights[statementCells[i].y] = statementCells[i].textLines.length;
-        }
-    }
+        let textLineHeight = c.measureText("G").actualBoundingBoxAscent;
+        let textHeight = textLineHeight * statementCells[i].textLines.length;
+        let totalLineSpacing = 4 * (statementCells[i].textLines.length - 1);
+        let padding = 2 * Number(VisualizationSettings.margins);
+        let statementHeight = Math.ceil((textHeight + totalLineSpacing + padding) / backgroundCellSize);
 
-    // Add padding above and below the text
-    for (let i = 0; i <= totalHeight; i++) {
-        cellHeights[i] += 2;
+        if (statementHeight > cellHeights[statementCells[i].y]) {
+            cellHeights[statementCells[i].y] = statementHeight;
+        }
     }
 }
 

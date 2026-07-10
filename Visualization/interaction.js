@@ -92,6 +92,15 @@ document.querySelectorAll('.slider').forEach(slider => {
         else if (input.id == "cornerRadius") {
             VisualizationSettings.cornerRadius = Number(input.value);
         }
+        else if (input.id == "margins") {
+            VisualizationSettings.margins = Number(input.value) * backgroundCellSize;
+        }
+        else if (input.id == "fontSize") {
+            VisualizationSettings.fontSize = Number(input.value) * backgroundCellSize;
+            
+            font = `normal ${VisualizationSettings.fontSize}px Cambria`;
+            boldFont = `bolder ${VisualizationSettings.fontSize}px Cambria`;
+        }
     });
 });
 

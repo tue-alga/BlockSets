@@ -13,7 +13,7 @@ class Statement {
         this.pixelCoords = [];
 
         // Lines of text stored as separate strings
-        this.textLines = splitTextIntoLines(this.text, (cellWidth - 2) * backgroundCellSize);
+        this.textLines = splitTextIntoLines(this.text, (cellWidth - 2 * Number(VisualizationSettings.margins) / backgroundCellSize) * backgroundCellSize);
     }
 
     // Get all entity names appearing in the statement text and their corresponding colors
@@ -118,8 +118,9 @@ class Statement {
         // Draw each character in statement text
         for (let i = 0; i < this.textLines.length; i++) {
             for (let j = 0; j < this.textLines[i].length; j++) {
-                let textX = this.pixelCoords[0].x + backgroundCellSize + lengthSoFar;
-                let textY = this.pixelCoords[0].y + (2 + i) * backgroundCellSize;
+                let textLineHeight = c.measureText("G").actualBoundingBoxAscent + 4;
+                let textX = this.pixelCoords[0].x + Number(VisualizationSettings.margins) + lengthSoFar;
+                let textY = this.pixelCoords[0].y + (1 + i) * textLineHeight + Number(VisualizationSettings.margins) - 4;
 
                 // Check if we are at the start of an entity name
                 for (let k = 0; k < nameIndices.length; k++) {
@@ -227,8 +228,9 @@ class Statement {
 
             for (let i = 0; i < this.textLines.length; i++) {
                 for (let j = 0; j < this.textLines[i].length; j++) {
-                    let textX = this.pixelCoords[0].x + backgroundCellSize + lengthSoFar;
-                    let textY = this.pixelCoords[0].y + (2 + i) * backgroundCellSize;
+                    let textLineHeight = c.measureText("G").actualBoundingBoxAscent + 4;
+                    let textX = this.pixelCoords[0].x + Number(VisualizationSettings.margins) + lengthSoFar;
+                    let textY = this.pixelCoords[0].y + (1 + i) * textLineHeight + Number(VisualizationSettings.margins) - 4;
 
                     // Check if we are at the start of an entity name
                     for (let k = 0; k < nameIndices.length; k++) {
@@ -250,6 +252,9 @@ class Statement {
                         drawingName = true;
                     }
 
+                    // If we are no longer drawing an entity switch back to black
+                    if (!drawingName) currentEntityNameColor = "#000";
+
                     // Check if we are drawing the name of a singleton
                     let drawingBold = false;
                     if (currentEntityNameColor == "rgb(255, 255, 255)") {
@@ -262,10 +267,13 @@ class Statement {
                         c.lineWidth = 1;
                         c.strokeText(this.textLines[i][j], textX, textY);
                     }
-                    // Draw next character
-                    c.fillText(this.textLines[i][j], textX, textY);
 
-                    // 
+                    // Bold characters have already been drawn
+                    if (!drawingBold) {
+                        // Draw next character
+                        c.fillText(this.textLines[i][j], textX, textY);
+                    }
+
                     if (drawingBold) {
                         currentEntityNameColor = "rgb(255, 255, 255)";
                     }
