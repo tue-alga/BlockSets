@@ -185,40 +185,8 @@ public class GridCanvas<T> extends Canvas {
     }
 
     // draw cell labels
-    g.setFont(new Font("Ubuntu Condensed", Font.PLAIN, 16));
+    g.setFont(new Font("Cambria", Font.PLAIN, 10));
     if (this.drawLabels) {
-      if (pointsToElements != null) {
-        for (float j = this.maxFontSize; j >= 12; j -= 2) {
-          Font currentFont = g.getFont();
-          Font newFont = currentFont.deriveFont(j);
-          g.setFont(newFont);
-
-          boolean allDrawable = true;
-          FontMetrics fm = g.getFontMetrics();
-          for (Entry<Point2D.Double, T> entry : pointsToElements.entrySet()) {
-            T i = entry.getValue();
-            String text = "" + i;
-            String[] pieces = text.split("(?<=[\\s-]+)");
-
-            for (String t : pieces) {
-              // System.out.println(t);
-              if ((grid.colSpacing - 15) < fm.stringWidth(t)) {
-                allDrawable = false;
-                break;
-              }
-            }
-
-            if (!allDrawable)
-              break;
-          }
-
-          if (allDrawable) {
-            // System.out.println("fontsize: " + j);
-            break;
-          }
-        }
-      }
-
       if (pointsToElements != null) {
         FontMetrics fm = g.getFontMetrics();
         g.setColor(this.fontColor);

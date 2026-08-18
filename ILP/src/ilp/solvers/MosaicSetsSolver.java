@@ -49,7 +49,7 @@ public class MosaicSetsSolver implements Solver {
     @Override
     public Solution solve(StatementEntityInstance inst, double timeLimit, int dimensions) throws Exception, GRBException {
         SetEmbedder.MINIMIZE_BOUNDARIES = minPerimeter;
-        Grid grid = new Grid(dimensions, dimensions, gridSize, 0.0, 0.0, Grid.TYPE_SQUARE);
+        Grid grid = new Grid(dimensions, dimensions, gridSize, gridSize, gridSize, Grid.TYPE_SQUARE);
 
         List<Set<String>> basemap = new ArrayList<>();
         var allStatements = new HashSet<String>();
@@ -110,19 +110,12 @@ public class MosaicSetsSolver implements Solver {
             endTimeSecond = System.currentTimeMillis();
         }
 
-        int maxX = 0;
-        int maxY = 0;
-        for (var k : solution.keySet()) {
-            if (k.getX() > maxX) maxX = (int) k.getX();
-            if (k.getY() > maxY) maxY = (int) k.getY();
-        }
-
         var statementCoordinates = new Point[inst.numberOfStatements];
         HashMap<String, Point> statementToPoint = new HashMap<>();
         for (var entry : solution.entrySet()) {
             var str = entry.getValue();
             var pt = entry.getKey();
-            statementToPoint.put(str, new Point((int) Math.round(pt.x / gridSize), (int) Math.round(pt.y / gridSize)));
+            statementToPoint.put(str, new Point((int) Math.round((pt.x - gridSize) / gridSize), (int) Math.round((pt.y - gridSize) / gridSize)));
         }
 
         // The code assumes that statementCoordinates are in the same order as in inst.statements.
@@ -143,8 +136,8 @@ public class MosaicSetsSolver implements Solver {
             Set<Point> cells = new HashSet<>();
 
             for (var v : ge.setsToSelectedArcs.get(k)) {
-                cells.add(new Point((int) Math.round(v.x1 / gridSize), (int) Math.round(v.y1 / gridSize)));
-                cells.add(new Point((int) Math.round(v.x2 / gridSize), (int) Math.round(v.y2 / gridSize)));
+                cells.add(new Point((int) Math.round((v.x1 - gridSize) / gridSize), (int) Math.round((v.y1 - gridSize) / gridSize)));
+                cells.add(new Point((int) Math.round((v.x2 - gridSize) / gridSize), (int) Math.round((v.y2 - gridSize) / gridSize)));
             }
             // If the entity is a singleton, then it will have no arcs.
             // Check where the single statement was placed.
@@ -156,7 +149,7 @@ public class MosaicSetsSolver implements Solver {
         }
 
         if (renderMosaicSetsSvgs) {
-            GridCanvas<String> gc = new GridCanvas<>(grid);
+            GridCanvas<String> gc = new GridCanvas<>(new Grid(dimensions + 2, dimensions + 2, gridSize, 0, 0, Grid.TYPE_SQUARE));
 
             Color borderColor = Color.white;
             int borderSize = 5;
