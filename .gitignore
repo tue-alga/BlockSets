@@ -1,2 +1,9 @@
 .idea
 BlockSets.iml
+ILP/lib/
+ILP/src/split/RectEuler-Split/boolean_vectors.json
+ILP/src/split/RectEuler-Split/split.json
+ILP/src/split/RectEuler-Split/.venv
+MosaicSets_run_*
+gurobi.log
+out
