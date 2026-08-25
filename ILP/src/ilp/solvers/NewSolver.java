@@ -6,10 +6,7 @@ import model.ArbitraryPolygonSolution;
 import model.Solution;
 import model.StatementEntityInstance;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.awt.Point;
 
 public class NewSolver implements Solver {
@@ -163,6 +160,57 @@ public class NewSolver implements Solver {
             }
         }
 
+        // Element exclusion
+        for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
+            int eId = this.entityIds.get(eIx);
+
+            for (int sIx = 0; sIx < inst.numberOfStatements; sIx++) {
+                final int sId = statementIds.get(sIx);
+                if (Arrays.stream(inst.entityIndToStatements.get(eId))
+                        .noneMatch(cand -> cand == sId)) {
+                    // Element is not part of this set, so force it outside
+                    // x[sIx][i][j] => !z[eIx][i][j]
+                    // z <= (1 - x)
+                    for (int i = 0; i < width; i++) {
+                        for (int j = 0; j < height; j++) {
+                            GRBLinExpr rhs = new GRBLinExpr();
+                            rhs.addConstant(1);
+                            rhs.addTerm(-1, x[sIx][i][j]);
+                            model.addConstr(z[eIx][i][j], '<', rhs, "element_exclusion");
+                        }
+                    }
+                }
+            }
+        }
+
+        // Independent sets are represented by disjoint shapes
+        for (int eIx1 = 0; eIx1 < inst.numberOfEntities; eIx1++) {
+            for (int eIx2 = eIx1 + 1; eIx2 < inst.numberOfEntities; eIx2++) {
+                int[] statementsOfEntity1 = inst.entityIndToStatements.get(entityIds.get(eIx1));
+                int[] statementsOfEntity2 = inst.entityIndToStatements.get(entityIds.get(eIx2));
+                boolean overlap = false;
+                for (var s1 : statementsOfEntity1) {
+                    for (var s2 : statementsOfEntity2) {
+                        if (s1 == s2) {
+                            overlap = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!overlap) {
+                    for (int i = 0; i < width; ++i) {
+                        for (int j = 0; j < height; ++j) {
+                            GRBLinExpr expr = new GRBLinExpr();
+                            expr.addTerm(1, z[eIx1][i][j]);
+                            expr.addTerm(1, z[eIx2][i][j]);
+                            model.addConstr(expr, '<', 1, "disjoint_independent_sets");
+                        }
+                    }
+                }
+            }
+        }
+
         // C
         for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
             GRBLinExpr expr = new GRBLinExpr();
@@ -173,7 +221,6 @@ public class NewSolver implements Solver {
             }
             model.addConstr(C[eIx], '=', expr, "C_definition");
         }
-
 
         // flow constraints
         for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
