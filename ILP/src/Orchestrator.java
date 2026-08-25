@@ -10,10 +10,7 @@ import ilp.constraints.*;
 import ilp.objective.CompactSquareTopLeft;
 import ilp.objective.ObjectiveModule;
 import ilp.objective.PolygonAreaDimensionsComplexity;
-import ilp.solvers.MosaicSetsSolver;
-import ilp.solvers.SolutionPositioner;
-import ilp.solvers.OrthoconvexSolver;
-import ilp.solvers.Solver;
+import ilp.solvers.*;
 import io.SolutionWriter;
 import io.StatementEntityReader;
 import io.StatsRecorder;
@@ -24,6 +21,7 @@ import split.ClusterSplit;
 import split.GreedySplit;
 
 public class Orchestrator {
+    private final boolean useNew = true;
 
     private final int splitK; // Maximum number of nodes to be deleted (usually 5)
     private final double splitRatio; // Coefficient that determines how wide is the range of acceptable components'
@@ -202,10 +200,14 @@ public class Orchestrator {
         }
 
         Solver solver;
-        if (polygonType == PolygonType.Arbitrary) {
-            solver = new MosaicSetsSolver(0, 0, false, mosaicSetsPerimeter);
+        if (useNew) {
+            solver = new NewSolver(polygonType);
         } else {
-            solver = new OrthoconvexSolver(constraints, objective, solutionType);
+            if (polygonType == PolygonType.Arbitrary) {
+                solver = new MosaicSetsSolver(0, 0, false, mosaicSetsPerimeter);
+            } else {
+                solver = new OrthoconvexSolver(constraints, objective, solutionType);
+            }
         }
 
         try {
