@@ -18,9 +18,15 @@ public class NewSolver implements Solver {
     public Map<Integer,Integer> entityIdToIdx;
     public Map<Integer,Integer> statementIdToIdx;
 
+    PolygonType polygonType;
+
     // Constructor that allows you to define your own list of constraints and
     // objective function
     public NewSolver(PolygonType polygonType) {
+        this.polygonType = polygonType;
+        if (polygonType != PolygonType.Gamma && polygonType != PolygonType.Nabla && polygonType != PolygonType.Orthoconvex) {
+            throw new RuntimeException("NewSolver cannot handle polygon type " + polygonType.name());
+        }
         try {
             this.env = new GRBEnv();
             this.model = new GRBModel(env);
@@ -207,6 +213,34 @@ public class NewSolver implements Solver {
                             model.addConstr(expr, '<', 1, "disjoint_independent_sets");
                         }
                     }
+                }
+            }
+        }
+
+        // Nabla
+        if (polygonType == PolygonType.Nabla || polygonType == PolygonType.Gamma) {
+            for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
+                for (int i = 0; i < width - 1; i++) {
+                    var consecutiveActive = model.addVar(0, 1, 0, GRB.BINARY, "consecutive_column_active");
+                    model.addGenConstrAnd(consecutiveActive, new GRBVar[]{c_a[eIx][i], c_a[eIx][i + 1]}, "consecutive_active");
+                    GRBLinExpr expr = new GRBLinExpr();
+                    expr.addTerm(1, c_start[eIx][i]);
+                    expr.addTerm(-1, c_start[eIx][i + 1]);
+                    model.addGenConstrIndicator(consecutiveActive, 1, expr, '=', 0, "name");
+                }
+            }
+        }
+
+        // Gamma
+        if (polygonType == PolygonType.Gamma) {
+            for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
+                for (int j = 0; j < height - 1; j++) {
+                    var consecutiveActive = model.addVar(0, 1, 0, GRB.BINARY, "consecutive_row_active");
+                    model.addGenConstrAnd(consecutiveActive, new GRBVar[]{r_a[eIx][j], r_a[eIx][j + 1]}, "consecutive_active");
+                    GRBLinExpr expr = new GRBLinExpr();
+                    expr.addTerm(1, r_start[eIx][j]);
+                    expr.addTerm(-1, r_start[eIx][j + 1]);
+                    model.addGenConstrIndicator(consecutiveActive, 1, expr, '=', 0, "name");
                 }
             }
         }
