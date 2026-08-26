@@ -11,6 +11,7 @@ import model.Solution;
 import model.StatementEntityInstance;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
@@ -23,7 +24,9 @@ public class MosaicSetsSolver implements Solver {
     private final double maxMIPgapSubseqIt;
     private final String resultPath = "MosaicSets_run_data_";
     private final boolean renderMosaicSetsSvgs;
-    int gridSize = 100;
+    int gridSize;
+    int padding;
+    int fontSize = 10;
 
     boolean drawGrid = false;
     boolean drawOutline = true;
@@ -49,6 +52,7 @@ public class MosaicSetsSolver implements Solver {
     @Override
     public Solution solve(StatementEntityInstance inst, double timeLimit, int dimensions) throws Exception, GRBException {
         SetEmbedder.MINIMIZE_BOUNDARIES = minPerimeter;
+        gridSize = calculateGridSize(inst);
         Grid grid = new Grid(dimensions, dimensions, gridSize, gridSize, gridSize, Grid.TYPE_SQUARE);
 
         List<Set<String>> basemap = new ArrayList<>();
@@ -151,9 +155,9 @@ public class MosaicSetsSolver implements Solver {
         if (renderMosaicSetsSvgs) {
             GridCanvas<String> gc = new GridCanvas<>(new Grid(dimensions + 2, dimensions + 2, gridSize, 0, 0, Grid.TYPE_SQUARE));
 
+            int borderSize = (int) Math.ceil(0.05 * gridSize);
             Color borderColor = Color.white;
-            int borderSize = 5;
-            int maxFontSize = 20;
+//            int maxFontSize = 20;
             Color fontColor = Color.decode("#353535");
 
             var basemapColor = Arrays.asList("#eeeeee");
@@ -190,7 +194,7 @@ public class MosaicSetsSolver implements Solver {
             gc.addSolution(basemap, solution, ge.setsToSelectedArcs, centers,
                     usedCenters, instituteFillColors, projectArcColors, drawGrid,
                     drawOutline, false, arcOrder, borderColor, borderSize, true,
-                    maxFontSize, fontColor, false, false);
+                    fontSize, fontColor, false, false);
             gc.export(resultPath + "gridset.svg");
         }
 
@@ -218,5 +222,119 @@ public class MosaicSetsSolver implements Solver {
             centers.add(new Point2D.Double(sumX / set.size(), sumY / set.size()));
         }
         return centers;
+    }
+
+    /**
+     * Computes the smallest grid cell size that fits every element.
+     *
+     * @param inst Instance containing the text associated with every element
+     * @return Smallest possible size of a grid cell side
+     */
+    private int calculateGridSize(StatementEntityInstance inst) {
+        BufferedImage image =
+                new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g = image.createGraphics();
+
+        Font font = new Font("Cambria", Font.PLAIN, fontSize);
+        g.setFont(font);
+
+        FontMetrics fm = g.getFontMetrics();
+
+        int low = fm.getHeight();
+        int high = low;
+
+        // Find an upper bound.
+        while (!allLabelsFit(inst, high, fm)) {
+            high *= 2;
+        }
+
+        // Find the smallest fitting grid size.
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+
+            if (allLabelsFit(inst, mid, fm)) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        g.dispose();
+
+        // Store the padding corresponding to the FINAL grid size.
+        padding = (int) Math.ceil(0.08 * low);
+
+        return low;
+    }
+
+
+    private boolean allLabelsFit(
+            StatementEntityInstance inst,
+            int gridSize,
+            FontMetrics fm) {
+
+        for (String text : inst.statements.values()) {
+            if (!fitsInCell(text, gridSize, fm)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    private boolean fitsInCell(
+            String text,
+            int gridSize,
+            FontMetrics fm) {
+
+        // Padding must be calculated for THIS candidate grid size.
+        int candidatePadding =
+                (int) Math.ceil(0.08 * gridSize);
+
+        // gridSize - padding on the left - padding on the right.
+        int availableSize =
+                gridSize - 2 * candidatePadding;
+
+        if (availableSize <= 0) {
+            return false;
+        }
+
+        String[] pieces = text.split("(?<=[\\s-]+)");
+        List<String> finalPieces = new ArrayList<>();
+
+        String curStr = "";
+
+        for (String t : pieces) {
+            if (availableSize < fm.stringWidth(curStr + t.trim())) {
+
+                if (!curStr.isEmpty()) {
+                    finalPieces.add(curStr);
+                }
+
+                curStr = t;
+
+            } else {
+                curStr = curStr + t;
+            }
+        }
+
+        if (!curStr.isEmpty()) {
+            finalPieces.add(curStr);
+        }
+
+        // Horizontal fit.
+        for (String line : finalPieces) {
+            if (fm.stringWidth(line.trim()) > availableSize) {
+                return false;
+            }
+        }
+
+        // Vertical fit.
+        int textHeight =
+                finalPieces.size() * fm.getAscent();
+
+        return textHeight <= availableSize;
     }
 }

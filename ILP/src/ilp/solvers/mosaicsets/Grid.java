@@ -29,6 +29,37 @@ public class Grid {
 
   private int type;
 
+  private static class BoundarySegment {
+    Line2D.Double line;
+
+    // The two ORIGINAL grid corners belonging to this boundary edge.
+    Point2D.Double startCorner;
+    Point2D.Double endCorner;
+
+    /*
+     * Direction of the oriented boundary:
+     *
+     * 0 = east
+     * 1 = south
+     * 2 = west
+     * 3 = north
+     *
+     * The orientation is clockwise around cells in the set.
+     */
+    int direction;
+
+    BoundarySegment(Line2D.Double line,
+                    Point2D.Double startCorner,
+                    Point2D.Double endCorner,
+                    int direction) {
+
+      this.line = line;
+      this.startCorner = startCorner;
+      this.endCorner = endCorner;
+      this.direction = direction;
+    }
+  }
+
   public Grid(int rows, int cols, double colSpacing, double x0, double y0,
       int type) {
     points = new Point2D.Double[rows][cols];
@@ -299,98 +330,458 @@ public class Grid {
    *                        many times an edge was already used by an overlay
    * @return
    */
-  public ArrayList<Path2D.Double> getRegionFromArcset(List<Line2D.Double> arcs,
-      HashMap<Point2D.Double, HashMap<Point2D.Double, Integer>> edgeColorCount,
-      float strokeWidth, float borderSize, float offset, boolean dontCount) {
-    // segments of the polygon
-    ArrayList<Line2D.Double> segments = new ArrayList<Line2D.Double>();
+  public ArrayList<Path2D.Double> getRegionFromArcset(
+          List<Line2D.Double> arcs,
+          HashMap<Point2D.Double, HashMap<Point2D.Double, Integer>> edgeColorCount,
+          float strokeWidth,
+          float borderSize,
+          float offset,
+          boolean dontCount) {
 
-    // create list of all vertices in the arc set
+    // Keep this for the old hexagonal-grid implementation.
+    ArrayList<Line2D.Double> segments =
+            new ArrayList<Line2D.Double>();
+
+    /*
+     * For square grids we additionally remember the topology of every
+     * boundary segment.
+     */
+    ArrayList<BoundarySegment> squareSegments =
+            new ArrayList<BoundarySegment>();
+
+    // Create list of all vertices in the arc set.
     Set<Point2D.Double> nodes = new HashSet<Point2D.Double>();
+
     for (Line2D.Double arc : arcs) {
       Point2D.Double p = new Point2D.Double(arc.x1, arc.y1);
       nodes.add(p);
+
       if (!SetEmbedder.RELAX_PROJECT_CONTIGUITY) {
         p = new Point2D.Double(arc.x2, arc.y2);
         nodes.add(p);
       }
     }
-    // halfway is the distance between two nodes
-    // sidelength is the sidelength of a side of the hexagon.
 
-    // iterate over all nodes in the arc set
+    // Iterate over all nodes in the arc set.
     for (Point2D.Double u : nodes) {
-      // iterate over all edges of a node and process the neighbour.
+
+      // Iterate over all neighbors of u.
       for (Point2D.Double v : Graphs.neighborListOf(graph, u)) {
 
-        // create a segment iff u and v are not in the arc set.
+        // Boundary edge: u is in the set and v is outside the set.
         if (!nodes.contains(v)) {
+
           int counter = edgeColorCount.get(u).get(v);
 
-          double halfway = (this.colSpacing / 2. - borderSize / 2.
-              - (strokeWidth / 2. + strokeWidth * (counter)) - offset);
-          double sideLength = 0;
-          if (type == TYPE_HEX) {
-            sideLength = 2 * Math.tan(Math.PI / 6) * halfway * 0.5;
-          } else if (type == TYPE_SQUARE) {
-            sideLength = 2 * Math.tan(Math.PI / 4) * halfway * 0.6;
-          }
-          // System.out.println(counter);
+          double halfway =
+                  this.colSpacing / 2.
+                          - borderSize / 2.
+                          - (strokeWidth / 2. + strokeWidth * counter)
+                          - offset;
 
-          double dx = (v.x - u.x);
-          double dy = (v.y - u.y);
+          double sideLength = 0;
+
+          if (type == TYPE_HEX) {
+            sideLength =
+                    2 * Math.tan(Math.PI / 6) * halfway * 0.5;
+
+          } else if (type == TYPE_SQUARE) {
+            sideLength =
+                    2 * Math.tan(Math.PI / 4) * halfway * 0.6;
+          }
+
+          double dx = v.x - u.x;
+          double dy = v.y - u.y;
 
           double l = Math.sqrt(dx * dx + dy * dy);
 
           dx = dx / l;
           dy = dy / l;
 
-          // x and y are the halfway point between two vertices
+          // Position of the shifted boundary segment.
           double x = u.x + dx * halfway;
           double y = u.y + dy * halfway;
 
-          // perpendicular vector
+          // Perpendicular vector.
           double tmp = dx;
           dx = -dy;
           dy = tmp;
 
-          // endpoints of the segment are perpendicular to the halfway point.
+          // Endpoints of the visible boundary segment.
           double x1 = x + dx * sideLength / 2;
           double y1 = y + dy * sideLength / 2;
+
           double x2 = x - dx * sideLength / 2;
           double y2 = y - dy * sideLength / 2;
 
-          // add the segment
-          Line2D.Double segment = new Line2D.Double(x1, y1, x2, y2);
+          Line2D.Double segment =
+                  new Line2D.Double(x1, y1, x2, y2);
 
+          // Preserve the old list for hexagonal grids.
           segments.add(segment);
+
+          /*
+           * For square grids, also remember WHICH grid side this
+           * segment came from.
+           */
+          if (type == TYPE_SQUARE) {
+            squareSegments.add(
+                    createSquareBoundarySegment(u, v, segment));
+          }
+
           counter += 1;
 
           if (!dontCount) {
             edgeColorCount.get(u).put(v, counter);
+
+            // Leave this unchanged from original implementation.
             // edgeColorCount.get(v).put(u, counter);
           }
         }
       }
     }
 
-    /*
-     * the algorithm to build the polygon picks a random segment first, removes
-     * it and uses one of the endpoints as current endpoint. Both endpoints are
-     * added to the polygon. Then, it iterates over all remaining segments and
-     * finds the segment with the closest endpoint to the current endpoint. Both
-     * endpoints are added to the polygon (first the closest) and the one
-     * further away is the new current endpoint of the polygon. The segment is
-     * removed from the remaining segments. This is repeated until all segments
-     * are processed.
-     */
-    ArrayList<Path2D.Double> paths = new ArrayList<>();
-    while (segments.size() > 0) {
-      paths.add(getPolygonFromSegs(segments, borderSize));
+    ArrayList<Path2D.Double> paths =
+            new ArrayList<Path2D.Double>();
+
+    if (type == TYPE_SQUARE) {
+
+      /*
+       * Follow actual grid topology instead of nearest endpoints.
+       */
+      while (!squareSegments.isEmpty()) {
+        paths.add(
+                getSquarePolygonFromSegs(
+                        squareSegments,
+                        borderSize));
+      }
+
+    } else {
+
+      /*
+       * Keep the original behavior for hexagonal grids.
+       */
+      while (!segments.isEmpty()) {
+        paths.add(
+                getPolygonFromSegs(
+                        segments,
+                        borderSize));
+      }
     }
 
     return paths;
-    // return new Polygon(xpoints, ypoints, xPoints.size());
+  }
+
+  private BoundarySegment createSquareBoundarySegment(
+          Point2D.Double u,
+          Point2D.Double v,
+          Line2D.Double segment) {
+
+    double half = colSpacing / 2.0;
+
+    double dx = v.x - u.x;
+    double dy = v.y - u.y;
+
+    Point2D.Double startCorner;
+    Point2D.Double endCorner;
+
+    int direction;
+
+    /*
+     * Orient every boundary clockwise around the cell u.
+     *
+     *          EAST
+     *      +----------+
+     *      |          |
+     * NORTH|    u     |SOUTH
+     *      |          |
+     *      +----------+
+     *          WEST
+     *
+     * More precisely:
+     *
+     * top:    left  -> right
+     * right:  top   -> bottom
+     * bottom: right -> left
+     * left:   bottom -> top
+     */
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+
+      if (dx > 0) {
+        // v is RIGHT of u.
+        startCorner = new Point2D.Double(
+                u.x + half,
+                u.y - half);
+
+        endCorner = new Point2D.Double(
+                u.x + half,
+                u.y + half);
+
+        direction = 1; // south
+
+      } else {
+        // v is LEFT of u.
+        startCorner = new Point2D.Double(
+                u.x - half,
+                u.y + half);
+
+        endCorner = new Point2D.Double(
+                u.x - half,
+                u.y - half);
+
+        direction = 3; // north
+      }
+
+    } else {
+
+      if (dy > 0) {
+        // v is BELOW u.
+        startCorner = new Point2D.Double(
+                u.x + half,
+                u.y + half);
+
+        endCorner = new Point2D.Double(
+                u.x - half,
+                u.y + half);
+
+        direction = 2; // west
+
+      } else {
+        // v is ABOVE u.
+        startCorner = new Point2D.Double(
+                u.x - half,
+                u.y - half);
+
+        endCorner = new Point2D.Double(
+                u.x + half,
+                u.y - half);
+
+        direction = 0; // east
+      }
+    }
+
+    /*
+     * Orient the actual shifted Line2D in the same direction as its
+     * logical grid edge.
+     *
+     * Pick whichever endpoint lies closest to startCorner.
+     */
+    double dist1 = Point2D.distanceSq(
+            segment.x1,
+            segment.y1,
+            startCorner.x,
+            startCorner.y);
+
+    double dist2 = Point2D.distanceSq(
+            segment.x2,
+            segment.y2,
+            startCorner.x,
+            startCorner.y);
+
+    Line2D.Double orientedLine;
+
+    if (dist1 <= dist2) {
+      orientedLine = new Line2D.Double(
+              segment.x1,
+              segment.y1,
+              segment.x2,
+              segment.y2);
+    } else {
+      orientedLine = new Line2D.Double(
+              segment.x2,
+              segment.y2,
+              segment.x1,
+              segment.y1);
+    }
+
+    return new BoundarySegment(
+            orientedLine,
+            startCorner,
+            endCorner,
+            direction);
+  }
+
+  private Path2D.Double getSquarePolygonFromSegs(
+          ArrayList<BoundarySegment> segments,
+          float borderSize) {
+
+    Path2D.Double path = new Path2D.Double();
+
+    // Start with any boundary segment.
+    BoundarySegment firstSegment = segments.remove(0);
+    BoundarySegment lastSegment = firstSegment;
+
+    path.moveTo(
+            firstSegment.line.x1,
+            firstSegment.line.y1);
+
+    path.lineTo(
+            firstSegment.line.x2,
+            firstSegment.line.y2);
+
+    while (true) {
+
+      /*
+       * Find the segment that ACTUALLY follows this one at the same
+       * logical grid corner.
+       */
+      BoundarySegment nextSegment =
+              findNextSquareBoundarySegment(
+                      lastSegment,
+                      firstSegment,
+                      segments);
+
+      if (nextSegment == null) {
+        /*
+         * This should not happen for a properly closed boundary.
+         *
+         * Don't jump to some geometrically close segment.
+         */
+        throw new IllegalStateException(
+                "Could not continue square boundary at grid corner "
+                        + lastSegment.endCorner);
+      }
+
+      /*
+       * If the correct next segment is our first segment, we have
+       * completed this boundary component.
+       */
+      if (nextSegment == firstSegment) {
+
+        List<Point2D.Double> intersectionPoints =
+                calcIntersectionPoint(
+                        lastSegment.line,
+                        firstSegment.line,
+                        borderSize);
+
+        for (Point2D.Double intersection : intersectionPoints) {
+          path.lineTo(
+                  intersection.x,
+                  intersection.y);
+        }
+
+        path.closePath();
+
+        return path;
+      }
+
+      /*
+       * Remove the segment now that it belongs to this polygon.
+       */
+      segments.remove(nextSegment);
+
+      /*
+       * Keep existing bend/intersection behavior.
+       */
+      List<Point2D.Double> intersectionPoints =
+              calcIntersectionPoint(
+                      lastSegment.line,
+                      nextSegment.line,
+                      borderSize);
+
+      for (Point2D.Double intersection : intersectionPoints) {
+        path.lineTo(
+                intersection.x,
+                intersection.y);
+      }
+
+      lastSegment = nextSegment;
+    }
+  }
+
+  private BoundarySegment findNextSquareBoundarySegment(
+          BoundarySegment current,
+          BoundarySegment first,
+          ArrayList<BoundarySegment> remaining) {
+
+    BoundarySegment best = null;
+    int bestPriority = Integer.MAX_VALUE;
+
+    /*
+     * The first segment has already been removed from "remaining",
+     * but it must still be considered because selecting it means the
+     * polygon is complete.
+     */
+    if (sameGridCorner(
+            current.endCorner,
+            first.startCorner)) {
+
+      best = first;
+      bestPriority =
+              turnPriority(
+                      current.direction,
+                      first.direction);
+    }
+
+    for (BoundarySegment candidate : remaining) {
+
+      if (!sameGridCorner(
+              current.endCorner,
+              candidate.startCorner)) {
+        continue;
+      }
+
+      int priority =
+              turnPriority(
+                      current.direction,
+                      candidate.direction);
+
+      if (priority < bestPriority) {
+        best = candidate;
+        bestPriority = priority;
+      }
+    }
+
+    return best;
+  }
+
+
+  /**
+   * At an ambiguous corner, keep the set on the same side by
+   * preferring:
+   *
+   * right turn -> straight -> left turn -> backwards.
+   *
+   * Normally there is only one candidate. This mainly matters when
+   * two cells touch diagonally at one grid corner.
+   */
+  private int turnPriority(
+          int currentDirection,
+          int nextDirection) {
+
+    int delta =
+            (nextDirection - currentDirection + 4) % 4;
+
+    // Right turn.
+    if (delta == 1)
+      return 0;
+
+    // Straight.
+    if (delta == 0)
+      return 1;
+
+    // Left turn.
+    if (delta == 3)
+      return 2;
+
+    // Reverse -- should normally never be needed.
+    return 3;
+  }
+
+
+  /**
+   * Logical grid corners should normally be exactly equal, but use a
+   * tiny tolerance to avoid floating-point issues.
+   */
+  private boolean sameGridCorner(
+          Point2D.Double a,
+          Point2D.Double b) {
+
+    double eps =
+            Math.max(1e-8, colSpacing * 1e-8);
+
+    return a.distanceSq(b) <= eps * eps;
   }
 
   /**

@@ -23,14 +23,22 @@ public class SVGExport {
 
   SVGGraphics2D svgGenerator;
 
-  public Graphics2D createContext() {
+  public Graphics2D createContext(int width, int height) {
     // Get a DOMImplementation.
-    DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
+    DOMImplementation domImpl =
+            GenericDOMImplementation.getDOMImplementation();
 
-    // Create an instance of org.w3c.dom.Document.
+    // Create the SVG document.
     String svgNS = "http://www.w3.org/2000/svg";
-    Document document = domImpl.createDocument(svgNS, "svg", null);
+    Document document =
+            domImpl.createDocument(svgNS, "svg", null);
+
     svgGenerator = new SVGGraphics2D(document);
+
+    // Set the SVG canvas to the size required by the grid.
+    svgGenerator.setSVGCanvasSize(
+            new Dimension(width, height)
+    );
 
     return svgGenerator;
   }

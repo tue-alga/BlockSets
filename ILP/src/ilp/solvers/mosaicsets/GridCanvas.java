@@ -9,6 +9,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D.Double;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.PathIterator;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
@@ -91,7 +92,7 @@ public class GridCanvas<T> extends Canvas {
       }
     }
 
-    g.setFont(g.getFont().deriveFont((float) 20.0));
+//    g.setFont(g.getFont().deriveFont((float) 20.0));
 
     // fill basemap polygons with color
     if (institutes != null && pointsToElements != null) {
@@ -185,7 +186,7 @@ public class GridCanvas<T> extends Canvas {
     }
 
     // draw cell labels
-    g.setFont(new Font("Cambria", Font.PLAIN, 10));
+    g.setFont(new Font("Cambria", Font.PLAIN, maxFontSize));
     if (this.drawLabels) {
       if (pointsToElements != null) {
         FontMetrics fm = g.getFontMetrics();
@@ -282,16 +283,45 @@ public class GridCanvas<T> extends Canvas {
    */
   public void export(String path) {
     SVGExport exp = new SVGExport();
-    Graphics2D graphic;
 
-    graphic = exp.createContext();
+    // Find the bounds of the entire grid.
+    double minX = java.lang.Double.POSITIVE_INFINITY;
+    double minY = java.lang.Double.POSITIVE_INFINITY;
+    double maxX = java.lang.Double.NEGATIVE_INFINITY;
+    double maxY = java.lang.Double.NEGATIVE_INFINITY;
+
+    for (int i = 0; i < grid.points.length; i++) {
+      for (int j = 0; j < grid.points[i].length; j++) {
+        Point2D.Double p = grid.points[i][j];
+
+        minX = Math.min(minX, p.x);
+        minY = Math.min(minY, p.y);
+        maxX = Math.max(maxX, p.x);
+        maxY = Math.max(maxY, p.y);
+      }
+    }
+
+    // Leave enough room around the outer cells.
+    double margin = Math.max(grid.colSpacing, grid.rowSpacing);
+
+    int width = (int) Math.ceil((maxX - minX) + 2 * margin);
+    int height = (int) Math.ceil((maxY - minY) + 2 * margin);
+
+    Graphics2D graphic = exp.createContext(width, height);
+
+    // Move the complete drawing into the SVG canvas.
+    graphic.translate(
+            -minX + margin,
+            -minY + margin
+    );
+
     this.paint(graphic);
+
     try {
       exp.writeToFile(path);
     } catch (TransformerException e) {
       e.printStackTrace();
     }
-
   }
 
   /**
@@ -311,7 +341,8 @@ public class GridCanvas<T> extends Canvas {
       // 30);
       int colorIndex = setsToColorMap.get(setID);
 
-      float strokeWidth = 8;
+      float strokeWidth = (float) (0.08 * grid.colSpacing);
+//      float strokeWidth = 8;
       Stroke stroke = new BasicStroke(strokeWidth, BasicStroke.CAP_ROUND,
           BasicStroke.JOIN_ROUND);
       // g.setStroke(dashed);
@@ -329,7 +360,15 @@ public class GridCanvas<T> extends Canvas {
         if (!this.setsToPolygons.containsKey(setID))
           this.setsToPolygons.put(setID, polys);
 
-        g.draw(getAreaFromPolys(polys));
+        Area area = getAreaFromPolys(polys);
+
+        int totalBends = countBends(area);
+
+        System.out.println(
+                "Set " + setID + ": " + totalBends + " bends"
+        );
+
+        g.draw(area);
 
         float strokeWidth2 = 1.5f;
         stroke = new BasicStroke(strokeWidth2, BasicStroke.CAP_ROUND,
@@ -721,4 +760,122 @@ public class GridCanvas<T> extends Canvas {
     this.drawKelpFusion = drawKelpFusion;
   }
 
+  private int countBends(Shape shape) {
+    List<Point2D.Double> points = new ArrayList<>();
+
+    PathIterator iterator = shape.getPathIterator(null);
+    double[] coords = new double[6];
+
+    int totalBends = 0;
+
+    while (!iterator.isDone()) {
+      int type = iterator.currentSegment(coords);
+
+      if (type == PathIterator.SEG_MOVETO) {
+        // Finish previous component, if there was one.
+        if (points.size() >= 3) {
+          totalBends += countBendsInClosedPath(points);
+        }
+
+        points.clear();
+        points.add(new Point2D.Double(coords[0], coords[1]));
+
+      } else if (type == PathIterator.SEG_LINETO) {
+        Point2D.Double p =
+                new Point2D.Double(coords[0], coords[1]);
+
+        if (points.isEmpty()
+                || points.get(points.size() - 1).distanceSq(p) > 1e-12) {
+          points.add(p);
+        }
+
+      } else if (type == PathIterator.SEG_CLOSE) {
+        if (points.size() >= 3) {
+          totalBends += countBendsInClosedPath(points);
+        }
+
+        points.clear();
+      }
+
+      iterator.next();
+    }
+
+    // Just in case the shape was not explicitly closed.
+    if (points.size() >= 3) {
+      totalBends += countBendsInClosedPath(points);
+    }
+
+    return totalBends;
+  }
+
+
+  private int countBendsInClosedPath(List<Point2D.Double> points) {
+
+    if (points.size() < 3) {
+      return 0;
+    }
+
+    /*
+     * Some PathIterators explicitly repeat the starting point at the end:
+     *
+     *   A -> B -> C -> A -> CLOSE
+     *
+     * Others give:
+     *
+     *   A -> B -> C -> CLOSE
+     *
+     * Normalize both to the second form.
+     */
+    if (points.size() > 1) {
+      Point2D.Double first = points.get(0);
+      Point2D.Double last = points.get(points.size() - 1);
+
+      if (first.distanceSq(last) < 1e-12) {
+        points = new ArrayList<>(points);
+        points.remove(points.size() - 1);
+      }
+    }
+
+    int bends = 0;
+
+    double minBendAngle = Math.toRadians(1.0);
+
+    for (int i = 0; i < points.size(); i++) {
+
+      Point2D.Double prev =
+              points.get((i - 1 + points.size()) % points.size());
+
+      Point2D.Double curr =
+              points.get(i);
+
+      Point2D.Double next =
+              points.get((i + 1) % points.size());
+
+      double dx1 = curr.x - prev.x;
+      double dy1 = curr.y - prev.y;
+
+      double dx2 = next.x - curr.x;
+      double dy2 = next.y - curr.y;
+
+      double len1 = Math.hypot(dx1, dy1);
+      double len2 = Math.hypot(dx2, dy2);
+
+      if (len1 < 1e-10 || len2 < 1e-10) {
+        continue;
+      }
+
+      double cos =
+              (dx1 * dx2 + dy1 * dy2) / (len1 * len2);
+
+      cos = Math.max(-1.0, Math.min(1.0, cos));
+
+      double angle = Math.acos(cos);
+
+      if (angle > minBendAngle) {
+        bends++;
+      }
+    }
+
+    return bends;
+  }
 }
