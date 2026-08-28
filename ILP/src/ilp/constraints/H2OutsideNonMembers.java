@@ -23,7 +23,7 @@ public class H2OutsideNonMembers implements ConstraintModule {
 
                 for (int j = 0; j < nStatements; j++) {
                     final int statementIdFinal = ctx.statementIds.get(j);
-                    if (Arrays.stream(ctx.inst.entityIndToStatements.get(entityId))
+                    if (Arrays.stream(ctx.inst.entityIdToStatements.get(entityId))
                             .noneMatch(x -> x == statementIdFinal)) {
 
                         GRBVar[] vars = new GRBVar[4];

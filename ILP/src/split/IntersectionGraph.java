@@ -96,23 +96,23 @@ public class IntersectionGraph {
     private void addStatement(StatementEntityInstance instance, int entity1, int entity2, int stInd) {
         for (Edge e : intersectionGraph[getGraphIndexFromId(entity1)].adj) {
             if (e.target == entity2) {
-                e.statements.add(instance.entityIndToStatements.get(entity1)[stInd]);
+                e.statements.add(instance.entityIdToStatements.get(entity1)[stInd]);
             }
         }
 
         for (Edge e : intersectionGraph[getGraphIndexFromId(entity2)].adj) {
             if (e.target == entity1) {
-                e.statements.add(instance.entityIndToStatements.get(entity1)[stInd]);
+                e.statements.add(instance.entityIdToStatements.get(entity1)[stInd]);
             }
         }
     }
 
     public void createEdge(StatementEntityInstance instance, int entity1, int entity2) {
         // Go through both statement lists
-        for (int k = 0; k < instance.entityIndToStatements.get(entity1).length; k++) {
-            for (int l = 0; l < instance.entityIndToStatements.get(entity2).length; l++) {
+        for (int k = 0; k < instance.entityIdToStatements.get(entity1).length; k++) {
+            for (int l = 0; l < instance.entityIdToStatements.get(entity2).length; l++) {
                 // They share some statement
-                if (instance.entityIndToStatements.get(entity1)[k] == instance.entityIndToStatements.get(entity2)[l]) {
+                if (instance.entityIdToStatements.get(entity1)[k] == instance.entityIdToStatements.get(entity2)[l]) {
                     initEdge(entity1, entity2);
                     addStatement(instance, entity1, entity2, k);
                 }

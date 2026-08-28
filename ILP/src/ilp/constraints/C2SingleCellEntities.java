@@ -14,7 +14,7 @@ public class C2SingleCellEntities implements ConstraintModule {
     public void add(ModelContext ctx) throws GRBException {
         if ((ctx.v instanceof VarsRectangles v)) { // only add this constraint for rectangle solutions
             for (int i = 0; i < ctx.entityIds.size(); i++) {
-                if (ctx.inst.entityIndToStatements.get(ctx.entityIds.get(i)).length == 1) {
+                if (ctx.inst.entityIdToStatements.get(ctx.entityIds.get(i)).length == 1) {
                     GRBLinExpr expr = new GRBLinExpr();
                     expr.addTerm(1.0, v.entityCoordinates[i][2]);
                     expr.addTerm(-1.0, v.entityCoordinates[i][0]);

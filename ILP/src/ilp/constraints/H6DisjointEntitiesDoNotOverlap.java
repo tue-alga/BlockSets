@@ -19,8 +19,8 @@ public class H6DisjointEntitiesDoNotOverlap implements ConstraintModule {
 
             for (int i = 0; i < nEntities; i++) {
                 for (int j = i + 1; j < nEntities; j++) {
-                    int[] statementsOfEntity1 = ctx.inst.entityIndToStatements.get(ctx.entityIds.get(i));
-                    int[] statementsOfEntity2 = ctx.inst.entityIndToStatements.get(ctx.entityIds.get(j));
+                    int[] statementsOfEntity1 = ctx.inst.entityIdToStatements.get(ctx.entityIds.get(i));
+                    int[] statementsOfEntity2 = ctx.inst.entityIdToStatements.get(ctx.entityIds.get(j));
                     boolean overlap = false;
                     for (int k = 0; k < statementsOfEntity1.length; k++) {
                         for (int l = 0; l < statementsOfEntity2.length; l++) {

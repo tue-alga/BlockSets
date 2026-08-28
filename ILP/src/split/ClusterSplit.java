@@ -13,12 +13,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -132,7 +130,7 @@ public class ClusterSplit {
         // true iff statement belongs to that entity
         boolean[][] vectors = new boolean[nStatements][nEntities];
 
-        for (Map.Entry<Integer, int[]> entry : instance.entityIndToStatements.entrySet()) {
+        for (Map.Entry<Integer, int[]> entry : instance.entityIdToStatements.entrySet()) {
             int entityId = entry.getKey();
             Integer col = entityIdToCol.get(entityId);
 
@@ -262,7 +260,7 @@ public class ClusterSplit {
             Map<Integer, String> newEntities = new HashMap<>();
             Map<Integer, int[]> newEntityToStatements = new HashMap<>();
 
-            for (Map.Entry<Integer, int[]> entry : originalInstance.entityIndToStatements.entrySet()) {
+            for (Map.Entry<Integer, int[]> entry : originalInstance.entityIdToStatements.entrySet()) {
                 int entityId = entry.getKey();
                 int[] oldStatementIds = entry.getValue();
 

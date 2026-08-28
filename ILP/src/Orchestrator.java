@@ -40,8 +40,38 @@ public class Orchestrator {
         this.componentArrangementTimeLimit = componentArrangementTimeLimit;
     }
 
+    List<StatementEntityInstance> clusterSplit(StatementEntityInstance inst) {
+        ClusterSplit splitter = new ClusterSplit(inst);
+        String os = System.getProperty("os.name").toLowerCase();
+        return splitter.splitWithPython(
+               os.contains("win") ?
+                       Paths.get("ILP", "src", "split", "RectEuler-Split", ".venv", "Scripts", "python.exe") :
+                       Paths.get("ILP", "src", "split", "RectEuler-Split", ".venv", "bin", "python")
+               ,
+               Paths.get("ILP", "src", "split", "RectEuler-Split", "cluster_split.py"),
+               Paths.get("ILP", "src", "split", "RectEuler-Split"),
+               2,
+               0,
+               5);
+    }
+
+    List<StatementEntityInstance> hypergraphSeparatorSplit(StatementEntityInstance inst) {
+        GreedySplit splitInst = new GreedySplit(inst);
+        return splitInst.findSplit(splitK, splitRatio);
+    }
+
+    List<StatementEntityInstance> split(StatementEntityInstance inst) {
+        var clusterParts = clusterSplit(inst);
+        var hgsParts = hypergraphSeparatorSplit(inst);
+        if (clusterParts.size() < hgsParts.size()) {
+            return clusterParts;
+        } else {
+            return hgsParts;
+        }
+    }
+
     public List<Solution> solveWithSplits(Solver solver, StatementEntityInstance root,
-                                          boolean rectEulerSplit, StatsRecorder stats, PolygonType polygonType) throws Exception, GRBException {
+                                          StatsRecorder stats, PolygonType polygonType) throws Exception, GRBException {
         // Store solved instances to record stats
         ArrayList<StatementEntityInstance> solvedInstances = new ArrayList<>();
 
@@ -77,29 +107,12 @@ public class Orchestrator {
             }
 
             // Too large or no optimal -> split
-            List<StatementEntityInstance> parts;
 
             // Record start time
             long beforeSplit = System.nanoTime();
-            if (rectEulerSplit) {
-                ClusterSplit splitter = new ClusterSplit(inst);
-                String os = System.getProperty("os.name").toLowerCase();
-                parts = splitter.splitWithPython(
-                        os.contains("win") ?
-                                Paths.get("ILP", "src", "split", "RectEuler-Split", ".venv", "Scripts", "python.exe") :
-                                Paths.get("ILP", "src", "split", "RectEuler-Split", ".venv", "bin", "python")
-                        ,
-                        Paths.get("ILP", "src", "split", "RectEuler-Split", "cluster_split.py"),
-                        Paths.get("ILP", "src", "split", "RectEuler-Split"),
-                        2,
-                        0,
-                        5);
-            } else {
-                GreedySplit splitInst = new GreedySplit(inst);
-                parts = splitInst.findSplit(splitK, splitRatio);
-                // Record deletions
-                deletedNodes.addAll(splitInst.deletedEntities);
-            }
+
+            var parts = split(inst);
+
             // Measure total runtime for this split
             long afterSplit = System.nanoTime();
             double splitTimeS = (afterSplit - beforeSplit) / 1_000_000_000.0;
@@ -212,7 +225,7 @@ public class Orchestrator {
 
         try {
             List<Solution> sols;
-            sols = solveWithSplits(solver, instance, useRectEulerSplit, stats, polygonType);
+            sols = solveWithSplits(solver, instance, stats, polygonType);
             sols.removeIf(solution -> solution.getEntityIds().isEmpty());
 
             long beforeArrange = System.nanoTime();

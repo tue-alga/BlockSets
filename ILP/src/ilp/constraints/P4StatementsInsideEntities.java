@@ -16,7 +16,7 @@ public class P4StatementsInsideEntities implements ConstraintModule {
             // Positioning statements inside entities (H1)
             for (int i = 0; i < nEntities; i++) {
                 int entityId = ctx.entityIds.get(i);
-                int[] statementsOfEntity = ctx.inst.entityIndToStatements.get(entityId);
+                int[] statementsOfEntity = ctx.inst.entityIdToStatements.get(entityId);
                 for (int st = 0; st < statementsOfEntity.length; st++) {
                     int statementIndex = ctx.statementIdToIdx.get(statementsOfEntity[st]);
                     for (int j = 0; j <= ctx.dimensions; j++) {

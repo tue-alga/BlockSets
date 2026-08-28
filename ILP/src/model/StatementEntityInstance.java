@@ -17,7 +17,7 @@ public class StatementEntityInstance {
 
     // map from entity index to statement indices corresponding to the indices in
     // the arrays entities, statements
-    public HashMap<Integer, int[]> entityIndToStatements;
+    public HashMap<Integer, int[]> entityIdToStatements;
 
     // NEW Constructor to load JSON data from file (keeping the ids from the
     // dataset)
@@ -59,7 +59,7 @@ public class StatementEntityInstance {
 
             // Load entity to statement mappings
             JSONObject entityStatementsObject = jsonData.getJSONObject("entity_statements");
-            entityIndToStatements = new HashMap<>();
+            entityIdToStatements = new HashMap<>();
 
             for (String key : entityStatementsObject.keySet()) {
                 int entityId = Integer.parseInt(key); // Entity ID from JSON
@@ -70,7 +70,7 @@ public class StatementEntityInstance {
                     statementIds[j] = statementIndicesArray.getInt(j); // Store statement ID
                 }
 
-                entityIndToStatements.put(entityId, statementIds); // Store using the actual entity ID
+                entityIdToStatements.put(entityId, statementIds); // Store using the actual entity ID
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -80,10 +80,10 @@ public class StatementEntityInstance {
     public StatementEntityInstance(
             Map<Integer, String> entities,
             Map<Integer, String> statements,
-            Map<Integer, int[]> entityIndToStatements) {
+            Map<Integer, int[]> entityIdToStatements) {
         this.entities = (HashMap<Integer, String>) entities;
         this.statements = (HashMap<Integer, String>) statements;
-        this.entityIndToStatements = (HashMap<Integer, int[]>) entityIndToStatements;
+        this.entityIdToStatements = (HashMap<Integer, int[]>) entityIdToStatements;
         this.numberOfEntities = entities.size();
         this.numberOfStatements = statements.size();
     }
@@ -110,7 +110,7 @@ public class StatementEntityInstance {
         }
 
         // Add entity to statement map
-        this.entityIndToStatements = new HashMap<>(entityStatements);
+        this.entityIdToStatements = new HashMap<>(entityStatements);
     }
 
     public void print() {
@@ -128,7 +128,7 @@ public class StatementEntityInstance {
         }
 
         System.out.println("\nEntity -> Statements mapping:");
-        for (Map.Entry<Integer, int[]> entry : entityIndToStatements.entrySet()) {
+        for (Map.Entry<Integer, int[]> entry : entityIdToStatements.entrySet()) {
             int entityId = entry.getKey();
             int[] stmtIds = entry.getValue();
 

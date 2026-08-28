@@ -47,7 +47,7 @@ public class StatsRecorder {
         this.numElements = inst.numberOfStatements;
 
         singletons = new HashSet<>();
-        for (var entry : inst.entityIndToStatements.entrySet()) {
+        for (var entry : inst.entityIdToStatements.entrySet()) {
             if (entry.getValue().length > 1)
                 numNonSingletonSets++;
             else

@@ -42,7 +42,7 @@ public class GraphHelper {
     }
 
     private void createMaps() {
-        HashMap<Integer, int[]> entityStatementMap = instance.entityIndToStatements;
+        HashMap<Integer, int[]> entityStatementMap = instance.entityIdToStatements;
 
         // Go through all entities
         for (Integer entity : entityStatementMap.keySet()) {

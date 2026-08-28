@@ -42,7 +42,7 @@ public class SplitIntanceFactory {
                 // For non deleted nodes get their statements from the instance
                 if (!ent.deleted) {
                     // Add the statements of this entity to the map of this component
-                    int[] arr = parentInstance.entityIndToStatements.get(ent.id);
+                    int[] arr = parentInstance.entityIdToStatements.get(ent.id);
                     int[] uniqueArr = removeDuplicates(arr);
                     entToSt.put(ent.id, uniqueArr);
 
@@ -110,14 +110,14 @@ public class SplitIntanceFactory {
                     smallestInstance.numberOfStatements = smallestInstance.statements.keySet().size();
 
                     for (Integer entity : group.entities) {
-                        int[] currentStatements = smallestInstance.entityIndToStatements.get(entity);
+                        int[] currentStatements = smallestInstance.entityIdToStatements.get(entity);
 
                         int[] updatedStatements = Arrays.copyOf(currentStatements, currentStatements.length + 1);
                         updatedStatements[currentStatements.length] = statementId;
 
                         // Replace the old (shared) array in the instance's statement-entity map with
                         // the combined array
-                        smallestInstance.entityIndToStatements.put(entity, updatedStatements);
+                        smallestInstance.entityIdToStatements.put(entity, updatedStatements);
                     }
                 }
             }
@@ -158,7 +158,7 @@ public class SplitIntanceFactory {
 
             // Get arrays for the unique and shared statements of this node
             int[] uniqueArr = node.uniqueStatements.stream().mapToInt(Integer::intValue).toArray();
-            int[] sharedArr = smallestInstance.entityIndToStatements.get(node.id);
+            int[] sharedArr = smallestInstance.entityIdToStatements.get(node.id);
 
             // Make a new array in case this node was not already in the smallest instance
             if (sharedArr == null)
@@ -171,7 +171,7 @@ public class SplitIntanceFactory {
 
             // Replace the old (shared) array in the instance's statement-entity map with
             // the combined array
-            smallestInstance.entityIndToStatements.put(node.id, combinedArr);
+            smallestInstance.entityIdToStatements.put(node.id, combinedArr);
         }
     }
 
@@ -196,10 +196,10 @@ public class SplitIntanceFactory {
     private void removeRedundantEntityCopies(ArrayList<StatementEntityInstance> instances) {
         for (StatementEntityInstance inst : instances) {
             // Update the entity-statement map
-            Iterator<Integer> it1 = inst.entityIndToStatements.keySet().iterator();
+            Iterator<Integer> it1 = inst.entityIdToStatements.keySet().iterator();
             while (it1.hasNext()) {
                 int entityId = it1.next();
-                int[] arr = inst.entityIndToStatements.get(entityId);
+                int[] arr = inst.entityIdToStatements.get(entityId);
                 if (arr == null || arr.length == 0) {
                     it1.remove();
                 }
@@ -209,7 +209,7 @@ public class SplitIntanceFactory {
             Iterator<Integer> it2 = inst.entities.keySet().iterator();
             while (it2.hasNext()) {
                 int entityId = it2.next();
-                if (!inst.entityIndToStatements.containsKey(entityId)) {
+                if (!inst.entityIdToStatements.containsKey(entityId)) {
                     it2.remove();
                 }
             }
@@ -239,7 +239,7 @@ public class SplitIntanceFactory {
 
     private void findUniqueStatements(Node node) {
         // Get all statements of this node
-        int[] allStatements = parentInstance.entityIndToStatements.get(node.id);
+        int[] allStatements = parentInstance.entityIdToStatements.get(node.id);
         // Get only statements shared with another entity
         ArrayList<Integer> sharedStatements = new ArrayList<>();
         for (ArrayList<Node> component : graph.components) {

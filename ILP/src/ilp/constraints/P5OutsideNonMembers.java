@@ -23,7 +23,7 @@ public class P5OutsideNonMembers implements ConstraintModule {
 
                 for (int st = 0; st < nStatements; st++) {
                     final int statementIdFinal = ctx.statementIds.get(st);
-                    if (Arrays.stream(ctx.inst.entityIndToStatements.get(entityId))
+                    if (Arrays.stream(ctx.inst.entityIdToStatements.get(entityId))
                             .noneMatch(x -> x == statementIdFinal)) {
 
                         for (int j = 0; j <= ctx.dimensions; j++) {

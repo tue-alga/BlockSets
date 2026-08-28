@@ -15,7 +15,7 @@ public class H1StatementsInsideEntities implements ConstraintModule {
             // Positioning statements inside entities (H1)
             for (int i = 0; i < nEntities; i++) {
                 int entityId = ctx.entityIds.get(i);
-                int[] statementsOfEntity = ctx.inst.entityIndToStatements.get(entityId);
+                int[] statementsOfEntity = ctx.inst.entityIdToStatements.get(entityId);
                 for (int j = 0; j < statementsOfEntity.length; j++) {
                     int statementIndex = ctx.statementIdToIdx.get(statementsOfEntity[j]);
 

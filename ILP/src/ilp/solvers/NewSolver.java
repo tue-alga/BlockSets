@@ -27,12 +27,6 @@ public class NewSolver implements Solver {
         if (polygonType != PolygonType.Gamma && polygonType != PolygonType.Nabla && polygonType != PolygonType.Orthoconvex) {
             throw new RuntimeException("NewSolver cannot handle polygon type " + polygonType.name());
         }
-        try {
-            this.env = new GRBEnv();
-            this.model = new GRBModel(env);
-        } catch (GRBException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     enum Direction {
@@ -44,24 +38,36 @@ public class NewSolver implements Solver {
         int width = dimensions;
         int height = dimensions;
 
+        try {
+            this.env = new GRBEnv();
+            this.model = new GRBModel(env);
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+
         this.entityIds = new ArrayList<>(inst.entities.keySet());
         this.statementIds = new ArrayList<>(inst.statements.keySet());
 
         HashMap<Integer, ArrayList<Integer>> statementIdToEntityIds = new HashMap<>();
+        ArrayList<Integer> singletonEntityIds = new ArrayList<>();
         for (var eId : entityIds) {
-            var statements = inst.entityIndToStatements.get(eId);
+            var statements = inst.entityIdToStatements.get(eId);
             for (var statement : statements) {
                 statementIdToEntityIds.computeIfAbsent(statement, k -> new ArrayList<>()).add(eId);
+            }
+            if (statements.length == 1) {
+                singletonEntityIds.add(eId);
             }
         }
         for (var entityIds : statementIdToEntityIds.values()) {
             Collections.sort(entityIds);
         }
-        HashMap<ArrayList<Integer>, ArrayList<Integer>> zones = new HashMap<>();
-        for (var sId : statementIdToEntityIds.keySet()) {
-            var zone = statementIdToEntityIds.get(sId);
-            zones.computeIfAbsent(zone, k -> new ArrayList<>()).add(sId);
-        }
+
+        this.entityIdToIdx = new HashMap<>();
+        for (int i = 0; i < entityIds.size(); i++) entityIdToIdx.put(entityIds.get(i), i);
+
+        this.statementIdToIdx = new HashMap<>();
+        for (int i = 0; i < statementIds.size(); i++) statementIdToIdx.put(statementIds.get(i), i);
 
         // Group indistinguishable elements
         // This comes down to using the zones of the set system.
@@ -70,6 +76,12 @@ public class NewSolver implements Solver {
 
         // Maps a set of statements to the sets they belong to.
         HashMap<ArrayList<Integer>, ArrayList<Integer>> groupedElements = new HashMap<>();
+
+        HashMap<ArrayList<Integer>, ArrayList<Integer>> zones = new HashMap<>();
+        for (var sId : statementIdToEntityIds.keySet()) {
+            var zone = statementIdToEntityIds.get(sId);
+            zones.computeIfAbsent(zone, k -> new ArrayList<>()).add(sId);
+        }
 
         class CandidateCenter {
             public int statement;
@@ -136,12 +148,6 @@ public class NewSolver implements Solver {
                 entityToGroups.computeIfAbsent(entity, k -> new ArrayList<>()).add(group);
             }
         }
-
-        this.entityIdToIdx = new HashMap<>();
-        for (int i = 0; i < entityIds.size(); i++) entityIdToIdx.put(entityIds.get(i), i);
-
-        this.statementIdToIdx = new HashMap<>();
-        for (int i = 0; i < statementIds.size(); i++) statementIdToIdx.put(statementIds.get(i), i);
 
         // =======================================
         // ============== VARIABLES ==============
@@ -259,6 +265,19 @@ public class NewSolver implements Solver {
             }
         }
 
+        // Singletons
+        for (int eId : singletonEntityIds) {
+            int eIx = entityIdToIdx.get(eId);
+
+            GRBLinExpr expr = new GRBLinExpr();
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    expr.addTerm(1.0, z[eIx][i][j]);
+                }
+            }
+            model.addConstr(expr, '=', 1, "singleton_occupies_single_cell");
+        }
+
         // Element exclusion
         for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
             int eId = this.entityIds.get(eIx);
@@ -283,8 +302,8 @@ public class NewSolver implements Solver {
         // Independent sets are represented by disjoint shapes
         for (int eIx1 = 0; eIx1 < inst.numberOfEntities; eIx1++) {
             for (int eIx2 = eIx1 + 1; eIx2 < inst.numberOfEntities; eIx2++) {
-                int[] statementsOfEntity1 = inst.entityIndToStatements.get(entityIds.get(eIx1));
-                int[] statementsOfEntity2 = inst.entityIndToStatements.get(entityIds.get(eIx2));
+                int[] statementsOfEntity1 = inst.entityIdToStatements.get(entityIds.get(eIx1));
+                int[] statementsOfEntity2 = inst.entityIdToStatements.get(entityIds.get(eIx2));
                 boolean overlap = false;
                 for (var s1 : statementsOfEntity1) {
                     for (var s2 : statementsOfEntity2) {

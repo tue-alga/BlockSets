@@ -14,7 +14,7 @@ public class P7SingleCellEntities implements ConstraintModule {
         if ((ctx.v instanceof VarsPolygons v)) { // only add this constraint for polygon solutions
             int nEntities = ctx.entityIds.size();
             for (int i = 0; i < nEntities; i++) {
-                if (ctx.inst.entityIndToStatements.get(ctx.entityIds.get(i)).length == 1) {
+                if (ctx.inst.entityIdToStatements.get(ctx.entityIds.get(i)).length == 1) {
                     GRBLinExpr nrActiveRows = new GRBLinExpr();
 
                     // if row is active then the size of the row is 1 cell (for entities with 1

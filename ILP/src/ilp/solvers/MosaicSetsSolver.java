@@ -4,17 +4,12 @@ import com.gurobi.gurobi.GRBException;
 import ilp.solvers.mosaicsets.Grid;
 import ilp.solvers.mosaicsets.GridCanvas;
 import ilp.solvers.mosaicsets.SetEmbedder;
-import ilp.solvers.mosaicsets.VertexColoring;
-import io.StatsRecorder;
 import model.ArbitraryPolygonSolution;
 import model.Solution;
 import model.StatementEntityInstance;
 
 import java.awt.*;
-import java.awt.geom.Path2D;
-import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
-import java.io.FileWriter;
 import java.util.*;
 import java.util.List;
 
@@ -65,7 +60,7 @@ public class MosaicSetsSolver implements Solver {
         var overlayIndexToEntityIndex = new ArrayList<Integer>();
         for (var entityIndex : inst.entities.keySet()) {
             var entity = inst.entities.get(entityIndex);
-            var statementIndices = inst.entityIndToStatements.get(entityIndex);
+            var statementIndices = inst.entityIdToStatements.get(entityIndex);
             var overlay = new HashSet<String>();
             overlays.add(overlay);
             overlayIndexToEntityIndex.add(entityIndex);
@@ -148,8 +143,8 @@ public class MosaicSetsSolver implements Solver {
             }
             // If the entity is a singleton, then it will have no arcs.
             // Check where the single statement was placed.
-            if (inst.entityIndToStatements.get(entityIndex).length == 1) {
-                var statement = inst.entityIndToStatements.get(entityIndex)[0];
+            if (inst.entityIdToStatements.get(entityIndex).length == 1) {
+                var statement = inst.entityIdToStatements.get(entityIndex)[0];
                 cells.add(statementCoordinates[statementIndexToStatementCoordinatesIndex.get(statement)]);
             }
             entityCells.add(new ArrayList<>(cells));
