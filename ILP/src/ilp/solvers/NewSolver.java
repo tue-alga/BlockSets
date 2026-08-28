@@ -34,7 +34,7 @@ public class NewSolver implements Solver {
     }
 
     @Override
-    public Solution solve(StatementEntityInstance inst, double timeLimit, int dimensions) throws Exception, GRBException {
+    public Solution solve(StatementEntityInstance originalInstance, double timeLimit, int dimensions) throws Exception, GRBException {
         int width = dimensions;
         int height = dimensions;
 
@@ -45,18 +45,16 @@ public class NewSolver implements Solver {
             throw new RuntimeException(e);
         }
 
+        var inst = originalInstance.withoutSingletons();
+
         this.entityIds = new ArrayList<>(inst.entities.keySet());
         this.statementIds = new ArrayList<>(inst.statements.keySet());
 
         HashMap<Integer, ArrayList<Integer>> statementIdToEntityIds = new HashMap<>();
-        ArrayList<Integer> singletonEntityIds = new ArrayList<>();
         for (var eId : entityIds) {
             var statements = inst.entityIdToStatements.get(eId);
             for (var statement : statements) {
                 statementIdToEntityIds.computeIfAbsent(statement, k -> new ArrayList<>()).add(eId);
-            }
-            if (statements.length == 1) {
-                singletonEntityIds.add(eId);
             }
         }
         for (var entityIds : statementIdToEntityIds.values()) {
@@ -263,19 +261,6 @@ public class NewSolver implements Solver {
                     model.addConstr(expr, '<', z[eIx][i][j], "set_coverage");
                 }
             }
-        }
-
-        // Singletons
-        for (int eId : singletonEntityIds) {
-            int eIx = entityIdToIdx.get(eId);
-
-            GRBLinExpr expr = new GRBLinExpr();
-            for (int i = 0; i < width; i++) {
-                for (int j = 0; j < height; j++) {
-                    expr.addTerm(1.0, z[eIx][i][j]);
-                }
-            }
-            model.addConstr(expr, '=', 1, "singleton_occupies_single_cell");
         }
 
         // Element exclusion
@@ -781,27 +766,39 @@ public class NewSolver implements Solver {
             }
         }
         var entityCells = new ArrayList<ArrayList<Point>>();
-        for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
+
+        int eIx = 0;
+        for (int ogEIx = 0; ogEIx < originalInstance.numberOfEntities; ++ogEIx) {
             var thisEntityCells = new ArrayList<Point>();
-            for (int i = 0; i < width; ++i) {
-                for (int j = 0; j < height; j++) {
-                    if (z[eIx][i][j].get(GRB.DoubleAttr.X) > 0.5) {
-                        thisEntityCells.add(new Point(i, j));
+            boolean isSingleton = originalInstance.entityIdToStatements.get(ogEIx).length == 1;
+
+            if (isSingleton) {
+                // look for the position of the single statement and use that
+                int sId = originalInstance.entityIdToStatements.get(ogEIx)[0];
+                int sIx = statementIdToIdx.get(sId);
+                thisEntityCells.add(sCoords[sIx]);
+            } else {
+                for (int i = 0; i < width; ++i) {
+                    for (int j = 0; j < height; j++) {
+                        if (z[eIx][i][j].get(GRB.DoubleAttr.X) > 0.5) {
+                            thisEntityCells.add(new Point(i, j));
+                        }
                     }
                 }
+                ++eIx;
             }
             entityCells.add(thisEntityCells);
         }
 
-        var sol = new ArbitraryPolygonSolution(inst, this.entityIds, entityCells, sCoords);
+        var sol = new ArbitraryPolygonSolution(originalInstance, new ArrayList<>(originalInstance.entities.keySet()), entityCells, sCoords);
 
-        System.out.println("Number of variables: " + model.get(GRB.IntAttr.NumVars));
-        System.out.println("Number of constraints: " + model.get(GRB.IntAttr.NumConstrs));
-        System.out.println("Number of general constraints: " + model.get(GRB.IntAttr.NumGenConstrs));
+//        System.out.println("Number of variables: " + model.get(GRB.IntAttr.NumVars));
+//        System.out.println("Number of constraints: " + model.get(GRB.IntAttr.NumConstrs));
+//        System.out.println("Number of general constraints: " + model.get(GRB.IntAttr.NumGenConstrs));
         System.out.println("Bbox dimensions: " + bboxDimensions.getValue());
-        for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
-            System.out.println("Entity: " + inst.entities.get(eIx));
-            System.out.println("area: " + C[eIx].get(GRB.DoubleAttr.X));
+//        for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
+//            System.out.println("Entity: " + inst.entities.get(eIx));
+//            System.out.println("area: " + C[eIx].get(GRB.DoubleAttr.X));
 //            System.out.println("Begin");
 //            for (int j = 0; j < height; ++j) {
 //                for (int i = 0; i < width; ++i) {
@@ -817,13 +814,13 @@ public class NewSolver implements Solver {
 //                }
 //                System.out.println();
 //            }
-            for (int j = 0; j < height; ++j) {
-                System.out.println(r_a[eIx][j].get(GRB.DoubleAttr.X) + " Row: " + r_start[eIx][j].get(GRB.DoubleAttr.X) + "  " + r_end[eIx][j].get(GRB.DoubleAttr.X));
-                if (j != height - 1) {
-                    System.out.println("Complexity: " + sumComplexity[eIx][j].get(GRB.DoubleAttr.X));
-                }
-            }
-        }
+//            for (int j = 0; j < height; ++j) {
+//                System.out.println(r_a[eIx][j].get(GRB.DoubleAttr.X) + " Row: " + r_start[eIx][j].get(GRB.DoubleAttr.X) + "  " + r_end[eIx][j].get(GRB.DoubleAttr.X));
+//                if (j != height - 1) {
+//                    System.out.println("Complexity: " + sumComplexity[eIx][j].get(GRB.DoubleAttr.X));
+//                }
+//            }
+//        }
 
         return sol;
     }

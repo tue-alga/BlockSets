@@ -3,11 +3,14 @@ package model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import javax.swing.plaf.nimbus.State;
 
 public class StatementEntityInstance {
     public int numberOfStatements;
@@ -18,6 +21,22 @@ public class StatementEntityInstance {
     // map from entity index to statement indices corresponding to the indices in
     // the arrays entities, statements
     public HashMap<Integer, int[]> entityIdToStatements;
+
+    public StatementEntityInstance withoutSingletons() {
+        var newStatements = new HashMap<Integer, String>(statements);
+        var newEntities = new HashMap<Integer, String>();
+        var newEtoS = new HashMap<Integer, int[]>();
+
+        for (var eId : entities.keySet()) {
+            var sms = entityIdToStatements.get(eId);
+            if (sms.length > 1) {
+                newEntities.put(eId, entities.get(eId));
+                newEtoS.put(eId, sms.clone());
+            }
+        }
+
+        return new StatementEntityInstance(newEntities, newStatements, newEtoS);
+    }
 
     // NEW Constructor to load JSON data from file (keeping the ids from the
     // dataset)
