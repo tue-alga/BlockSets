@@ -47,6 +47,96 @@ public class NewSolver implements Solver {
         this.entityIds = new ArrayList<>(inst.entities.keySet());
         this.statementIds = new ArrayList<>(inst.statements.keySet());
 
+        HashMap<Integer, ArrayList<Integer>> statementIdToEntityIds = new HashMap<>();
+        for (var eId : entityIds) {
+            var statements = inst.entityIndToStatements.get(eId);
+            for (var statement : statements) {
+                statementIdToEntityIds.computeIfAbsent(statement, k -> new ArrayList<>()).add(eId);
+            }
+        }
+        for (var entityIds : statementIdToEntityIds.values()) {
+            Collections.sort(entityIds);
+        }
+        HashMap<ArrayList<Integer>, ArrayList<Integer>> zones = new HashMap<>();
+        for (var sId : statementIdToEntityIds.keySet()) {
+            var zone = statementIdToEntityIds.get(sId);
+            zones.computeIfAbsent(zone, k -> new ArrayList<>()).add(sId);
+        }
+
+        // Group indistinguishable elements
+        // This comes down to using the zones of the set system.
+        // However, we want to keep one element in each set separate to serve as the root of the flow for that set.
+        // We prefer to use elements for this that are alone in their zone anyway.
+
+        // Maps a set of statements to the sets they belong to.
+        HashMap<ArrayList<Integer>, ArrayList<Integer>> groupedElements = new HashMap<>();
+
+        class CandidateCenter {
+            public int statement;
+            public ArrayList<Integer> zone;
+            CandidateCenter(int statement, ArrayList<Integer> zone) {
+                this.statement = statement;
+                this.zone = zone;
+            }
+        }
+
+        ArrayList<CandidateCenter> candidateCenters = new ArrayList<>();
+        for (var zone : zones.keySet()) {
+            var statements = zones.get(zone);
+            if (statements.size() == 1) {
+                candidateCenters.add(new CandidateCenter(statements.getFirst(), zone));
+            }
+        }
+
+        candidateCenters.sort(Comparator.comparingInt(c -> c.zone.size()));
+
+        // Map entity ID to singleton group with set center
+        HashMap<Integer, ArrayList<Integer>> setCenter = new HashMap<>();
+
+        for (var c : candidateCenters) {
+            var group = new ArrayList<>(List.of(c.statement));
+            boolean used = false;
+            for (var eId : c.zone) {
+                if (!setCenter.containsKey(eId)) {
+                    setCenter.put(eId, group);
+                    used = true;
+                }
+            }
+
+            if (used) {
+                groupedElements.put(group, c.zone);
+                zones.remove(c.zone);
+            }
+        }
+
+        // We pick the leftover zone with the most sets without assigned center.
+        // We then pick an element of that zone to serve as the root for all those sets.
+
+        while(setCenter.keySet().size() < inst.entities.size()) {
+            var zone = zones.keySet().stream().max (Comparator.comparingLong(z -> z.stream().filter(eId -> !setCenter.containsKey(eId)).count()));
+            var statement = zones.get(zone.get()).removeFirst();
+            var group = new ArrayList<>(List.of(statement));
+            groupedElements.put(group, zone.get());
+            for (var eId : zone.get()) {
+                if (!setCenter.containsKey(eId)) {
+                    setCenter.put(eId, group);
+                }
+            }
+        }
+
+        for (var zone : zones.keySet()) {
+            var statements = zones.get(zone);
+            groupedElements.put(statements, zone);
+        }
+
+        var entityToGroups = new HashMap<Integer, ArrayList<ArrayList<Integer>>>();
+        for (var group : groupedElements.keySet()) {
+            var entities = groupedElements.get(group);
+            for (var entity : entities) {
+                entityToGroups.computeIfAbsent(entity, k -> new ArrayList<>()).add(group);
+            }
+        }
+
         this.entityIdToIdx = new HashMap<>();
         for (int i = 0; i < entityIds.size(); i++) entityIdToIdx.put(entityIds.get(i), i);
 
@@ -57,7 +147,7 @@ public class NewSolver implements Solver {
         // ============== VARIABLES ==============
         // =======================================
         // Whether an element is assigned to a grid cell
-        GRBVar[][][] x = new GRBVar[inst.numberOfStatements][width][height];
+        HashMap<ArrayList<Integer>, GRBVar[][]> x = new HashMap<>();
         // Whether a set covers a grid cell
         GRBVar[][][] z = new GRBVar[inst.numberOfEntities][width][height];
         // Active row
@@ -87,10 +177,12 @@ public class NewSolver implements Solver {
         GRBVar[][][] cActivePosEnd = new GRBVar[inst.numberOfEntities][width][height];
 
         // x
-        for (int sIx = 0; sIx < inst.numberOfStatements; ++sIx) {
+        for (var group : groupedElements.keySet()) {
+            var xG = new GRBVar[width][height];
+            x.put(group, xG);
             for (int i = 0; i < width; i++) {
                 for (int j = 0; j < height; j++) {
-                    x[sIx][i][j] = model.addVar(0, 1, 0, GRB.BINARY, "x_" + sIx + "_" + i + "_" + j);
+                    xG[i][j] = model.addVar(0, 1, 0, GRB.BINARY, "x_" + group.toString() + "_" + i + "_" + j);
                 }
             }
         }
@@ -130,21 +222,22 @@ public class NewSolver implements Solver {
         // ============= CONSTRAINTS =============
         // =======================================
         // Statement <-> cell
-        for (int sIx = 0; sIx < inst.numberOfStatements; ++sIx) {
+        for (var group : groupedElements.keySet()) {
+            var xG = x.get(group);
             GRBLinExpr expr = new GRBLinExpr();
             for (int i = 0; i < width; i++) {
                 for (int j = 0; j < height; j++) {
-                    expr.addTerm(1.0, x[sIx][i][j]);
+                    expr.addTerm(1.0, xG[i][j]);
                 }
             }
-            model.addConstr(expr, '=', 1, "unique_element_position");
+            model.addConstr(expr, '=', group.size(), "unique_element_position");
         }
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 GRBLinExpr expr = new GRBLinExpr();
-                for (int sIx = 0; sIx < inst.numberOfStatements; ++sIx) {
-                    expr.addTerm(1.0, x[sIx][i][j]);
+                for (var group : groupedElements.keySet()) {
+                    expr.addTerm(1.0, x.get(group)[i][j]);
                 }
                 model.addConstr(expr, '<', 1, "injection");
             }
@@ -152,14 +245,14 @@ public class NewSolver implements Solver {
 
         // z
         for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
-            var statementIds = inst.entityIndToStatements.get(this.entityIds.get(eIx));
+            var eId = entityIds.get(eIx);
+            var groups = entityToGroups.get(eId);
 
             for (int i = 0; i < width; i++) {
                 for (int j = 0; j < height; j++) {
                     GRBLinExpr expr = new GRBLinExpr();
-                    for (int sId : statementIds) {
-                        int sIx = statementIdToIdx.get(sId);
-                        expr.addTerm(1.0, x[sIx][i][j]);
+                    for (var group : groups) {
+                        expr.addTerm(1.0, x.get(group)[i][j]);
                     }
                     model.addConstr(expr, '<', z[eIx][i][j], "set_coverage");
                 }
@@ -170,18 +263,16 @@ public class NewSolver implements Solver {
         for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
             int eId = this.entityIds.get(eIx);
 
-            for (int sIx = 0; sIx < inst.numberOfStatements; sIx++) {
-                final int sId = statementIds.get(sIx);
-                if (Arrays.stream(inst.entityIndToStatements.get(eId))
-                        .noneMatch(cand -> cand == sId)) {
-                    // Element is not part of this set, so force it outside
+            for (var group : groupedElements.keySet()) {
+                if (!groupedElements.get(group).contains(eId)) {
+                    // Element group is not part of this set, so force it outside
                     // x[sIx][i][j] => !z[eIx][i][j]
                     // z <= (1 - x)
                     for (int i = 0; i < width; i++) {
                         for (int j = 0; j < height; j++) {
                             GRBLinExpr rhs = new GRBLinExpr();
                             rhs.addConstant(1);
-                            rhs.addTerm(-1, x[sIx][i][j]);
+                            rhs.addTerm(-1, x.get(group)[i][j]);
                             model.addConstr(z[eIx][i][j], '<', rhs, "element_exclusion");
                         }
                     }
@@ -258,13 +349,14 @@ public class NewSolver implements Solver {
 
         // flow constraints
         for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
+            var eId = entityIds.get(eIx);
             for (int i = 0; i < width; i++) {
                 for (int j = 0; j < height; j++) {
                     // Define g which is equal to C if this is a root cell otherwise it is zero.
                     var g = model.addVar(0, width * height, 0, GRB.INTEGER, "g_" + eIx + "_" + i + "_" + j);
                     model.addConstr(g, '<', C[eIx], "g <= C");
-                    int entityRootStatementIx = this.statementIdToIdx.get(inst.entityIndToStatements.get(this.entityIds.get(eIx))[0]);
-                    var isRoot = x[entityRootStatementIx][i][j];
+                    var rootGroup = setCenter.get(eId);//this.statementIdToIdx.get(inst.entityIndToStatements.get(this.entityIds.get(eIx))[0]);
+                    var isRoot = x.get(rootGroup)[i][j];
                     var expr1 = new GRBLinExpr();
                     expr1.addTerm(width * height, isRoot);
                     model.addConstr(g, '<', expr1, "g <= w * h * isRoot?");
@@ -658,13 +750,13 @@ public class NewSolver implements Solver {
         }
 
         Point[] sCoords = new Point[inst.numberOfStatements];
-        for (int sIx = 0; sIx < inst.numberOfStatements; ++sIx) {
-            boolean found = false;
-            for (int i = 0; i < width && !found; ++i) {
-                for (int j = 0; j < height && !found; j++) {
-                    if (x[sIx][i][j].get(GRB.DoubleAttr.X) > 0.5) {
+        for (var group : groupedElements.keySet()) {
+            int currentStatementIx = 0;
+            for (int i = 0; i < width; ++i) {
+                for (int j = 0; j < height; j++) {
+                    if (x.get(group)[i][j].get(GRB.DoubleAttr.X) > 0.5) {
+                        int sIx = statementIdToIdx.get(group.get(currentStatementIx++));
                         sCoords[sIx] = new Point(i, j);
-                        found = true;
                     }
                 }
             }
@@ -684,6 +776,9 @@ public class NewSolver implements Solver {
 
         var sol = new ArbitraryPolygonSolution(inst, this.entityIds, entityCells, sCoords);
 
+        System.out.println("Number of variables: " + model.get(GRB.IntAttr.NumVars));
+        System.out.println("Number of constraints: " + model.get(GRB.IntAttr.NumConstrs));
+        System.out.println("Number of general constraints: " + model.get(GRB.IntAttr.NumGenConstrs));
         System.out.println("Bbox dimensions: " + bboxDimensions.getValue());
         for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
             System.out.println("Entity: " + inst.entities.get(eIx));
