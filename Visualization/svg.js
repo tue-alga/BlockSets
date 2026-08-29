@@ -176,7 +176,7 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
         let nameIndices = [];
 
         for (let i = 0; i < namesAndColors.length; i++) {
-            nameIndices.push(getIndicesOf(namesAndColors[i][0], statement.textLines.join(""), false));
+            nameIndices.push(getIndicesOf(namesAndColors[i][0], statement.text, false));
         }
 
         // Store text to be draw after all entity name backgrounds (for highlight type "background")
@@ -190,7 +190,38 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
 
         // Draw each character in statement text
         for (let i = 0; i < statement.textLines.length; i++) {
-            for (let j = 0; j < statement.textLines[i].length; j++) {
+            let hyphen = false;
+            for (let j = 0; j < statement.textLines[i].plaintext.length; j++) {
+                let textLineHeight = c.measureText("G").actualBoundingBoxAscent + 4;
+
+                let currentItemIx = 0;
+                let length = 0;
+                hyphen = false;
+                for (let itemIx = 0; itemIx < statement.textLines[i].positionedItems.length; ++itemIx) {
+                    let item = statement.textLines[i].positionedItems[itemIx];
+                    if (item.text !== undefined) {
+                        length += item.text.length;
+                        if (length > j) {
+                            currentItemIx = itemIx;
+                            length -= item.text.length;
+                            break;
+                        }
+                    }
+                    if (item.type == "penalty") {
+                        currentItemIx = itemIx;
+                        hyphen = true;
+                    }
+                }
+
+                let item = statement.textLines[i].positionedItems[currentItemIx];
+
+                let textX = xStart + Number(VisualizationSettings.margins) + item.xOffset;
+                if (!hyphen) {
+                    let prevChars = getCharsBeforeInWord(item.text, j - length);
+                    for (let char of prevChars) {
+                        textX += c.measureText(char).width;
+                    }
+                }
 
                 // Check if we are at the start of an entity name
                 for (let k = 0; k < nameIndices.length; k++) {
@@ -225,28 +256,28 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                     fontWeight = "bold";
                 }
 
-                const width = c.measureText(statement.textLines[i][j]).width + 0.3;
+                const width = c.measureText(statement.textLines[i].plaintext[j]).width + 0.3;
 
                 // Background behind the text
                 const height = c.measureText("G").actualBoundingBoxAscent + 4;
                 const textBackground = document.createElementNS(svgNS, "rect");
-                textBackground.setAttribute("x", xStart + Number(VisualizationSettings.margins) + lengthSoFar);
+                textBackground.setAttribute("x", textX);
                 textBackground.setAttribute("y", yStart + (i) * height + Number(VisualizationSettings.margins) - 2);
                 textBackground.setAttribute("width", width);
                 textBackground.setAttribute("height", height);
                 textBackground.setAttribute("fill", lightenRGB(fillColor, 0.7));
-                textBackground.textContent = statement.textLines[i][j];
+                textBackground.textContent = statement.textLines[i].plaintext[j];
 
                 // Text
                 const textElem = document.createElementNS(svgNS, "text");
-                textElem.setAttribute("x", xStart + Number(VisualizationSettings.margins) + lengthSoFar);
+                textElem.setAttribute("x", textX);
                 textElem.setAttribute("y", yStart + (1 + i) * height + Number(VisualizationSettings.margins) - 4);
-                textElem.textContent = statement.textLines[i][j];
+                textElem.textContent = statement.textLines[i].plaintext[j];
 
                 // Underline
                 const underline = document.createElementNS(svgNS, "line");
-                underline.setAttribute("x1", xStart + Number(VisualizationSettings.margins) + lengthSoFar);
-                underline.setAttribute("x2", xStart + Number(VisualizationSettings.margins) + lengthSoFar + width);
+                underline.setAttribute("x1", textX);
+                underline.setAttribute("x2", textX + (statement.textLines[i].plaintext[j] === ' ' ? 3 * width : width));
                 underline.setAttribute("y1", yStart + (1 + i) * height + Number(VisualizationSettings.margins) - 4 + 1);
                 underline.setAttribute("y2", yStart + (1 + i) * height + Number(VisualizationSettings.margins) - 4 + 1);
                 underline.setAttribute("stroke", "#000");
@@ -296,9 +327,11 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                 }
 
                 // Update pointers
-                ongoingNameLengthsAndColors.forEach(e => {
-                    e[0]--; // Decrease remaining length of all current names
-                });
+                if (!hyphen) {
+                    ongoingNameLengthsAndColors.forEach(e => {
+                        e[0]--; // Decrease remaining length of all current names
+                    });
+                }
 
                 // Remove names from the list when they are done
                 ongoingNameLengthsAndColors = ongoingNameLengthsAndColors.filter(e => e[0] != 0);
@@ -313,12 +346,15 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                 }
 
                 // Move on to next character
-                currentIndex++;
-                lengthSoFar += c.measureText(statement.textLines[i][j]).width;
+                if (!hyphen) {
+                    currentIndex++;
+                }
+                lengthSoFar += c.measureText(statement.textLines[i].plaintext[j]).width;
             }
 
-            // Reset length after each line
-            lengthSoFar = 0;
+            if (!hyphen) {
+                currentIndex++;
+            }
         }
 
         // Draw all text on top of backgrounds if necessary

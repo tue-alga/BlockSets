@@ -1,3 +1,13 @@
+function getWordIndex(str, charIndex) {
+    const before = str.slice(0, charIndex);
+    return before.split(' ').length - 1;
+}
+
+function getCharsBeforeInWord(str, charIndex) {
+    const wordStart = str.lastIndexOf(' ', charIndex - 1) + 1;
+    return str.slice(wordStart, charIndex);
+}
+
 class Statement {
     constructor(id, x, y, text, entities) {
         // Identifiers
@@ -12,8 +22,23 @@ class Statement {
         // Pixel coordinates
         this.pixelCoords = [];
 
+        const lineWidth = (cellWidth - 2 * Number(VisualizationSettings.margins) / backgroundCellSize) * backgroundCellSize;
+
+        c.font = font;
+
+        const options = {
+            lineWidth: lineWidth,
+            justify: true,
+
+            measureFn: (text) => {
+                return c.measureText(text).width;
+            },
+        };
+
+        this.textLines = new texLinebreak.TexLinebreak(hyphenateWord(text), options).lines;
+
         // Lines of text stored as separate strings
-        this.textLines = splitTextIntoLines(this.text, (cellWidth - 2 * Number(VisualizationSettings.margins) / backgroundCellSize) * backgroundCellSize);
+        // this.textLines = splitTextIntoLines(this.text, (cellWidth - 2 * Number(VisualizationSettings.margins) / backgroundCellSize) * backgroundCellSize);
     }
 
     // Get all entity names appearing in the statement text and their corresponding colors
@@ -106,27 +131,55 @@ class Statement {
         // Find name indices in the text
         let nameIndices = [];
         for (let i = 0; i < namesAndColors.length; i++) {
-            nameIndices.push(getIndicesOf(namesAndColors[i][0], this.textLines.join(""), false));
+            nameIndices.push(getIndicesOf(namesAndColors[i][0], this.text, false));
         }
 
         // Pointers
         let currentIndex = 0;
         let drawingName = false;
-        let lengthSoFar = 0;
         let ongoingNameLengthsAndColors = [];
 
         // Draw each character in statement text
         for (let i = 0; i < this.textLines.length; i++) {
-            for (let j = 0; j < this.textLines[i].length; j++) {
+            let hyphen = false;
+            for (let j = 0; j < this.textLines[i].plaintext.length; j++) {
                 let textLineHeight = c.measureText("G").actualBoundingBoxAscent + 4;
-                let textX = this.pixelCoords[0].x + Number(VisualizationSettings.margins) + lengthSoFar;
+
+                let currentItemIx = 0;
+                let length = 0;
+                hyphen = false;
+                for (let itemIx = 0; itemIx < this.textLines[i].positionedItems.length; ++itemIx) {
+                    let item = this.textLines[i].positionedItems[itemIx];
+                    if (item.text !== undefined) {
+                        length += item.text.length;
+                        if (length > j) {
+                            currentItemIx = itemIx;
+                            length -= item.text.length;
+                            break;
+                        }
+                    }
+                    if (item.type == "penalty") {
+                        currentItemIx = itemIx;
+                        hyphen = true;
+                    }
+                }
+
+                let item = this.textLines[i].positionedItems[currentItemIx];
+
+                let textX = this.pixelCoords[0].x + Number(VisualizationSettings.margins) + item.xOffset;
+                if (!hyphen) {
+                    let prevChars = getCharsBeforeInWord(item.text, j - length);
+                    for (let char of prevChars) {
+                        textX += c.measureText(char).width;
+                    }
+                }
                 let textY = this.pixelCoords[0].y + (1 + i) * textLineHeight + Number(VisualizationSettings.margins) - 4;
 
                 // Check if we are at the start of an entity name
                 for (let k = 0; k < nameIndices.length; k++) {
                     for (let l = 0; l < nameIndices[k].length; l++) {
                         // A name starts at this index
-                        if (currentIndex == nameIndices[k][l]) {
+                        if (currentIndex === nameIndices[k][l]) {
                             // Add name length and color to list of current names
                             ongoingNameLengthsAndColors.unshift([namesAndColors[k][0].length, namesAndColors[k][1]]);
                         }
@@ -155,20 +208,24 @@ class Statement {
 
                 if (VisualizationSettings.textHighlight == "text") {
                     // Draw next character
-                    c.fillText(this.textLines[i][j], textX, textY);
+                    c.fillText(this.textLines[i].plaintext[j], textX, textY);
 
                     // Draw underline
                     if (drawingBold) {
-                        c.fillRect(Math.round(textX), Math.round(textY + 1), Math.round(c.measureText(this.textLines[i][j]).width + 0.3), 1);
+                        c.fillRect(Math.round(textX), Math.round(textY + 1), Math.round(c.measureText(this.textLines[i].plaintext[j]).width + 0.3), 1);
+                        if (this.textLines[i].plaintext[j] == ' ') {
+                            c.fillRect(Math.round(textX + 2), Math.round(textY + 1), Math.round(c.measureText(this.textLines[i].plaintext[j]).width + 0.3), 1);
+                            c.fillRect(Math.round(textX + 4), Math.round(textY + 1), Math.round(c.measureText(this.textLines[i].plaintext[j]).width + 0.3), 1);
+                        }
                     }
                 }
                 else if (VisualizationSettings.textHighlight == "background") {
                     if (drawingBold) {
                         // Draw next character
-                        c.fillText(this.textLines[i][j], textX, textY);
+                        c.fillText(this.textLines[i].plaintext[j], textX, textY);
 
                         // Draw underline
-                        c.fillRect(Math.round(textX), Math.round(textY + 1), Math.round(c.measureText(this.textLines[i][j]).width + 0.3), 1);
+                        c.fillRect(Math.round(textX), Math.round(textY + 1), Math.round(c.measureText(this.textLines[i].plaintext[j]).width + 0.3), 1);
                     }
                     else {
                         if (drawingName) {
@@ -176,7 +233,7 @@ class Statement {
                             let height = c.measureText("G").actualBoundingBoxAscent + 4;
                             let color = c.fillStyle;
                             c.fillStyle = lightenRGB(hexToRgb(c.fillStyle), 0.7);
-                            c.fillRect(Math.round(textX), Math.round(textY - height) + 2, Math.round(c.measureText(this.textLines[i][j]).width + 0.3), Math.round(height));
+                            c.fillRect(Math.round(textX), Math.round(textY - height) + 2, Math.round(c.measureText(this.textLines[i].plaintext[j]).width + 0.3), Math.round(height));
                             c.fillStyle = color;
                         }
                     }
@@ -185,7 +242,7 @@ class Statement {
                     // Draw next character
                     c.fillStyle = "#000";
                     c.font = font;
-                    c.fillText(this.textLines[i][j], textX, textY);
+                    c.fillText(this.textLines[i].plaintext[j], textX, textY);
                 }
 
                 // Reset font if needed
@@ -195,9 +252,11 @@ class Statement {
                 }
 
                 // Update pointers
-                ongoingNameLengthsAndColors.forEach(e => {
-                    e[0]--; // Decrease remaining length of all current names
-                });
+                if (!hyphen) {
+                    ongoingNameLengthsAndColors.forEach(e => {
+                        e[0]--; // Decrease remaining length of all current names
+                    });
+                }
 
                 // Remove names from the list when they are done
                 ongoingNameLengthsAndColors = ongoingNameLengthsAndColors.filter(e => e[0] != 0);
@@ -211,13 +270,13 @@ class Statement {
                     c.fillStyle = ongoingNameLengthsAndColors[0][1];
                 }
 
-                // Move on to next character
-                currentIndex++;
-                lengthSoFar += c.measureText(this.textLines[i][j]).width;
+                if (!hyphen) {
+                    currentIndex++;
+                }
             }
-
-            // Reset length after each line
-            lengthSoFar = 0;
+            if (!hyphen) {
+                ++currentIndex;
+            }
         }
 
         // If the highlight style is "background" draw all the text separately after all the backgrounds
@@ -227,7 +286,7 @@ class Statement {
             currentIndex = 0;
 
             for (let i = 0; i < this.textLines.length; i++) {
-                for (let j = 0; j < this.textLines[i].length; j++) {
+                for (let j = 0; j < this.textLines[i].plaintext.length; j++) {
                     let textLineHeight = c.measureText("G").actualBoundingBoxAscent + 4;
                     let textX = this.pixelCoords[0].x + Number(VisualizationSettings.margins) + lengthSoFar;
                     let textY = this.pixelCoords[0].y + (1 + i) * textLineHeight + Number(VisualizationSettings.margins) - 4;
@@ -265,13 +324,13 @@ class Statement {
                     if (drawingName && !drawingBold) {
                         c.strokeStyle = "rgb(245, 245, 245)";
                         c.lineWidth = 1;
-                        c.strokeText(this.textLines[i][j], textX, textY);
+                        c.strokeText(this.textLines[i].plaintext[j], textX, textY);
                     }
 
                     // Bold characters have already been drawn
                     if (!drawingBold) {
                         // Draw next character
-                        c.fillText(this.textLines[i][j], textX, textY);
+                        c.fillText(this.textLines[i].plaintext[j], textX, textY);
                     }
 
                     if (drawingBold) {
@@ -296,12 +355,12 @@ class Statement {
                     }
 
                     // Move on to next character
-                    currentIndex++;
-                    lengthSoFar += c.measureText(this.textLines[i][j]).width;
+                    ++currentIndex;
+                    // lengthSoFar += c.measureText(this.textLines[i].plaintext[j]).width;
                 }
 
                 // Reset length after each line
-                lengthSoFar = 0;
+                // lengthSoFar = 0;
             }
         }
     }
