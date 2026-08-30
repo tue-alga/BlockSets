@@ -200,6 +200,7 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                 for (let itemIx = 0; itemIx < statement.textLines[i].positionedItems.length; ++itemIx) {
                     let item = statement.textLines[i].positionedItems[itemIx];
                     if (item.text !== undefined) {
+                        if (item.text === ' ' && item.xOffset === 0) continue; // ignore first space on a line
                         length += item.text.length;
                         if (length > j) {
                             currentItemIx = itemIx;
