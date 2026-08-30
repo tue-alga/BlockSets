@@ -291,7 +291,7 @@ public class SolutionPositioner {
             // Apply offsets to set component coordinates in the global placement
             offsetCoords(components, solutionCoordinates);
 
-            System.out.println("Bounding Box: " + W.get(GRB.DoubleAttr.X) + " x " + H.get(GRB.DoubleAttr.X));
+            System.out.println("Bounding Box: " + (W.get(GRB.DoubleAttr.X) + 1) + " x " + (H.get(GRB.DoubleAttr.X) + 1));
 
             return new PositionedSolution(components, (int) W.get(GRB.DoubleAttr.X), (int) H.get(GRB.DoubleAttr.X));
         } catch (GRBException e) {

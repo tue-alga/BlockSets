@@ -15,7 +15,6 @@ public class NewSolver implements Solver {
 
     public ArrayList<Integer> entityIds;
     public List<Integer> statementIds;
-    public Map<Integer,Integer> entityIdToIdx;
     public Map<Integer,Integer> statementIdToIdx;
 
     PolygonType polygonType;
@@ -24,7 +23,7 @@ public class NewSolver implements Solver {
     // objective function
     public NewSolver(PolygonType polygonType) {
         this.polygonType = polygonType;
-        if (polygonType != PolygonType.Gamma && polygonType != PolygonType.Nabla && polygonType != PolygonType.Orthoconvex) {
+        if (polygonType != PolygonType.Gamma && polygonType != PolygonType.Nabla && polygonType != PolygonType.Orthoconvex && polygonType != PolygonType.Rectangle) {
             throw new RuntimeException("NewSolver cannot handle polygon type " + polygonType.name());
         }
     }
@@ -61,8 +60,7 @@ public class NewSolver implements Solver {
             Collections.sort(entityIds);
         }
 
-        this.entityIdToIdx = new HashMap<>();
-        for (int i = 0; i < entityIds.size(); i++) entityIdToIdx.put(entityIds.get(i), i);
+        var ogEntityIds = new ArrayList<>(originalInstance.entities.keySet());
 
         this.statementIdToIdx = new HashMap<>();
         for (int i = 0; i < statementIds.size(); i++) statementIdToIdx.put(statementIds.get(i), i);
@@ -313,7 +311,7 @@ public class NewSolver implements Solver {
         }
 
         // Nabla
-        if (polygonType == PolygonType.Nabla || polygonType == PolygonType.Gamma) {
+        if (polygonType == PolygonType.Nabla || polygonType == PolygonType.Gamma || polygonType == PolygonType.Rectangle) {
             for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
                 for (int i = 0; i < width - 1; i++) {
                     var consecutiveActive = model.addVar(0, 1, 0, GRB.BINARY, "consecutive_column_active");
@@ -322,12 +320,18 @@ public class NewSolver implements Solver {
                     expr.addTerm(1, c_start[eIx][i]);
                     expr.addTerm(-1, c_start[eIx][i + 1]);
                     model.addGenConstrIndicator(consecutiveActive, 1, expr, '=', 0, "name");
+                    if (polygonType == PolygonType.Rectangle) {
+                        GRBLinExpr expr2 = new GRBLinExpr();
+                        expr2.addTerm(1, c_end[eIx][i]);
+                        expr2.addTerm(-1, c_end[eIx][i + 1]);
+                        model.addGenConstrIndicator(consecutiveActive, 1, expr2, '=', 0, "name");
+                    }
                 }
             }
         }
 
         // Gamma
-        if (polygonType == PolygonType.Gamma) {
+        if (polygonType == PolygonType.Gamma || polygonType == PolygonType.Rectangle) {
             for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
                 for (int j = 0; j < height - 1; j++) {
                     var consecutiveActive = model.addVar(0, 1, 0, GRB.BINARY, "consecutive_row_active");
@@ -336,6 +340,12 @@ public class NewSolver implements Solver {
                     expr.addTerm(1, r_start[eIx][j]);
                     expr.addTerm(-1, r_start[eIx][j + 1]);
                     model.addGenConstrIndicator(consecutiveActive, 1, expr, '=', 0, "name");
+                    if (polygonType == PolygonType.Rectangle) {
+                        GRBLinExpr expr2 = new GRBLinExpr();
+                        expr2.addTerm(1, r_end[eIx][j]);
+                        expr2.addTerm(-1, r_end[eIx][j + 1]);
+                        model.addGenConstrIndicator(consecutiveActive, 1, expr2, '=', 0, "name");
+                    }
                 }
             }
         }
@@ -588,12 +598,14 @@ public class NewSolver implements Solver {
 
         GRBLinExpr bboxDimensions = new GRBLinExpr();
         bboxDimensions.addTerm(1, r_max);
+        bboxDimensions.addConstant(1);
         bboxDimensions.addTerm(1, c_max);
+        bboxDimensions.addConstant(1);
 
         GRBLinExpr obj = new GRBLinExpr();
 
         GRBVar[][] sumComplexity = new GRBVar[inst.numberOfEntities][height - 1];
-        for (int eIx = 0; eIx < inst.numberOfEntities; eIx++) {
+        for (int eIx = 0; eIx < inst.numberOfEntities && polygonType != PolygonType.Rectangle; eIx++) {
             for (int j = 0; j < height - 1; j++) {
                 // b_active_consecutive: e_j and e_(j+1) are active
                 GRBVar b_active_consecutive = model.addVar(0.0, 1.0, 0.0, GRB.BINARY,
@@ -728,12 +740,10 @@ public class NewSolver implements Solver {
                         GRB.EQUAL, 0,
                         "if_active_consecutive_rows_then_sumComplexity");
 
-                obj.addTerm(0.1, sumComplexity[eIx][j]);
+                obj.addTerm(0.1, sumComplexity[eIx][j]); // Every turn adds 2 vertices, we divide by 20.
             }
+            obj.addConstant(0.2); // Complexity = 4 + #turns, so add 4 / 20 here.
         }
-
-
-
 
         obj.add(area);
         obj.add(bboxDimensions);
@@ -767,10 +777,10 @@ public class NewSolver implements Solver {
         }
         var entityCells = new ArrayList<ArrayList<Point>>();
 
-        int eIx = 0;
+        int eIx_ = 0;
         for (int ogEIx = 0; ogEIx < originalInstance.numberOfEntities; ++ogEIx) {
             var thisEntityCells = new ArrayList<Point>();
-            boolean isSingleton = originalInstance.entityIdToStatements.get(ogEIx).length == 1;
+            boolean isSingleton = originalInstance.entityIdToStatements.get(ogEntityIds.get(ogEIx)).length == 1;
 
             if (isSingleton) {
                 // look for the position of the single statement and use that
@@ -780,12 +790,12 @@ public class NewSolver implements Solver {
             } else {
                 for (int i = 0; i < width; ++i) {
                     for (int j = 0; j < height; j++) {
-                        if (z[eIx][i][j].get(GRB.DoubleAttr.X) > 0.5) {
+                        if (z[eIx_][i][j].get(GRB.DoubleAttr.X) > 0.5) {
                             thisEntityCells.add(new Point(i, j));
                         }
                     }
                 }
-                ++eIx;
+                ++eIx_;
             }
             entityCells.add(thisEntityCells);
         }
@@ -796,8 +806,8 @@ public class NewSolver implements Solver {
 //        System.out.println("Number of constraints: " + model.get(GRB.IntAttr.NumConstrs));
 //        System.out.println("Number of general constraints: " + model.get(GRB.IntAttr.NumGenConstrs));
         System.out.println("Bbox dimensions: " + bboxDimensions.getValue());
-//        for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
-//            System.out.println("Entity: " + inst.entities.get(eIx));
+        for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
+//            System.out.println("Entity: " + inst.entities.get(entityIds.get(eIx)));
 //            System.out.println("area: " + C[eIx].get(GRB.DoubleAttr.X));
 //            System.out.println("Begin");
 //            for (int j = 0; j < height; ++j) {
@@ -820,7 +830,7 @@ public class NewSolver implements Solver {
 //                    System.out.println("Complexity: " + sumComplexity[eIx][j].get(GRB.DoubleAttr.X));
 //                }
 //            }
-//        }
+        }
 
         return sol;
     }

@@ -17,7 +17,7 @@ Statement Tulips originated in Central Asia and were later cultivated in the Ott
 Statement Carolus Clusius introduced tulips to the Netherlands through the Leiden gardens.: (1, 0)
 Statement Tulip Mania in the Netherlands drove the price of tulip bulbs to extraordinary levels.: (2, 2)
 Statement The Bollenstreek in the Netherlands is famous for vast tulip fields that attract visitors each spring.: (1, 1)
-Statement Keukenhof showcases diverse tulip displays and is central to the Netherlands' annual flower parades.: (2, 1)
+Statement Keukenhof showcases tulip displays and is central to the Netherlands' annual flower parades.: (2, 1)
 Statement A breaking virus produced striped patterns in tulips such as Semper Augustus.: (3, 1)
 Statement Tulips can self-pollinate, allowing some varieties to reproduce even without insect pollinators.: (3, 0)
 Statement Carolus Clusius studied exotic plants and exchanged knowledge with botanists across Europe.: (0, 0)
