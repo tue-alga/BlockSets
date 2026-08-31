@@ -396,6 +396,31 @@ function calculateCellHeights(cellHeights, statementCells, totalHeight) {
             cellHeights[statementCells[i].y] = statementHeight;
         }
     }
+
+    // Center text vertically based on the longest statement in each row
+    let rowYOffsets = [];
+    for (let i = 0; i <= totalHeight; i++) {
+        rowYOffsets[i] = 0;
+    }
+
+    for (let i = 0; i < statementCells.length; i++) {
+        // Center longest statement in the row vertically
+        if (!statementCells[i].longestInRow) continue;
+
+        let textLineHeight = c.measureText("G").actualBoundingBoxAscent;
+        let textHeight = textLineHeight * statementCells[i].textLines.length;
+        let totalLineSpacing = 4 * (statementCells[i].textLines.length - 1);
+        let padding = 2 * Number(VisualizationSettings.margins);
+        let totalNeededHeight = textHeight + totalLineSpacing + padding;
+
+        let cellHeight = cellHeights[statementCells[i].y];
+        let leftoverSpace = cellHeight * backgroundCellSize - totalNeededHeight;
+        rowYOffsets[statementCells[i].y] = leftoverSpace / 2.0;
+    }
+
+    for (let i = 0; i < statementCells.length; i++) {
+        statementCells[i].yTextOffset = rowYOffsets[statementCells[i].y];
+    }
 }
 
 // Resize and center canvas on the screen

@@ -9,11 +9,12 @@ function getCharsBeforeInWord(str, charIndex) {
 }
 
 class Statement {
-    constructor(id, x, y, text, entities) {
+    constructor(id, x, y, text, entities, longestInRow) {
         // Identifiers
         this.id = id;
         this.text = text;
         this.entities = entities;
+        this.longestInRow = longestInRow;
 
         // Cell coordinates
         this.x = x;
@@ -21,6 +22,9 @@ class Statement {
 
         // Pixel coordinates
         this.pixelCoords = [];
+
+        // Start of the first row of text after vertical centering
+        this.yTextOffset;
 
         const lineWidth = (cellWidth - 2 * Number(VisualizationSettings.margins) / backgroundCellSize) * backgroundCellSize;
 
@@ -68,7 +72,7 @@ class Statement {
         // Combine names and colors into a single array
         for (let i = 0; i < names.length; i++) {
             let hyphenatedVariants = getHyphenatedVariations(names[i]);
-            
+
             for (let j = 0; j < hyphenatedVariants.length; j++) {
                 combined.push([hyphenatedVariants[j], colors[i]]);
             }
@@ -174,7 +178,7 @@ class Statement {
                         textX += c.measureText(char).width;
                     }
                 }
-                let textY = this.pixelCoords[0].y + (1 + i) * textLineHeight + Number(VisualizationSettings.margins) - 4;
+                let textY = this.pixelCoords[0].y + (1 + i) * textLineHeight + Number(VisualizationSettings.margins) - 4 + this.yTextOffset;
 
                 // Check if we are at the start of an entity name
                 for (let k = 0; k < nameIndices.length; k++) {
@@ -287,10 +291,40 @@ class Statement {
             currentIndex = 0;
 
             for (let i = 0; i < this.textLines.length; i++) {
+                let hyphen = false;
                 for (let j = 0; j < this.textLines[i].plaintext.length; j++) {
                     let textLineHeight = c.measureText("G").actualBoundingBoxAscent + 4;
-                    let textX = this.pixelCoords[0].x + Number(VisualizationSettings.margins) + lengthSoFar;
-                    let textY = this.pixelCoords[0].y + (1 + i) * textLineHeight + Number(VisualizationSettings.margins) - 4;
+
+                    let currentItemIx = 0;
+                    let length = 0;
+                    hyphen = false;
+                    for (let itemIx = 0; itemIx < this.textLines[i].positionedItems.length; ++itemIx) {
+                        let item = this.textLines[i].positionedItems[itemIx];
+                        if (item.text !== undefined) {
+                            if (item.text === ' ' && item.xOffset === 0) continue; // ignore first space on a line
+                            length += item.text.length;
+                            if (length > j) {
+                                currentItemIx = itemIx;
+                                length -= item.text.length;
+                                break;
+                            }
+                        }
+                        if (item.type == "penalty") {
+                            currentItemIx = itemIx;
+                            hyphen = true;
+                        }
+                    }
+
+                    let item = this.textLines[i].positionedItems[currentItemIx];
+
+                    let textX = this.pixelCoords[0].x + Number(VisualizationSettings.margins) + item.xOffset;
+                    if (!hyphen) {
+                        let prevChars = getCharsBeforeInWord(item.text, j - length);
+                        for (let char of prevChars) {
+                            textX += c.measureText(char).width;
+                        }
+                    }
+                    let textY = this.pixelCoords[0].y + (1 + i) * textLineHeight + Number(VisualizationSettings.margins) - 4 + this.yTextOffset;
 
                     // Check if we are at the start of an entity name
                     for (let k = 0; k < nameIndices.length; k++) {

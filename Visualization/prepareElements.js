@@ -30,7 +30,15 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
         let y = statements[i].y;
         let text = statements[i].text;
         let entities = statements[i].entities;
-        statementCells[i] = new Statement(id, x, y, text, entities);
+
+        // Find longest statement in each row
+        let rowStatements = statements.filter(s => s.y == y);
+        let longest = true;
+        rowStatements.forEach(s => {
+            if (s.text.length > text.length) longest = false;
+        });
+
+        statementCells[i] = new Statement(id, x, y, text, entities, longest);
     }
 }
 

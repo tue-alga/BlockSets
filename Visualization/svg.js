@@ -263,7 +263,7 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                 const height = c.measureText("G").actualBoundingBoxAscent + 4;
                 const textBackground = document.createElementNS(svgNS, "rect");
                 textBackground.setAttribute("x", textX);
-                textBackground.setAttribute("y", yStart + (i) * height + Number(VisualizationSettings.margins) - 2);
+                textBackground.setAttribute("y", yStart + (i) * height + Number(VisualizationSettings.margins) - 2 + statement.yTextOffset);
                 textBackground.setAttribute("width", width);
                 textBackground.setAttribute("height", height);
                 textBackground.setAttribute("fill", lightenRGB(fillColor, 0.7));
@@ -272,15 +272,15 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                 // Text
                 const textElem = document.createElementNS(svgNS, "text");
                 textElem.setAttribute("x", textX);
-                textElem.setAttribute("y", yStart + (1 + i) * height + Number(VisualizationSettings.margins) - 4);
+                textElem.setAttribute("y", yStart + (1 + i) * height + Number(VisualizationSettings.margins) - 4 + statement.yTextOffset);
                 textElem.textContent = statement.textLines[i].plaintext[j];
 
                 // Underline
                 const underline = document.createElementNS(svgNS, "line");
                 underline.setAttribute("x1", textX);
                 underline.setAttribute("x2", textX + (statement.textLines[i].plaintext[j] === ' ' ? 3 * width : width));
-                underline.setAttribute("y1", yStart + (1 + i) * height + Number(VisualizationSettings.margins) - 4 + 1);
-                underline.setAttribute("y2", yStart + (1 + i) * height + Number(VisualizationSettings.margins) - 4 + 1);
+                underline.setAttribute("y1", yStart + (1 + i) * height + Number(VisualizationSettings.margins) - 4 + 1 + statement.yTextOffset);
+                underline.setAttribute("y2", yStart + (1 + i) * height + Number(VisualizationSettings.margins) - 4 + 1 + statement.yTextOffset);
                 underline.setAttribute("stroke", "#000");
                 underline.setAttribute("stroke-width", "1");
 
