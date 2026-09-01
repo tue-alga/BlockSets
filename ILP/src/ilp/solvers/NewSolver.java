@@ -6,8 +6,12 @@ import model.ArbitraryPolygonSolution;
 import model.Solution;
 import model.StatementEntityInstance;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.*;
 import java.awt.Point;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NewSolver implements Solver {
     GRBEnv env;
@@ -34,6 +38,32 @@ public class NewSolver implements Solver {
 
     @Override
     public Solution solve(StatementEntityInstance originalInstance, double timeLimit, int dimensions) throws Exception, GRBException {
+        var statementFile = new FileReader("example_solutions/CountryFlags_4.txt");
+
+        BufferedReader reader = new BufferedReader(statementFile);
+        String line;
+
+        Pattern pattern = Pattern.compile("Statement (.+?): \\(([^,]+), ([^)]+)\\)");
+
+        HashMap<Integer, Point> statementPositions = new HashMap<>();
+
+        while ((line = reader.readLine()) != null) {
+            Matcher matcher = pattern.matcher(line);
+
+            if (matcher.matches()) {
+                String label = matcher.group(1);
+                int x = Integer.parseInt(matcher.group(2).trim());
+                int y = Integer.parseInt(matcher.group(3).trim());
+
+                for (var entry : originalInstance.statements.entrySet()) {
+                    if (entry.getValue().equals(label)) {
+                        statementPositions.put(entry.getKey(), new Point(x, y));
+                    }
+                }
+            }
+        }
+        reader.close();
+
         int width = dimensions;
         int height = dimensions;
 
@@ -185,6 +215,23 @@ public class NewSolver implements Solver {
             for (int i = 0; i < width; i++) {
                 for (int j = 0; j < height; j++) {
                     xG[i][j] = model.addVar(0, 1, 0, GRB.BINARY, "x_" + group.toString() + "_" + i + "_" + j);
+                }
+            }
+        }
+
+        for (var sId : statementPositions.keySet()) {
+            for (var group : groupedElements.keySet()) {
+                boolean found = false;
+                for (var candSId : group) {
+                    if (Objects.equals(sId, candSId)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) { // sId is part of this group
+                    var xG = x.get(group);
+                    var pos = statementPositions.get(sId);
+                    xG[pos.x][pos.y].set(GRB.DoubleAttr.Start, 1);
                 }
             }
         }
