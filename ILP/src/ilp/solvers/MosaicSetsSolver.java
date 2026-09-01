@@ -26,7 +26,7 @@ public class MosaicSetsSolver implements Solver {
     private final boolean renderMosaicSetsSvgs;
     int gridSize;
     int padding;
-    int fontSize = 10;
+    int fontSize = 12;
 
     boolean drawGrid = false;
     boolean drawOutline = true;
