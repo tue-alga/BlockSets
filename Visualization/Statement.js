@@ -9,12 +9,12 @@ function getCharsBeforeInWord(str, charIndex) {
 }
 
 class Statement {
-    constructor(id, x, y, text, entities, longestInRow) {
+    constructor(id, x, y, text, entities) {
         // Identifiers
         this.id = id;
         this.text = text;
         this.entities = entities;
-        this.longestInRow = longestInRow;
+        this.longestInRow;
 
         // Cell coordinates
         this.x = x;
