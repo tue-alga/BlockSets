@@ -19,6 +19,7 @@ public class PolygonAreaDimensionsComplexity implements ObjectiveModule {
                         // Opt2: Minimize dimensions of solution
                         objective.addTerm(1.0, v.maxWidth);
                         objective.addTerm(1.0, v.maxHeight);
+                        objective.addConstant(2); // We add 2 to get the total bounding box dimensions
                         PolygonAreaDimensionsComplexity.addComplexity(ctx, objective);
 
                         for (int i = 0; i < nEntities; i++) {
@@ -170,8 +171,9 @@ public class PolygonAreaDimensionsComplexity implements ObjectiveModule {
                                                         GRB.EQUAL, 0,
                                                         "if_active_consecutive_rows_then_sumComplexity");
 
-                                        objective.addTerm(0.1, sumComplexity);
+                                        objective.addTerm(0.1, sumComplexity);  // Every turn adds 2 vertices, we divide by 20.
                                 }
+                                objective.addConstant(0.2); // Complexity = 4 + #turns, so add 4 / 20 here.
                         }
                 }
         }
