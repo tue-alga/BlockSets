@@ -31,14 +31,19 @@ function initializeElements(colorPalette, entities, statements, entityRects, sta
         let text = statements[i].text;
         let entities = statements[i].entities;
 
+        statementCells[i] = new Statement(id, x, y, text, entities);
+    }
+
+    for (let i = 0; i < statementCells.length; i++) {
         // Find longest statement in each row
-        let rowStatements = statements.filter(s => s.y == y);
+        let y = statementCells[i].y;
+        let rowStatements = statementCells.filter(s => s.y == y);
         let longest = true;
         rowStatements.forEach(s => {
-            if (s.text.length > text.length) longest = false;
+            if (s.textLines > statementCells[i].textLines) longest = false;
         });
 
-        statementCells[i] = new Statement(id, x, y, text, entities, longest);
+        statementCells[i].longestInRow = longest;
     }
 }
 
