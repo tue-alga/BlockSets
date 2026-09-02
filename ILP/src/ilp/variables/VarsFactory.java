@@ -5,15 +5,22 @@ import com.gurobi.gurobi.GRBException;
 import com.gurobi.gurobi.GRBModel;
 import com.gurobi.gurobi.GRBVar;
 
+import java.awt.Point;
+import java.util.List;
+import java.util.Map;
+
 public final class VarsFactory {
     private VarsFactory() {
     }
 
     public static Vars create(GRBModel model,
-            int nEntities,
-            int nStatements,
-            int coordLowerBound,
-            int coordUpperBound, int modelType) throws GRBException {
+                              int nEntities,
+                              int nStatements,
+                              int coordLowerBound,
+                              int coordUpperBound,
+                              int modelType,
+                              List<Integer> statementIds,
+                              Map<Integer, Point> initialStatementPositions) throws GRBException {
 
         switch (modelType) {
             case 0:
@@ -21,7 +28,7 @@ public final class VarsFactory {
                         coordUpperBound);
                 return v;
             case 1:
-                return createPolygonVars(model, nEntities, nStatements, coordLowerBound, coordUpperBound);
+                return createPolygonVars(model, nEntities, nStatements, coordLowerBound, coordUpperBound, statementIds, initialStatementPositions);
             default:
                 System.out.println("Unidentified model type");
                 return createRectangleVars(model, nEntities, nStatements, coordLowerBound, coordUpperBound);
@@ -67,7 +74,9 @@ public final class VarsFactory {
             int nEntities,
             int nStatements,
             int coordLowerBound,
-            int coordUpperBound) throws GRBException {
+            int coordUpperBound,
+            List<Integer> statementIds,
+            Map<Integer, Point> initialStatementPositions) throws GRBException {
         VarsPolygons v = new VarsPolygons();
 
         // statement coordinates: statementCoordinates[i][x/y]
@@ -78,6 +87,11 @@ public final class VarsFactory {
                     "s" + i + "_x");
             v.statementCoordinates[i][1] = model.addVar(coordLowerBound, coordUpperBound, 0.0, GRB.INTEGER,
                     "s" + i + "_y");
+            if (initialStatementPositions != null && initialStatementPositions.containsKey(statementIds.get(i))) {
+                var pt = initialStatementPositions.get(statementIds.get(i));
+                v.statementCoordinates[i][0].set(GRB.DoubleAttr.Start, pt.x);
+                v.statementCoordinates[i][1].set(GRB.DoubleAttr.Start, pt.y);
+            }
 
             for (int j = 0; j <= coordUpperBound; j++) {
                 v.statementIsOnRow[i][j] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY,
