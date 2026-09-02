@@ -85,9 +85,9 @@ public class Orchestrator {
             if (polygonType == PolygonType.Nabla) {
                 dimension += 1;
             } else if (polygonType == PolygonType.Gamma) {
-                dimension += 2;
+                dimension += 1;
             } else if (polygonType == PolygonType.Rectangle) {
-                dimension += 3;
+                dimension += 2;
             }
             // Note that a dimension=5 would mean a grid of size 5 x 5. With 5 rows columns with indices 0..4.
             Solution sol = solver.solve(inst, this.componentLayoutTimeLimit, dimension);
