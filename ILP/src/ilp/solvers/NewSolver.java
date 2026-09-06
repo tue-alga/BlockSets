@@ -38,31 +38,31 @@ public class NewSolver implements Solver {
 
     @Override
     public Solution solve(StatementEntityInstance originalInstance, double timeLimit, int dimensions) throws Exception, GRBException {
-        var statementFile = new FileReader("example_solutions/CountryFlags_4.txt");
-
-        BufferedReader reader = new BufferedReader(statementFile);
-        String line;
-
-        Pattern pattern = Pattern.compile("Statement (.+?): \\(([^,]+), ([^)]+)\\)");
+//        var statementFile = new FileReader("example_solutions/CountryFlags_4.txt");
+//
+//        BufferedReader reader = new BufferedReader(statementFile);
+//        String line;
+//
+//        Pattern pattern = Pattern.compile("Statement (.+?): \\(([^,]+), ([^)]+)\\)");
 
         HashMap<Integer, Point> statementPositions = new HashMap<>();
 
-        while ((line = reader.readLine()) != null) {
-            Matcher matcher = pattern.matcher(line);
-
-            if (matcher.matches()) {
-                String label = matcher.group(1);
-                int x = Integer.parseInt(matcher.group(2).trim());
-                int y = Integer.parseInt(matcher.group(3).trim());
-
-                for (var entry : originalInstance.statements.entrySet()) {
-                    if (entry.getValue().equals(label)) {
-                        statementPositions.put(entry.getKey(), new Point(x, y));
-                    }
-                }
-            }
-        }
-        reader.close();
+//        while ((line = reader.readLine()) != null) {
+//            Matcher matcher = pattern.matcher(line);
+//
+//            if (matcher.matches()) {
+//                String label = matcher.group(1);
+//                int x = Integer.parseInt(matcher.group(2).trim());
+//                int y = Integer.parseInt(matcher.group(3).trim());
+//
+//                for (var entry : originalInstance.statements.entrySet()) {
+//                    if (entry.getValue().equals(label)) {
+//                        statementPositions.put(entry.getKey(), new Point(x, y));
+//                    }
+//                }
+//            }
+//        }
+//        reader.close();
 
         int width = dimensions;
         int height = dimensions;
@@ -182,6 +182,8 @@ public class NewSolver implements Solver {
         HashMap<ArrayList<Integer>, GRBVar[][]> x = new HashMap<>();
         // Whether a set covers a grid cell
         GRBVar[][][] z = new GRBVar[inst.numberOfEntities][width][height];
+        // Occupied by any set?
+        GRBVar[][] occupied = new GRBVar[width][height];
         // Active row
         GRBVar[][] r_a = new GRBVar[inst.numberOfEntities][height];
         // Row start
@@ -267,6 +269,12 @@ public class NewSolver implements Solver {
             }
         }
 
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                occupied[i][j] = model.addVar(0, 1, 0, GRB.BINARY, "occupied_" + i + "_" + j);
+            }
+        }
+
         // =======================================
         // ============= CONSTRAINTS =============
         // =======================================
@@ -304,6 +312,14 @@ public class NewSolver implements Solver {
                         expr.addTerm(1.0, x.get(group)[i][j]);
                     }
                     model.addConstr(expr, '<', z[eIx][i][j], "set_coverage");
+                }
+            }
+        }
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
+                    model.addConstr(occupied[i][j], '>', z[eIx][i][j], "occupied_" + i + "_" + j);
                 }
             }
         }
@@ -638,10 +654,20 @@ public class NewSolver implements Solver {
         // =======================================
         // ============== OBJECTIVE ==============
         // =======================================
-        GRBLinExpr area = new GRBLinExpr();
-        for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
-            area.addTerm(1, C[eIx]);
-        }
+//        GRBLinExpr area = new GRBLinExpr();
+//        for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
+//            area.addTerm(1, C[eIx]);
+//        }
+
+        var maxDimension = model.addVar(0, Math.max(width, height), 0, 'I', "max_dimension");
+        GRBLinExpr r_max_plus_1 = new GRBLinExpr();
+        r_max_plus_1.addTerm(1, r_max);
+        r_max_plus_1.addConstant(1);
+        GRBLinExpr c_max_plus_1 = new GRBLinExpr();
+        c_max_plus_1.addTerm(1, c_max);
+        c_max_plus_1.addConstant(1);
+        model.addConstr(maxDimension, '>', r_max_plus_1, "max_dimension_>_r_max+1");
+        model.addConstr(maxDimension, '>', c_max_plus_1, "max_dimension_>_c_max+1");
 
         GRBLinExpr bboxDimensions = new GRBLinExpr();
         bboxDimensions.addTerm(1, r_max);
@@ -649,7 +675,20 @@ public class NewSolver implements Solver {
         bboxDimensions.addTerm(1, c_max);
         bboxDimensions.addConstant(1);
 
+        // #gaps = #occupied - #statements
+        var gaps = new GRBLinExpr();
+        for (int i = 0; i < width; ++i) {
+            for (int j = 0; j < height; ++j) {
+                gaps.addTerm(1, occupied[i][j]);
+            }
+        }
+
+        gaps.addConstant(-inst.numberOfStatements);
         GRBLinExpr obj = new GRBLinExpr();
+
+        obj.addTerm(100, maxDimension);
+        obj.add(gaps);
+        obj.add(bboxDimensions);
 
         GRBVar[][] sumComplexity = new GRBVar[inst.numberOfEntities][height - 1];
         for (int eIx = 0; eIx < inst.numberOfEntities && polygonType != PolygonType.Rectangle; eIx++) {
@@ -787,16 +826,27 @@ public class NewSolver implements Solver {
                         GRB.EQUAL, 0,
                         "if_active_consecutive_rows_then_sumComplexity");
 
-                obj.addTerm(0.1, sumComplexity[eIx][j]); // Every turn adds 2 vertices, we divide by 20.
+                obj.addTerm(2.0 / 100, sumComplexity[eIx][j]); // Every turn adds 2 vertices, we divide by 20.
             }
-            obj.addConstant(0.2); // Complexity = 4 + #turns, so add 4 / 20 here.
+            obj.addConstant(4.0 / 100); // Complexity = 4 + #turns, so add 4 / 20 here.
         }
 
-        obj.add(area);
-        obj.add(bboxDimensions);
+        GRBLinExpr perimeter = new GRBLinExpr();
+
+        for (int eIx = 0; eIx < inst.numberOfEntities; eIx++) {
+            for (int i = 0; i < width; ++i) {
+                perimeter.addTerm(2.0 / 100, c_a[eIx][i]);
+            }
+            for (int j = 0; j < height; ++j) {
+                perimeter.addTerm(2.0 / 100, r_a[eIx][j]);
+            }
+        }
+
+        obj.add(perimeter);
 
         model.setObjective(obj, GRB.MINIMIZE);
         model.set(GRB.DoubleParam.TimeLimit, timeLimit);
+        model.set(GRB.DoubleParam.Heuristics, 0.5);
         model.optimize();
 
         int status = model.get(GRB.IntAttr.Status);
