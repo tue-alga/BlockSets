@@ -39,6 +39,7 @@ public class StatsRecorder {
     public double averageNumSetVertices = 0;
     public double averageNumStraightSetSides = 0;
     public double averageSetSquareness = 0;
+    public double averageSetPerimeter = 0;
 
     public StatsRecorder(StatementEntityInstance inst, String[] params) {
         this.parameters = params;
@@ -72,6 +73,7 @@ public class StatsRecorder {
             this.averageSetSquareness += (Math.min(setWidth, setHeight) / Math.max(setWidth, setHeight));
             this.averageNumStraightSetSides += 4;
             this.averageNumSetVertices += 4;
+            this.averageSetPerimeter += 2 * setWidth + 2 * setHeight;
         }
     }
 
@@ -113,6 +115,7 @@ public class StatsRecorder {
             double setHeight = yEnd - yStart + 1;
 
             this.averageSetSquareness += (Math.min(setWidth, setHeight) / Math.max(setWidth, setHeight));
+            this.averageSetPerimeter += 2 * setWidth + 2 * setHeight;
 
             // #Vertices
             int numVertices = 4;
@@ -231,6 +234,22 @@ public class StatsRecorder {
 
             this.averageNumSetVertices += vertices;
 
+            int perimeter = 0;
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    if (!cellSet.contains(new Point(x, y))) continue;
+                    int count = 0;
+
+                    if (!cellSet.contains(new Point(x-1, y))) count++;
+                    if (!cellSet.contains(new Point(x+1, y))) count++;
+                    if (!cellSet.contains(new Point(x, y+1))) count++;
+                    if (!cellSet.contains(new Point(x, y-1))) count++;
+                    perimeter += count;
+                }
+            }
+
+            this.averageSetPerimeter = perimeter;
+
             entityI++;
         }
     }
@@ -268,6 +287,7 @@ public class StatsRecorder {
         this.averageNumSetVertices /= (this.numNonSingletonSets + this.numSetCopies);
         this.averageNumStraightSetSides /= (this.numNonSingletonSets + this.numSetCopies);
         this.averageSetSquareness /= (this.numNonSingletonSets + this.numSetCopies);
+        this.averageSetPerimeter /= (this.numNonSingletonSets + this.numSetCopies);
 
         // Get the fraction of vacant cells
         this.sparsity = (double) this.numVacantCells / this.totalBBoxSize;
@@ -354,6 +374,7 @@ public class StatsRecorder {
         System.out.println("Average set squareness (normalized range: 0 - 1): " + this.averageSetSquareness);
         System.out.println("Average set vertices: " + this.averageNumSetVertices);
         System.out.println("Average set straight sides: " + this.averageNumStraightSetSides);
+        System.out.println("Average set perimeter: " + this.averageSetPerimeter);
         System.out.println("-------------------------------------------");
     }
 
@@ -374,7 +395,7 @@ public class StatsRecorder {
                                 "Vacant cells,Sparsity (%),Total split time (s),Total layout time (s),Total arrange time (s)," +
                                 "Bounding box width,Bounding box height," +
                                 "Bounding box (cells),Blank cells,Blank orthoconvex hull cells," +
-                                "Average set squareness,Average set vertices,Average set straight sides");
+                                "Average set squareness,Average set vertices,Average set straight sides,Average perimeter");
                 writer.newLine();
             }
 
@@ -400,7 +421,8 @@ public class StatsRecorder {
                             this.numBlankOrthoconvexHullCells + "," +
                             String.format("%.4f", this.averageSetSquareness) + "," +
                             String.format("%.4f", this.averageNumSetVertices) + "," +
-                            String.format("%.4f", this.averageNumStraightSetSides));
+                            String.format("%.4f", this.averageNumStraightSetSides) + "," +
+                            String.format("%.4f", this.averageSetPerimeter));
 
             writer.newLine();
 
