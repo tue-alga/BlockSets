@@ -641,14 +641,14 @@ public class NewSolver implements Solver {
             }
         }
 
-        GRBLinExpr numActiveTopRows = new GRBLinExpr();
-        GRBLinExpr numActiveLeftColumns = new GRBLinExpr();
-        for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
-            numActiveTopRows.addTerm(1, r_a[eIx][0]);
-            numActiveLeftColumns.addTerm(1, c_a[eIx][0]);
-        }
-        model.addConstr(numActiveTopRows, '>', 1, "active_top_row");
-        model.addConstr(numActiveLeftColumns, '>', 1, "active_left_column");
+//        GRBLinExpr numActiveTopRows = new GRBLinExpr();
+//        GRBLinExpr numActiveLeftColumns = new GRBLinExpr();
+//        for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
+//            numActiveTopRows.addTerm(1, r_a[eIx][0]);
+//            numActiveLeftColumns.addTerm(1, c_a[eIx][0]);
+//        }
+//        model.addConstr(numActiveTopRows, '>', 1, "active_top_row");
+//        model.addConstr(numActiveLeftColumns, '>', 1, "active_left_column");
 
 
         // =======================================
