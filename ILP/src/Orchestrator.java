@@ -21,7 +21,8 @@ import split.ClusterSplit;
 import split.GreedySplit;
 
 public class Orchestrator {
-    private final boolean useNew = true;
+    private final boolean useNew = false;
+    private final boolean useCombined = true;
 
     private final int splitK; // Maximum number of nodes to be deleted (usually 5)
     private final double splitRatio; // Coefficient that determines how wide is the range of acceptable components'
@@ -131,7 +132,7 @@ public class Orchestrator {
     }
 
     public PositionedSolution runBlockSets(StatementEntityInstance instance, PolygonType polygonType,
-                                           StatsRecorder stats, boolean useRectEulerSplit, boolean mosaicSetsPerimeter) {
+                                           StatsRecorder stats, boolean mosaicSetsPerimeter) {
         List<ConstraintModule> constraints = null;
         ObjectiveModule objective = null;
         int solutionType = -1;
@@ -214,13 +215,22 @@ public class Orchestrator {
         }
 
         Solver solver;
-        if (useNew && (polygonType != PolygonType.Arbitrary && polygonType != PolygonType.Rectangle)) {
-            solver = new NewSolver(polygonType);
-        } else {
+        if (useCombined) {
             if (polygonType == PolygonType.Arbitrary) {
                 solver = new MosaicSetsSolver(0, 0, false, mosaicSetsPerimeter);
             } else {
-                solver = new OrthoconvexSolver(constraints, objective, solutionType);
+                Solver initialSolver = new OrthoconvexSolver(constraints, objective, solutionType);
+                solver = new CombinedSolver(initialSolver, new NewSolver(polygonType));
+           }
+        } else {
+            if (useNew && (polygonType != PolygonType.Arbitrary && polygonType != PolygonType.Rectangle)) {
+                solver = new NewSolver(polygonType);
+            } else {
+                if (polygonType == PolygonType.Arbitrary) {
+                    solver = new MosaicSetsSolver(0, 0, false, mosaicSetsPerimeter);
+                } else {
+                    solver = new OrthoconvexSolver(constraints, objective, solutionType);
+                }
             }
         }
 
@@ -312,7 +322,7 @@ public class Orchestrator {
             StatsRecorder stats = new StatsRecorder(instance, runParams);
 
             Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, componentLayoutTimeLimit, componentArrangementTimeLimit);
-            PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, stats, false, false);
+            PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, stats, false);
 
             // Write solution stats to file
             stats.appendToCsv(statsFile);

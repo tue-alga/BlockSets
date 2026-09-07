@@ -23,6 +23,7 @@ public interface Solution {
 
     ArrayList<Integer> getEntityIds();
     ArrayList<Point> getStatementCells();
+    ArrayList<ArrayList<Point>> getEntityCells();
 
     ArrayList<Point> getCells();
 

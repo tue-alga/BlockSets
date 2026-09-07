@@ -65,31 +65,31 @@ public class OrthoconvexSolver implements Solver {
             return null;
         }
 
-        var statementFile = new FileReader("example_solutions/CountryFlags_4.json");
-
-        BufferedReader reader = new BufferedReader(statementFile);
-        String line;
-
-        Pattern pattern = Pattern.compile("Statement (.+?): \\(([^,]+), ([^)]+)\\)");
+//        var statementFile = new FileReader("example_solutions/CountryFlags_4.json");
+//
+//        BufferedReader reader = new BufferedReader(statementFile);
+//        String line;
+//
+//        Pattern pattern = Pattern.compile("Statement (.+?): \\(([^,]+), ([^)]+)\\)");
 
         HashMap<Integer, Point> statementPositions = new HashMap<>();
 
-        while ((line = reader.readLine()) != null) {
-            Matcher matcher = pattern.matcher(line);
-
-            if (matcher.matches()) {
-                String label = matcher.group(1);
-                int x = Integer.parseInt(matcher.group(2).trim());
-                int y = Integer.parseInt(matcher.group(3).trim());
-
-                for (var entry : inst.statements.entrySet()) {
-                    if (entry.getValue().equals(label)) {
-                        statementPositions.put(entry.getKey(), new Point(x, y));
-                    }
-                }
-            }
-        }
-        reader.close();
+//        while ((line = reader.readLine()) != null) {
+//            Matcher matcher = pattern.matcher(line);
+//
+//            if (matcher.matches()) {
+//                String label = matcher.group(1);
+//                int x = Integer.parseInt(matcher.group(2).trim());
+//                int y = Integer.parseInt(matcher.group(3).trim());
+//
+//                for (var entry : inst.statements.entrySet()) {
+//                    if (entry.getValue().equals(label)) {
+//                        statementPositions.put(entry.getKey(), new Point(x, y));
+//                    }
+//                }
+//            }
+//        }
+//        reader.close();
 
         try (ModelContext ctx = new ModelContext(inst, dimensions - 1, gridMin, maxSizeSum, wTopLeft, wMaxExtents,
                 solutionType, statementPositions)) {

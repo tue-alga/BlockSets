@@ -37,16 +37,20 @@ public class NewSolver implements Solver {
     }
 
     @Override
-    public Solution solve(StatementEntityInstance originalInstance, double timeLimit, int dimensions) throws Exception, GRBException {
-//        var statementFile = new FileReader("example_solutions/CountryFlags_4.txt");
+    public Solution solve(StatementEntityInstance instance, double timeLimit, int dimensions) throws Exception, GRBException {
+        return warmSolve(instance, timeLimit, dimensions, null);
+    }
+
+    public Solution warmSolve(StatementEntityInstance originalInstance, double timeLimit, int dimensions, Solution initialSolution) throws Exception, GRBException {
+//        var statementFile = new FileReader("example_solutions/CountryFlags_3.txt");
 //
 //        BufferedReader reader = new BufferedReader(statementFile);
 //        String line;
 //
 //        Pattern pattern = Pattern.compile("Statement (.+?): \\(([^,]+), ([^)]+)\\)");
-
-        HashMap<Integer, Point> statementPositions = new HashMap<>();
-
+//
+//        HashMap<Integer, Point> statementPositions = new HashMap<>();
+//
 //        while ((line = reader.readLine()) != null) {
 //            Matcher matcher = pattern.matcher(line);
 //
@@ -221,23 +225,6 @@ public class NewSolver implements Solver {
             }
         }
 
-        for (var sId : statementPositions.keySet()) {
-            for (var group : groupedElements.keySet()) {
-                boolean found = false;
-                for (var candSId : group) {
-                    if (Objects.equals(sId, candSId)) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (found) { // sId is part of this group
-                    var xG = x.get(group);
-                    var pos = statementPositions.get(sId);
-                    xG[pos.x][pos.y].set(GRB.DoubleAttr.Start, 1);
-                }
-            }
-        }
-
         // a, b, z, f and C
         for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
             C[eIx] = model.addVar(0, width * height, 0, GRB.INTEGER, "C_" + eIx);
@@ -266,6 +253,47 @@ public class NewSolver implements Solver {
                 r_a[eIx][j] = model.addVar(0, 1, 0, GRB.BINARY, "r_a_" + eIx + "_" + j);
                 r_start[eIx][j] = model.addVar(0, width-1, 0, GRB.INTEGER, "r_start_" + eIx + "_" + j);
                 r_end[eIx][j] = model.addVar(0, width-1, 0, GRB.INTEGER, "r_end_" + eIx + "_" + j);
+            }
+        }
+
+        if (initialSolution != null) {
+            var statementCoords = initialSolution.getStatementCells();
+
+            int _warm_sIx = 0;
+            for (int sId : originalInstance.statements.keySet()) {
+                for (var group : groupedElements.keySet()) {
+                    boolean found = false;
+                    for (var candSId : group) {
+                        if (Objects.equals(sId, candSId)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found) { // sId is part of this group
+                        var xG = x.get(group);
+                        var pos = statementCoords.get(_warm_sIx);
+                        xG[pos.x][pos.y].set(GRB.DoubleAttr.Start, 1);
+                    }
+                }
+                ++_warm_sIx;
+            }
+            var entityCoords = initialSolution.getEntityCells();
+            var ogIxToId = new ArrayList<>(originalInstance.entities.keySet());
+
+            int eIx = 0;
+            for (int og_eIx = 0; og_eIx < originalInstance.numberOfEntities; ++og_eIx) {
+                if(originalInstance.entityIdToStatements.get(ogIxToId.get(og_eIx)).length == 1) {
+                    continue;
+                }
+                for (int i = 0; i < width; i++) {
+                    for (int j = 0; j < height; j++) {
+                        z[eIx][i][j].set(GRB.DoubleAttr.Start, 0);
+                    }
+                }
+                for (var coord : entityCoords.get(og_eIx)) {
+                    z[eIx][coord.x][coord.y].set(GRB.DoubleAttr.Start, 1);
+                }
+                ++eIx;
             }
         }
 
@@ -846,7 +874,6 @@ public class NewSolver implements Solver {
 
         model.setObjective(obj, GRB.MINIMIZE);
         model.set(GRB.DoubleParam.TimeLimit, timeLimit);
-        model.set(GRB.DoubleParam.Heuristics, 0.5);
         model.optimize();
 
         int status = model.get(GRB.IntAttr.Status);

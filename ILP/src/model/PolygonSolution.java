@@ -13,6 +13,7 @@ public class PolygonSolution implements Solution {
     public int[][][] entities;
     public int[][] statementCoordinates;
     public ArrayList<Point> cells;
+    public ArrayList<ArrayList<Point>> entityCells;
     public boolean shifted = false;
 
     public PolygonSolution(StatementEntityInstance inst, int w, int h, ArrayList<Integer> eIds, int[][][] entities,
@@ -105,12 +106,18 @@ public class PolygonSolution implements Solution {
     }
 
     @Override
+    public ArrayList<ArrayList<Point>> getEntityCells() {
+        return entityCells;
+    }
+
+    @Override
     public ArrayList<Point> getCells() {
         return this.cells;
     }
 
     public void setCells() {
         cells = new ArrayList<>();
+        entityCells = new ArrayList<>();
 
         for (int i = startX; i <= endX(); i++) {
             for (int j = startY; j <= endY(); j++) {
@@ -119,26 +126,43 @@ public class PolygonSolution implements Solution {
                 }
             }
         }
+
+        for (int eIx = 0; eIx < entities.length; eIx++) {
+            entityCells.add(new ArrayList<>());
+            for (int i = startX; i <= endX(); i++) {
+                for (int j = startY; j <= endY(); j++) {
+                    if (entityCovers(eIx, i, j)) {
+                        entityCells.get(eIx).add(new Point(i, j));
+                    }
+                }
+            }
+        }
     }
 
-    private boolean entityCovers(int x, int y) {
+    private boolean entityCovers(int eIx, int x, int y) {
         if (!shifted) {
-            for (int i = 0; i < entities.length; i++) {
-                if (entities[i][y][0] == 1) {
-                    if (entities[i][y][1] <= x && entities[i][y][2] >= x) {
+            if (entities[eIx][y][0] == 1) {
+                if (entities[eIx][y][1] <= x && entities[eIx][y][2] >= x) {
+                    return true;
+                }
+            }
+        } else {
+            for (int r = 0; r < entities[eIx].length; r++) {
+                if (entities[eIx][r][0] == y + 1) {
+                    if (entities[eIx][r][1] <= x && entities[eIx][r][2] >= x) {
                         return true;
                     }
                 }
             }
-        } else {
-            for (int i = 0; i < entities.length; i++) {
-                for (int r = 0; r < entities[i].length; r++) {
-                    if (entities[i][r][0] == y + 1) {
-                        if (entities[i][r][1] <= x && entities[i][r][2] >= x) {
-                            return true;
-                        }
-                    }
-                }
+        }
+
+        return false;
+    }
+
+    private boolean entityCovers(int x, int y) {
+        for (int i = 0; i < entities.length; i++) {
+            if (entityCovers(i, x, y)) {
+                return true;
             }
         }
 

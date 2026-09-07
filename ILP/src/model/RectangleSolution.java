@@ -13,6 +13,7 @@ public class RectangleSolution implements Solution {
     public int[][] entityCoordinates;
     public int[][] statementCoordinates;
     public ArrayList<Point> cells;
+    public ArrayList<ArrayList<Point>> entityCells;
 
     public RectangleSolution(StatementEntityInstance inst, int w, int h, ArrayList<Integer> eIds, int[][] eCoords,
             int[][] sCoords) {
@@ -23,6 +24,7 @@ public class RectangleSolution implements Solution {
         this.entityCoordinates = eCoords;
         this.statementCoordinates = sCoords;
         setCells();
+        setEntityCells();
     }
 
     @Override
@@ -104,6 +106,11 @@ public class RectangleSolution implements Solution {
     }
 
     @Override
+    public ArrayList<ArrayList<Point>> getEntityCells() {
+        return this.entityCells;
+    }
+
+    @Override
     public ArrayList<Point> getCells() {
         return this.cells;
     }
@@ -120,12 +127,33 @@ public class RectangleSolution implements Solution {
         }
     }
 
+    public void setEntityCells() {
+        entityCells = new ArrayList<>();
+
+        for (int eIx = 0; eIx < entityCoordinates.length; ++eIx) {
+            entityCells.add(new ArrayList<>());
+            for (int i = startX; i <= endX(); i++) {
+                for (int j = startY; j <= endY(); j++) {
+                    if (entityCovers(eIx, i, j)) {
+                        entityCells.get(eIx).add(new Point(i, j));
+                    }
+                }
+            }
+        }
+    }
+
     private boolean entityCovers(int x, int y) {
         for (int i = 0; i < entityCoordinates.length; i++) {
-            if (entityCoordinates[i][0] <= x && entityCoordinates[i][2] >= x) {
-                if (entityCoordinates[i][1] <= y && entityCoordinates[i][3] >= y) {
-                    return true;
-                }
+            if (entityCovers(i, x, y)) return true;
+        }
+
+        return false;
+    }
+
+    private boolean entityCovers(int eIx, int x, int y) {
+        if (entityCoordinates[eIx][0] <= x && entityCoordinates[eIx][2] >= x) {
+            if (entityCoordinates[eIx][1] <= y && entityCoordinates[eIx][3] >= y) {
+                return true;
             }
         }
 

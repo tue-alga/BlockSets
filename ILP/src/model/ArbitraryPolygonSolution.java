@@ -114,6 +114,11 @@ public class ArbitraryPolygonSolution implements Solution {
     }
 
     @Override
+    public ArrayList<ArrayList<Point>> getEntityCells() {
+        return this.entityCells;
+    }
+
+    @Override
     public ArrayList<Point> getCells() {
         return this.cells;
     }
