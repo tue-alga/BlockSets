@@ -5,6 +5,7 @@ import ilp.PolygonType;
 import model.ArbitraryPolygonSolution;
 import model.Solution;
 import model.StatementEntityInstance;
+import org.jgrapht.alg.util.Pair;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -37,37 +38,11 @@ public class NewSolver implements Solver {
     }
 
     @Override
-    public Solution solve(StatementEntityInstance instance, double timeLimit, int dimensions) throws Exception, GRBException {
+    public Pair<Solution, Integer> solve(StatementEntityInstance instance, double timeLimit, int dimensions) throws Exception, GRBException {
         return warmSolve(instance, timeLimit, dimensions, null);
     }
 
-    public Solution warmSolve(StatementEntityInstance originalInstance, double timeLimit, int dimensions, Solution initialSolution) throws Exception, GRBException {
-//        var statementFile = new FileReader("example_solutions/CountryFlags_3.txt");
-//
-//        BufferedReader reader = new BufferedReader(statementFile);
-//        String line;
-//
-//        Pattern pattern = Pattern.compile("Statement (.+?): \\(([^,]+), ([^)]+)\\)");
-//
-//        HashMap<Integer, Point> statementPositions = new HashMap<>();
-//
-//        while ((line = reader.readLine()) != null) {
-//            Matcher matcher = pattern.matcher(line);
-//
-//            if (matcher.matches()) {
-//                String label = matcher.group(1);
-//                int x = Integer.parseInt(matcher.group(2).trim());
-//                int y = Integer.parseInt(matcher.group(3).trim());
-//
-//                for (var entry : originalInstance.statements.entrySet()) {
-//                    if (entry.getValue().equals(label)) {
-//                        statementPositions.put(entry.getKey(), new Point(x, y));
-//                    }
-//                }
-//            }
-//        }
-//        reader.close();
-
+    public Pair<Solution, Integer> warmSolve(StatementEntityInstance originalInstance, double timeLimit, int dimensions, Solution initialSolution) throws Exception, GRBException {
         int width = dimensions;
         int height = dimensions;
 
@@ -884,7 +859,7 @@ public class NewSolver implements Solver {
                 status == GRB.Status.INF_OR_UNBD ||
                 solCount == 0) {
 
-            return null;
+            return new Pair(null, status);
         }
 
         Point[] sCoords = new Point[inst.numberOfStatements];
@@ -908,7 +883,7 @@ public class NewSolver implements Solver {
 
             if (isSingleton) {
                 // look for the position of the single statement and use that
-                int sId = originalInstance.entityIdToStatements.get(ogEIx)[0];
+                int sId = originalInstance.entityIdToStatements.get(ogEntityIds.get(ogEIx))[0];
                 int sIx = statementIdToIdx.get(sId);
                 thisEntityCells.add(sCoords[sIx]);
             } else {
@@ -956,6 +931,6 @@ public class NewSolver implements Solver {
 //            }
         }
 
-        return sol;
+        return new Pair(sol, status);
     }
 }

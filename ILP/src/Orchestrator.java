@@ -91,7 +91,7 @@ public class Orchestrator {
                 dimension += 2;
             }
             // Note that a dimension=5 would mean a grid of size 5 x 5. With 5 rows columns with indices 0..4.
-            Solution sol = solver.solve(inst, this.componentLayoutTimeLimit, dimension);
+            Solution sol = solver.solve(inst, this.componentLayoutTimeLimit, dimension).getFirst();
             long afterSolve = System.nanoTime();
             double layoutTimeS = (afterSolve - beforeSolve) / 1_000_000_000.0;
             stats.totalLayoutTime += layoutTimeS;
