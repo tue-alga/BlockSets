@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
@@ -28,7 +29,7 @@ public class Orchestrator {
     private final double splitRatio; // Coefficient that determines how wide is the range of acceptable components'
                                      // sizes produced from the split
     private final double componentLayoutTimeLimit;
-    private final double componentArrangementTimeLimit;
+    public final double componentArrangementTimeLimit;
 
     public final List<Solution> solutions = new ArrayList<>();
     public final Set<Integer> deletedNodes = new HashSet<>();
@@ -69,6 +70,66 @@ public class Orchestrator {
         } else {
             return hgsParts;
         }
+    }
+
+    public List<Solution> solveWithSplits(NewSolver solver, StatementEntityInstance root,
+                                          StatsRecorder stats, PolygonType polygonType, HashMap<Integer, Point> statementPositions) throws Exception, GRBException {
+        // Store solved instances to record stats
+        ArrayList<StatementEntityInstance> solvedInstances = new ArrayList<>();
+
+        Deque<StatementEntityInstance> queue = new ArrayDeque<>();
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            StatementEntityInstance inst = queue.removeFirst();
+            long beforeSolve = System.nanoTime();
+            int dimension = (int) (Math.ceil(Math.sqrt(inst.numberOfStatements)) + 1);
+            if (polygonType == PolygonType.Nabla) {
+                dimension += 1;
+            } else if (polygonType == PolygonType.Gamma) {
+                dimension += 1;
+            } else if (polygonType == PolygonType.Rectangle) {
+                dimension += 2;
+            }
+            // Note that a dimension=5 would mean a grid of size 5 x 5. With 5 rows columns with indices 0..4.
+            Solution sol = solver.warmSolve(inst, this.componentLayoutTimeLimit, dimension, null, statementPositions);
+            long afterSolve = System.nanoTime();
+            double layoutTimeS = (afterSolve - beforeSolve) / 1_000_000_000.0;
+            stats.totalLayoutTime += layoutTimeS;
+
+            if (sol != null) {
+                solutions.add(sol);
+
+                // Record shape stats for this solution
+                stats.updateShapeStatsSingleComponent(sol);
+
+                // Add solved instance to global solved list
+                solvedInstances.add(inst);
+
+                continue;
+            }
+
+            // Too large or no optimal -> split
+
+            // Record start time
+            long beforeSplit = System.nanoTime();
+
+            var parts = split(inst);
+
+            // Measure total runtime for this split
+            long afterSplit = System.nanoTime();
+            double splitTimeS = (afterSplit - beforeSplit) / 1_000_000_000.0;
+            stats.totalSplitTime += splitTimeS;
+
+
+            // Enqueue parts
+            queue.addAll(parts);
+        }
+
+        // Record final component stats
+        stats.updateSplitComponentStats(solvedInstances);
+
+        return solutions;
     }
 
     public List<Solution> solveWithSplits(Solver solver, StatementEntityInstance root,
