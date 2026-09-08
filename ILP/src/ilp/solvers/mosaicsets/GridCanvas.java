@@ -68,6 +68,10 @@ public class GridCanvas<T> extends Canvas {
 
   @Override
   public void paint(Graphics g2) {
+    paint(g2, new HashMap<>());
+  }
+
+  public void paint(Graphics g2, HashMap<Integer, Integer> bends) {
 
     Graphics2D g = (Graphics2D) g2;
 
@@ -172,7 +176,7 @@ public class GridCanvas<T> extends Canvas {
 
     // draw the different styles.
     if (setsToSelectedArcs != null && this.drawOutline) {
-      drawBoundary(g, setsToArcsList, setsToColorMap, edgeColorCount);
+      drawBoundary(g, setsToArcsList, setsToColorMap, edgeColorCount, bends);
     }
 
     if (setsToSelectedArcs != null && this.drawKelp) {
@@ -281,7 +285,7 @@ public class GridCanvas<T> extends Canvas {
    * 
    * @param path filepath of the output
    */
-  public void export(String path) {
+  public void export(String path, HashMap<Integer, Integer> bends) {
     SVGExport exp = new SVGExport();
 
     // Find the bounds of the entire grid.
@@ -315,7 +319,7 @@ public class GridCanvas<T> extends Canvas {
             -minY + margin
     );
 
-    this.paint(graphic);
+    this.paint(graphic, bends);
 
     try {
       exp.writeToFile(path);
@@ -334,7 +338,7 @@ public class GridCanvas<T> extends Canvas {
    */
   private void drawBoundary(Graphics2D g, List<Integer> setsToArcsList,
       HashMap<Integer, Integer> setsToColorMap,
-      HashMap<Point2D.Double, HashMap<Point2D.Double, Integer>> edgeColorCount) {
+      HashMap<Point2D.Double, HashMap<Point2D.Double, Integer>> edgeColorCount, HashMap<Integer, Integer> bends) {
     for (Integer setID : setsToArcsList) {
       // Stroke dashed = new BasicStroke(7, BasicStroke.CAP_BUTT,
       // BasicStroke.JOIN_BEVEL, 0, new float[]{9}, colorIndex *
@@ -363,6 +367,7 @@ public class GridCanvas<T> extends Canvas {
         Area area = getAreaFromPolys(polys);
 
         int totalBends = countBends(area);
+        bends.put(setID, totalBends);
 
         System.out.println(
                 "Set " + setID + ": " + totalBends + " bends"
@@ -760,7 +765,7 @@ public class GridCanvas<T> extends Canvas {
     this.drawKelpFusion = drawKelpFusion;
   }
 
-  private int countBends(Shape shape) {
+  public int countBends(Shape shape) {
     List<Point2D.Double> points = new ArrayList<>();
 
     PathIterator iterator = shape.getPathIterator(null);

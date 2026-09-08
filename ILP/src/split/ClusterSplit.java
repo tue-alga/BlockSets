@@ -284,7 +284,7 @@ public class ClusterSplit {
                 }
             }
 
-            result.add(new StatementEntityInstance(newEntities, newStatements, newEntityToStatements));
+            result.add(new StatementEntityInstance(originalInstance.name + "_" + c, newEntities, newStatements, newEntityToStatements));
         }
 
         return result;

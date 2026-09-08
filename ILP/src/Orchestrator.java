@@ -278,7 +278,7 @@ public class Orchestrator {
         Solver solver;
         if (useCombined) {
             if (polygonType == PolygonType.Arbitrary) {
-                solver = new MosaicSetsSolver(0, 0, false, mosaicSetsPerimeter);
+                solver = new MosaicSetsSolver(0, 0, true, mosaicSetsPerimeter);
             } else {
                 Solver initialSolver = new OrthoconvexSolver(constraints, objective, solutionType);
                 solver = new CombinedSolver(initialSolver, new NewSolver(polygonType));
@@ -288,7 +288,7 @@ public class Orchestrator {
                 solver = new NewSolver(polygonType);
             } else {
                 if (polygonType == PolygonType.Arbitrary) {
-                    solver = new MosaicSetsSolver(0, 0, false, mosaicSetsPerimeter);
+                    solver = new MosaicSetsSolver(0, 0, true, mosaicSetsPerimeter);
                 } else {
                     solver = new OrthoconvexSolver(constraints, objective, solutionType);
                 }

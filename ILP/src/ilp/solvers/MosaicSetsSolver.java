@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
+import java.io.FileWriter;
 import java.util.*;
 import java.util.List;
 
@@ -110,6 +111,7 @@ public class MosaicSetsSolver implements Solver {
             }
             endTimeSecond = System.currentTimeMillis();
         }
+        long endTime = System.currentTimeMillis();
 
         var statementCoordinates = new Point[inst.numberOfStatements];
         HashMap<String, Point> statementToPoint = new HashMap<>();
@@ -187,12 +189,31 @@ public class MosaicSetsSolver implements Solver {
 //                arcOrder[i] = vc.getColor(i);
                 arcOrder[i] = i;
             }
-            
+
             gc.addSolution(basemap, solution, ge.setsToSelectedArcs, centers,
                     usedCenters, instituteFillColors, projectArcColors, drawGrid,
                     drawOutline, false, arcOrder, borderColor, borderSize, true,
                     fontSize, fontColor, false, false);
-            gc.export(resultPath + "gridset.svg");
+            var bends = new HashMap<Integer, Integer>();
+
+            gc.export(resultPath + inst.name + ".svg", bends);
+
+            long timeMs = endTime - startTime;
+            int totalBends = 0;
+            int nSets = 0;
+
+            for (var sId : bends.keySet()) {
+                System.out.println("* Set " + sId + ": " + bends.get(sId));
+                totalBends += bends.get(sId);
+                if (bends.get(sId) > 0) {
+                    ++nSets;
+                }
+            }
+
+            FileWriter writer = new FileWriter(resultPath + inst.name + ".txt");
+            writer.write(totalBends / nSets  + "\n");
+            writer.write(timeMs + "\n");
+            writer.close();
         }
 
         return new ArbitraryPolygonSolution(inst, entityIds, entityCells, statementCoordinates);

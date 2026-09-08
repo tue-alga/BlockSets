@@ -1,18 +1,17 @@
 package model;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.swing.plaf.nimbus.State;
-
 public class StatementEntityInstance {
+    public String name;
     public int numberOfStatements;
     public int numberOfEntities;
     public HashMap<Integer, String> statements;
@@ -35,13 +34,14 @@ public class StatementEntityInstance {
             }
         }
 
-        return new StatementEntityInstance(newEntities, newStatements, newEtoS);
+        return new StatementEntityInstance(this.name, newEntities, newStatements, newEtoS);
     }
 
     // NEW Constructor to load JSON data from file (keeping the ids from the
     // dataset)
     public StatementEntityInstance(String jsonFilePath) {
         try {
+            this.name = new File(jsonFilePath).getName().replaceFirst("[.][^.]+$", "");;
             StringBuilder jsonContent = new StringBuilder();
             BufferedReader reader = new BufferedReader(new FileReader(jsonFilePath));
             String line;
@@ -96,10 +96,11 @@ public class StatementEntityInstance {
         }
     }
 
-    public StatementEntityInstance(
+    public StatementEntityInstance(String name,
             Map<Integer, String> entities,
             Map<Integer, String> statements,
             Map<Integer, int[]> entityIdToStatements) {
+        this.name = name;
         this.entities = (HashMap<Integer, String>) entities;
         this.statements = (HashMap<Integer, String>) statements;
         this.entityIdToStatements = (HashMap<Integer, int[]>) entityIdToStatements;
@@ -109,6 +110,7 @@ public class StatementEntityInstance {
 
     public StatementEntityInstance(int[] entities, int[] statements, HashMap<Integer, int[]> entityStatements,
             StatementEntityInstance inst) {
+        this.name = inst.name;
         numberOfEntities = entities.length;
         numberOfStatements = statements.length;
 

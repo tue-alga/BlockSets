@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -59,6 +60,6 @@ public final class StatementEntityReader {
         }
 
         // Build and return model
-        return new StatementEntityInstance(entities, statements, entityIndToStatements);
+        return new StatementEntityInstance(new File(jsonFilePath).getName().replaceFirst("[.][^.]+$", ""), entities, statements, entityIndToStatements);
     }
 }
