@@ -43,6 +43,10 @@ public class NewSolver implements Solver {
     }
 
     public Pair<Solution, Integer> warmSolve(StatementEntityInstance originalInstance, double timeLimit, int dimensions, Solution initialSolution) throws Exception, GRBException {
+        return warmSolve(originalInstance, timeLimit, dimensions, initialSolution, null);
+    }
+
+    public Pair<Solution, Integer> warmSolve(StatementEntityInstance originalInstance, double timeLimit, int dimensions, Solution initialSolution, HashMap<Integer, Point> statementPositions) throws Exception, GRBException {
         int width = dimensions;
         int height = dimensions;
 
@@ -269,6 +273,23 @@ public class NewSolver implements Solver {
                     z[eIx][coord.x][coord.y].set(GRB.DoubleAttr.Start, 1);
                 }
                 ++eIx;
+            }
+        } else if (statementPositions != null) {
+            for (var sId : statementPositions.keySet()) {
+                for (var group : groupedElements.keySet()) {
+                    boolean found = false;
+                    for (var candSId : group) {
+                        if (Objects.equals(sId, candSId)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found) { // sId is part of this group
+                        var xG = x.get(group);
+                        var pos = statementPositions.get(sId);
+                        xG[pos.x][pos.y].set(GRB.DoubleAttr.Start, 1);
+                    }
+                }
             }
         }
 
