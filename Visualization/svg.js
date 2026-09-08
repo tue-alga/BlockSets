@@ -25,13 +25,13 @@ function createSVG(svg, svgNS) {
     svg.setAttribute("height", canvas.height);
 
     // Add white background
-    const background = document.createElementNS(svgNS, "rect");
-    background.setAttribute("x", 0);
-    background.setAttribute("y", 0);
-    background.setAttribute("width", canvas.width);
-    background.setAttribute("height", canvas.height);
-    background.setAttribute("fill", "white");
-    svg.appendChild(background);
+    // const background = document.createElementNS(svgNS, "rect");
+    // background.setAttribute("x", 0);
+    // background.setAttribute("y", 0);
+    // background.setAttribute("width", canvas.width);
+    // background.setAttribute("height", canvas.height);
+    // background.setAttribute("fill", "white");
+    // svg.appendChild(background);
 }
 
 function drawEntities(svg, svgNS, VisualizationSettings) {
