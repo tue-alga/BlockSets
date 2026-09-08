@@ -17,6 +17,7 @@ import ilp.objective.*;
 import io.StatsRecorder;
 import model.Solution;
 import model.StatementEntityInstance;
+import org.jgrapht.alg.util.Pair;
 
 public class OrthoconvexSolver implements Solver {
     private final int gridMin = 0;
@@ -58,7 +59,7 @@ public class OrthoconvexSolver implements Solver {
     }
 
     @Override
-    public Solution solve(StatementEntityInstance inst, double timeLimit, int dimensions) throws Exception, GRBException {
+    public Pair<Solution, Integer> solve(StatementEntityInstance inst, double timeLimit, int dimensions) throws Exception, GRBException {
         int maxCells = dimensions * dimensions;
         if (inst.numberOfStatements > maxCells) {
             System.out.println("Instance too large");
@@ -127,15 +128,15 @@ public class OrthoconvexSolver implements Solver {
                     status == GRB.Status.INF_OR_UNBD ||
                     solCount == 0) {
 
-                return null;
+                return new Pair(null, status);
             }
 
             // Extract and return
             switch (solutionType) {
                 case 0:
-                    return SolutionExtractor.extractRectangleSolution(ctx);
+                    return new Pair(SolutionExtractor.extractRectangleSolution(ctx), status);
                 case 1:
-                    return SolutionExtractor.extractPolygonSolution(ctx);
+                    return new Pair(SolutionExtractor.extractPolygonSolution(ctx), status);
                 default:
                     throw new Exception("Unknown solution type");
             }

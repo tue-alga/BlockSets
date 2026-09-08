@@ -1,5 +1,6 @@
 package ilp.solvers;
 
+import com.gurobi.gurobi.GRB;
 import com.gurobi.gurobi.GRBException;
 import ilp.solvers.mosaicsets.Grid;
 import ilp.solvers.mosaicsets.GridCanvas;
@@ -7,6 +8,7 @@ import ilp.solvers.mosaicsets.SetEmbedder;
 import model.ArbitraryPolygonSolution;
 import model.Solution;
 import model.StatementEntityInstance;
+import org.jgrapht.alg.util.Pair;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -48,7 +50,7 @@ public class MosaicSetsSolver implements Solver {
 
     /// Uses the eccentricity-based compactness measure
     @Override
-    public Solution solve(StatementEntityInstance inst, double timeLimit, int dimensions) throws Exception, GRBException {
+    public Pair<Solution, Integer> solve(StatementEntityInstance inst, double timeLimit, int dimensions) throws Exception, GRBException {
         SetEmbedder.MINIMIZE_BOUNDARIES = minPerimeter;
         gridSize = calculateGridSize(inst);
         Grid grid = new Grid(dimensions, dimensions, gridSize, gridSize, gridSize, Grid.TYPE_SQUARE);
@@ -95,7 +97,7 @@ public class MosaicSetsSolver implements Solver {
                 endTimeSecond = 0;
         Map<Point2D.Double, String> solution = ge.optimize(timeLimit, maxMIPgapInitIt, centers, resultPath);
         if (solution == null) {
-            return null;
+            return new Pair(solution, GRB.TIME_LIMIT);
         }
         endTimeFirst = System.currentTimeMillis();
         List<Point2D.Double> usedCenters = new ArrayList<>();
@@ -216,7 +218,7 @@ public class MosaicSetsSolver implements Solver {
             writer.close();
         }
 
-        return new ArbitraryPolygonSolution(inst, entityIds, entityCells, statementCoordinates);
+        return new Pair(new ArbitraryPolygonSolution(inst, entityIds, entityCells, statementCoordinates), GRB.TIME_LIMIT);
     }
 
     /**
