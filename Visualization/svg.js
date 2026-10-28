@@ -15,7 +15,7 @@ function exportToSVG(VisualizationSettings) {
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = "solution.svg";
+    link.download = lastFileName.substring(0, lastFileName.length - 4) + ".svg";
     link.click();
 }
 

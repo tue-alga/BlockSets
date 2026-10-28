@@ -76,17 +76,25 @@ const colors = [
     "#F1CE63",
     "#FF9D9A",
     "#FFBE7D",
-    "#FABFD2"
+    "#FABFD2",
+    "#FF0000",
+    "#0000FF",
+    "#FF00FF",
+    "#00FF00",
 ];
 
 // Color palette to be used for the current visualization
 let colorPalette = [];
 colors.forEach(c => colorPalette.push(hexToRgb(c)));
 
+let lastFileName = "solution";
+
 // Read solution from input
 document.getElementById('fileInput').addEventListener('change', function (event) {
     const file = event.target.files[0];
     if (!file) return;
+
+    lastFileName = file.name;
 
     reset(); // Clear any previous visuazliations
 
