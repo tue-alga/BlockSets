@@ -63,6 +63,9 @@ public class NewSolver implements Solver {
         this.statementIds = new ArrayList<>(inst.statements.keySet());
 
         HashMap<Integer, ArrayList<Integer>> statementIdToEntityIds = new HashMap<>();
+        for (var sId : statementIds) {
+            statementIdToEntityIds.put(sId, new ArrayList<>());
+        }
         for (var eId : entityIds) {
             var statements = inst.entityIdToStatements.get(eId);
             for (var statement : statements) {
@@ -340,6 +343,22 @@ public class NewSolver implements Solver {
             for (int j = 0; j < height; j++) {
                 for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
                     model.addConstr(occupied[i][j], '>', z[eIx][i][j], "occupied_" + i + "_" + j);
+                }
+            }
+        }
+
+        for (var group : groupedElements.keySet()) {
+            if (!groupedElements.get(group).isEmpty()) continue;
+            var xS = x.get(group);
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    model.addConstr(occupied[i][j], '>', xS[i][j], "occupied_singleton_" + i + "_" + j);
+                    GRBLinExpr iX = new GRBLinExpr();
+                    iX.addTerm(i, xS[i][j]);
+                    model.addConstr(c_max, '>', iX, "rightmost_column_singleton");
+                    GRBLinExpr jX = new GRBLinExpr();
+                    jX.addTerm(j, xS[i][j]);
+                    model.addConstr(r_max, '>', jX, "topmost_row_singleton");
                 }
             }
         }
@@ -893,7 +912,6 @@ public class NewSolver implements Solver {
         }
         var entityCells = new ArrayList<ArrayList<Point>>();
 
-        int eIx_ = 0;
         for (int ogEIx = 0; ogEIx < originalInstance.numberOfEntities; ++ogEIx) {
             var thisEntityCells = new ArrayList<Point>();
             boolean isSingleton = originalInstance.entityIdToStatements.get(ogEntityIds.get(ogEIx)).length == 1;
@@ -904,14 +922,14 @@ public class NewSolver implements Solver {
                 int sIx = statementIdToIdx.get(sId);
                 thisEntityCells.add(sCoords[sIx]);
             } else {
+                int eIx = entityIds.indexOf(ogEntityIds.get(ogEIx));
                 for (int i = 0; i < width; ++i) {
                     for (int j = 0; j < height; j++) {
-                        if (z[eIx_][i][j].get(GRB.DoubleAttr.X) > 0.5) {
+                        if (z[eIx][i][j].get(GRB.DoubleAttr.X) > 0.5) {
                             thisEntityCells.add(new Point(i, j));
                         }
                     }
                 }
-                ++eIx_;
             }
             entityCells.add(thisEntityCells);
         }
