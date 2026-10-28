@@ -257,13 +257,10 @@ public class NewSolver implements Solver {
                 ++_warm_sIx;
             }
             var entityCoords = initialSolution.getEntityCells();
-            var ogIxToId = new ArrayList<>(originalInstance.entities.keySet());
+            var initialIds = initialSolution.getEntityIds();
 
-            int eIx = 0;
-            for (int og_eIx = 0; og_eIx < originalInstance.numberOfEntities; ++og_eIx) {
-                if(originalInstance.entityIdToStatements.get(ogIxToId.get(og_eIx)).length == 1) {
-                    continue;
-                }
+            for (int eIx = 0; eIx < inst.numberOfEntities; ++eIx) {
+                int og_eIx = initialIds.indexOf(entityIds.get(eIx));
                 for (int i = 0; i < width; i++) {
                     for (int j = 0; j < height; j++) {
                         z[eIx][i][j].set(GRB.DoubleAttr.Start, 0);
@@ -272,7 +269,6 @@ public class NewSolver implements Solver {
                 for (var coord : entityCoords.get(og_eIx)) {
                     z[eIx][coord.x][coord.y].set(GRB.DoubleAttr.Start, 1);
                 }
-                ++eIx;
             }
         } else if (statementPositions != null) {
             for (var sId : statementPositions.keySet()) {
