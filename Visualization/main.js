@@ -87,8 +87,6 @@ const colors = [
 let colorPalette = [];
 colors.forEach(c => colorPalette.push(hexToRgb(c)));
 
-let lastFileName = "solution";
-
 // Read solution from input
 document.getElementById('fileInput').addEventListener('change', function (event) {
     const file = event.target.files[0];

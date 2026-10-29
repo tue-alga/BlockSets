@@ -1,3 +1,5 @@
+let lastFileName = "solution";
+
 function exportToSVG(VisualizationSettings) {
     // Create svg and set parameters
     const svgNS = "http://www.w3.org/2000/svg";
