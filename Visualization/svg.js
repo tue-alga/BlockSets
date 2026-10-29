@@ -264,7 +264,7 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
                 const textBackground = document.createElementNS(svgNS, "rect");
                 textBackground.setAttribute("x", textX);
                 textBackground.setAttribute("y", yStart + (i) * height + Number(VisualizationSettings.margins) - 2 + statement.yTextOffset);
-                textBackground.setAttribute("width", width);
+                textBackground.setAttribute("width", (statement.textLines[i].plaintext[j] === ' ' ? 3 * width : width));
                 textBackground.setAttribute("height", height);
                 textBackground.setAttribute("fill", lightenRGB(fillColor, 0.7));
                 textBackground.textContent = statement.textLines[i].plaintext[j];
@@ -355,6 +355,9 @@ function drawStatements(svg, svgNS, VisualizationSettings) {
 
             if (!hyphen) {
                 currentIndex++;
+                ongoingNameLengthsAndColors.forEach(e => {
+                    e[0]--; // Decrease remaining length of all current names
+                });
             }
         }
 

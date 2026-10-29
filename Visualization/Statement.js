@@ -230,7 +230,8 @@ class Statement {
                         c.fillText(this.textLines[i].plaintext[j], textX, textY);
 
                         // Draw underline
-                        c.fillRect(Math.round(textX), Math.round(textY + 1), Math.round(c.measureText(this.textLines[i].plaintext[j]).width + 0.3), 1);
+                        var w = this.textLines[i].plaintext[j] === ' ' ? Math.round(4 * c.measureText(this.textLines[i].plaintext[j]).width + 0.3) :  Math.round(1 * c.measureText(this.textLines[i].plaintext[j]).width + 0.3);
+                        c.fillRect(Math.round(textX), Math.round(textY + 1), w, 1);
                     }
                     else {
                         if (drawingName) {
@@ -238,7 +239,8 @@ class Statement {
                             let height = c.measureText("G").actualBoundingBoxAscent + 4;
                             let color = c.fillStyle;
                             c.fillStyle = lightenRGB(hexToRgb(c.fillStyle), 0.7);
-                            c.fillRect(Math.round(textX), Math.round(textY - height) + 2, Math.round(c.measureText(this.textLines[i].plaintext[j]).width + 0.3), Math.round(height));
+                            var w = this.textLines[i].plaintext[j] === ' ' ? Math.round(4 * c.measureText(this.textLines[i].plaintext[j]).width + 0.3) :  Math.round(1.5 * c.measureText(this.textLines[i].plaintext[j]).width + 0.3);
+                            c.fillRect(Math.round(textX), Math.round(textY - height) + 2, w, Math.round(height));
                             c.fillStyle = color;
                         }
                     }
@@ -281,6 +283,9 @@ class Statement {
             }
             if (!hyphen) {
                 ++currentIndex;
+                ongoingNameLengthsAndColors.forEach(e => {
+                    e[0]--; // Decrease remaining length of all current names
+                });
             }
         }
 
