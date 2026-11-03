@@ -25,18 +25,38 @@ public class ArbitraryPolygonSolution implements Solution {
         this.entityCells = entityCells;
         this.statementCoordinates = sCoords;
 
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
 
         for (var eCells : this.entityCells) {
             for (Point p : eCells) {
+                if (p.x < minX) minX = p.x;
+                if (p.y < minY) minY = p.y;
                 if (p.x > maxX) maxX = p.x;
                 if (p.y > maxY) maxY = p.y;
             }
         }
+        for (Point p : this.statementCoordinates) {
+            if (p.x < minX) minX = p.x;
+            if (p.y < minY) minY = p.y;
+            if (p.x > maxX) maxX = p.x;
+            if (p.y > maxY) maxY = p.y;
+        }
 
-        this.w = maxX;
-        this.h = maxY;
+        // Translate so that the solution starts at (0, 0); the MosaicSets grid may leave empty space around it
+        for (var eCells : this.entityCells) {
+            for (Point p : eCells) {
+                p.translate(-minX, -minY);
+            }
+        }
+        for (Point p : this.statementCoordinates) {
+            p.translate(-minX, -minY);
+        }
+
+        this.w = maxX - minX;
+        this.h = maxY - minY;
 
         setCells();
     }

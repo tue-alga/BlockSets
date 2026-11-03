@@ -22,7 +22,7 @@ import java.util.List;
 public class MosaicSetsSolver implements Solver {
     private final double maxMIPgapInitIt;
     private final double maxMIPgapSubseqIt;
-    private final String resultPath = "MosaicSets_run_data_";
+    private String resultPath = "MosaicSets_run_data_";
     private final boolean renderMosaicSetsSvgs;
     int gridSize;
     int padding;
@@ -40,15 +40,20 @@ public class MosaicSetsSolver implements Solver {
     // of gravity
     boolean projects_centered = true;
 
-    public MosaicSetsSolver(double maxMIPgapInitIt, double maxMIPgapSubseqIt, boolean renderMosaicSetsSvgs, boolean minPerimeter) {
+    public MosaicSetsSolver(double maxMIPgapInitIt, double maxMIPgapSubseqIt, boolean renderMosaicSetsSvgs, boolean minPerimeter, String outputFolder) {
         this.maxMIPgapSubseqIt = maxMIPgapSubseqIt;
         this.maxMIPgapInitIt = maxMIPgapInitIt;
         this.renderMosaicSetsSvgs = renderMosaicSetsSvgs;
         this.minPerimeter = minPerimeter;
         this.iterations = minPerimeter ? 1 : 5;
+
+        resultPath = outputFolder + "/" + resultPath;
     }
 
-    /// Uses the eccentricity-based compactness measure
+    public MosaicSetsSolver(double maxMIPgapInitIt, double maxMIPgapSubseqIt, boolean renderMosaicSetsSvgs, boolean minPerimeter) {
+        this(maxMIPgapInitIt, maxMIPgapSubseqIt, renderMosaicSetsSvgs, minPerimeter, "");
+    }
+
     @Override
     public Pair<Solution, Integer> solve(StatementEntityInstance inst, double timeLimit, int dimensions) throws Exception, GRBException {
         SetEmbedder.MINIMIZE_BOUNDARIES = minPerimeter;
@@ -148,7 +153,7 @@ public class MosaicSetsSolver implements Solver {
             // Check where the single statement was placed.
             if (inst.entityIdToStatements.get(entityIndex).length == 1) {
                 var statement = inst.entityIdToStatements.get(entityIndex)[0];
-                cells.add(statementCoordinates[statementIndexToStatementCoordinatesIndex.get(statement)]);
+                cells.add(new Point(statementCoordinates[statementIndexToStatementCoordinatesIndex.get(statement)]));
             }
             entityCells.add(new ArrayList<>(cells));
         }

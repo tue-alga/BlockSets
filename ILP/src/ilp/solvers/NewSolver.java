@@ -920,7 +920,7 @@ public class NewSolver implements Solver {
                 // look for the position of the single statement and use that
                 int sId = originalInstance.entityIdToStatements.get(ogEntityIds.get(ogEIx))[0];
                 int sIx = statementIdToIdx.get(sId);
-                thisEntityCells.add(sCoords[sIx]);
+                thisEntityCells.add(new Point(sCoords[sIx]));
             } else {
                 int eIx = entityIds.indexOf(ogEntityIds.get(ogEIx));
                 for (int i = 0; i < width; ++i) {

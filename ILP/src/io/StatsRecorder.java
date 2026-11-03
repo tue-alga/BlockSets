@@ -248,7 +248,7 @@ public class StatsRecorder {
                 }
             }
 
-            this.averageSetPerimeter = perimeter;
+            this.averageSetPerimeter += perimeter;
 
             entityI++;
         }
