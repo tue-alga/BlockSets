@@ -186,11 +186,16 @@ public class MosaicSetsSolver implements Solver {
             Color[] projectArcColors = new Color[overlays.size()];
             int[] arcOrder = new int[overlays.size()];
             for (int i = 0; i < basemap.size(); i++) {
-                Color c = Color.decode(basemapColor.get(i));
+                Color c = Color.decode(basemapColor.get(i % basemapColor.size()));
                 instituteFillColors[i] = c;
             }
             for (int i = 0; i < overlays.size(); i++) {
-                projectArcColors[i] = Color.decode(overlayColor.get(i));
+                if (i < overlayColor.size()) {
+                    projectArcColors[i] = Color.decode(overlayColor.get(i));
+                } else {
+                    float hue = (float) (((i - overlayColor.size()) * 0.618033988749895) % 1.0);
+                    projectArcColors[i] = Color.getHSBColor(hue, 0.55f, 0.75f);
+                }
             }
             for (int i = 0; i < overlays.size(); i++) {
 //                arcOrder[i] = vc.getColor(i);
