@@ -33,6 +33,8 @@ public class MosaicSetsSolver implements Solver {
 
     boolean minPerimeter;
 
+    private static boolean cambriaWarningShown = false;
+
     /// The number of ILP iterations (for the eccentricity-based compactness measure)
     private final int iterations;
 
@@ -267,6 +269,12 @@ public class MosaicSetsSolver implements Solver {
         Graphics2D g = image.createGraphics();
 
         Font font = new Font("Cambria", Font.PLAIN, fontSize);
+        // Java silently falls back to another font if Cambria is not installed
+        if (!cambriaWarningShown && !font.getFamily().equals("Cambria")) {
+            System.err.println("WARNING: font Cambria is not available, falling back to " + font.getFamily() +
+                    ". Grid sizes and label layout will differ from runs that use Cambria.");
+            cambriaWarningShown = true;
+        }
         g.setFont(font);
 
         FontMetrics fm = g.getFontMetrics();
