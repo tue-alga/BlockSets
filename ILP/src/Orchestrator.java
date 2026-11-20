@@ -22,8 +22,22 @@ import split.ClusterSplit;
 import split.GreedySplit;
 
 public class Orchestrator {
+    public enum SplitMethod {
+        Best("Best of RectEuler and BlockSets"),
+        BlockSets("BlockSets"),
+        RectEuler("RectEuler");
+
+        public final String label;
+
+        SplitMethod(String label) {
+            this.label = label;
+        }
+    }
+
     private final boolean useNew = false;
     private final boolean useCombined = true;
+
+    private final SplitMethod splitMethod;
 
     private final int splitK; // Maximum number of nodes to be deleted (usually 5)
     private final double splitRatio; // Coefficient that determines how wide is the range of acceptable components'
@@ -36,6 +50,12 @@ public class Orchestrator {
     public final Map<Integer, int[]> deletedPositions = new HashMap<>(); // fill later if needed
 
     public Orchestrator(int splitK, double splitRatio, double componentLayoutTimeLimit, double componentArrangementTimeLimit) {
+        this(splitK, splitRatio, componentLayoutTimeLimit, componentArrangementTimeLimit, SplitMethod.Best);
+    }
+
+    public Orchestrator(int splitK, double splitRatio, double componentLayoutTimeLimit, double componentArrangementTimeLimit,
+                        SplitMethod splitMethod) {
+        this.splitMethod = splitMethod;
         this.splitK = splitK;
         this.splitRatio = splitRatio;
         this.componentLayoutTimeLimit = componentLayoutTimeLimit;
@@ -63,6 +83,12 @@ public class Orchestrator {
     }
 
     List<StatementEntityInstance> split(StatementEntityInstance inst) {
+        if (splitMethod == SplitMethod.BlockSets) {
+            return hypergraphSeparatorSplit(inst);
+        }
+        if (splitMethod == SplitMethod.RectEuler) {
+            return clusterSplit(inst);
+        }
         var clusterParts = clusterSplit(inst);
         var hgsParts = hypergraphSeparatorSplit(inst);
         if (clusterParts.size() < hgsParts.size()) {

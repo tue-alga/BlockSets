@@ -18,6 +18,9 @@ public class Experiments {
         var outputFolderDir = new File(outputFolder);
         assert(inputFolderDir.isDirectory());
 
+        // Split methods to run. Each method gets its own output files and its own label in the statistics CSV.
+        Orchestrator.SplitMethod[] splitMethods = {Orchestrator.SplitMethod.BlockSets, Orchestrator.SplitMethod.RectEuler};
+
         var uniqueID = System.currentTimeMillis();
 
         File[] files = inputFolderDir.listFiles();
@@ -34,9 +37,13 @@ public class Experiments {
                         mosaicSetsPerimeterOptions = new boolean[]{false};
                     }
                     for (var mosaicSetsPerimeter : mosaicSetsPerimeterOptions) {
+                      for (var splitMethod : splitMethods) {
                         String outputName = inputName + "_" + polygonType.name();
                         if (mosaicSetsPerimeter) {
                             outputName += "_perimeter";
+                        }
+                        if (splitMethod != Orchestrator.SplitMethod.Best) {
+                            outputName += "_" + splitMethod.name();
                         }
 
                         var outputFile = new File(outputFolder + outputName + ".txt");
@@ -46,9 +53,9 @@ public class Experiments {
 
                         StatementEntityInstance instance = StatementEntityReader.readFromFile(file.getPath());
 
-                        String[] runParams = {inputName, "Best of RectEuler and BlockSets", polygonType.name()};
+                        String[] runParams = {inputName, splitMethod.label, polygonType.name()};
                         StatsRecorder stats = new StatsRecorder(instance, runParams);
-                        Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, 120, 60);
+                        Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, 120, 60, splitMethod);
                         PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, stats, mosaicSetsPerimeter);
 
                         // Write solution stats to file
@@ -60,6 +67,7 @@ public class Experiments {
                                 finalLayout.width,
                                 finalLayout.height,
                                 outputFile.getPath());
+                      }
                     }
                 }
             }
