@@ -26,7 +26,7 @@ public class Experiments {
         try {
             for (File file : files) {
                 var inputName = file.getName().split("\\.(?=[^\\.]+$)")[0];
-                for (var polygonType : new PolygonType[]{PolygonType.Arbitrary, PolygonType.Orthoconvex, PolygonType.Nabla, PolygonType.Gamma, PolygonType.Rectangle}) {
+                for (var polygonType : new PolygonType[]{PolygonType.Orthoconvex, PolygonType.Nabla, PolygonType.Gamma, PolygonType.Rectangle}) {
                     boolean[] mosaicSetsPerimeterOptions;
                     if (polygonType == PolygonType.Arbitrary) {
                         mosaicSetsPerimeterOptions = new boolean[]{false};
@@ -48,7 +48,7 @@ public class Experiments {
 
                         String[] runParams = {inputName, "Best of RectEuler and BlockSets", polygonType.name()};
                         StatsRecorder stats = new StatsRecorder(instance, runParams);
-                        Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, 120, 60);
+                        Orchestrator orchestrator = new Orchestrator(5, 1.0 / 3, 600, 600);
                         PositionedSolution finalLayout = orchestrator.runBlockSets(instance, polygonType, stats, mosaicSetsPerimeter);
 
                         // Write solution stats to file
